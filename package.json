@@ -1,0 +1,38 @@
+{
+  "name": "aoc-copilot",
+  "private": false,
+  "version": "1.0.3",
+  "description": "Advent of Code automatic runner for examples and inputs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonmuzzy/aoc-copilot.git"
+  },
+  "keywords": [
+    "aoc",
+    "advent"
+  ],
+  "author": "Jason Muzzy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jasonmuzzy/aoc-copilot/issues"
+  },
+  "homepage": "https://github.com/jasonmuzzy/aoc-copilot#readme",
+  "devDependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^20.14.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.4.5"
+  }
+}
