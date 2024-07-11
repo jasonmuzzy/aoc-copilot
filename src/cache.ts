@@ -1,8 +1,9 @@
 import { mkdir, readFile, writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 
+// https://stackoverflow.com/a/26227660
 const HOME_DIR =
-    process.env.LOCALAPPDATA
+    process.env.LOCALAPPDATA // LOCALAPPDATA for local, APPDATA for roaming
     || (process.platform == 'darwin'
         ? process.env.HOME + '/Library/Preferences'
         : process.env.HOME + "/.config")

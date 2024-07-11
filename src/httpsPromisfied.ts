@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import https from 'https';
 
 function request(method: string, path: string, cookie?: string, ca?: string, formData?: string): Promise<string> {
