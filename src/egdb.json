@@ -29,9 +29,23 @@
     },
     {
         "year": 2021,
+        "day": 13,
+        "reason": "Irregular format",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [1, 1]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [27, 26]
+        }
+    },
+    {
+        "year": 2021,
         "day": 16,
         "reason": "Multiple examples",
-        "part1length": 5,
+        "part1length": 4,
         "inputs": {
             "selector": "code",
             "indexes": [73, 75, 77, 79, 90, 94, 98, 103, 108, 112, 116, 120]
@@ -76,11 +90,137 @@
         "part1length": 2,
         "inputs": {
             "selector": "code",
-            "indexes": [4,70,74]
+            "indexes": [4, 70, 74]
         },
         "answers": {
             "selector": "code",
-            "indexes": [64,71,75]
+            "indexes": [64, 71, 75]
+        }
+    },
+    {
+        "year": 2022,
+        "day": 6,
+        "reason": "Multiple examples",
+        "part1length": 5,
+        "inputs": {
+            "selector": "code",
+            "indexes": [0, 6, 8, 10, 12, 15, 17, 19, 21, 23]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [5, 7, 9, 11, 13, 16, 18, 20, 22, 24]
+        }
+    },
+    {
+        "year": 2022,
+        "day": 9,
+        "reason": "Multiple examples",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [5, 5, 20]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [11, 19, 23]
+        }
+    },
+    {
+        "year": 2022,
+        "day": 10,
+        "reason": "Irregular format (part 2 CRT output)",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [30, 30]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [52, 63]
+        }
+    },
+    {
+        "year": 2023,
+        "day": 1,
+        "reason": "Multiple examples",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [0, 16]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [5, 24]
+        }
+    },
+    {
+        "year": 2023,
+        "day": 8,
+        "reason": "Multiple examples",
+        "part1length": 2,
+        "inputs": {
+            "selector": "code",
+            "indexes": [4, 20, 28]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [14, 18, 49]
+        }
+    },
+    {
+        "year": 2023,
+        "day": 10,
+        "reason": "Multiple examples",
+        "part1length": 2,
+        "inputs": {
+            "selector": "code",
+            "indexes": [17, 20, 24, 34, 39]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [19, 38, 33, 38, 42]
+        }
+    },
+    {
+        "year": 2023,
+        "day": 17,
+        "reason": "Multiple examples",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [0, 0, 6]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [2, 5, 8]
+        }
+    },
+    {
+        "year": 2023,
+        "day": 20,
+        "reason": "Multiple examples",
+        "part1length": 2,
+        "inputs": {
+            "selector": "code",
+            "indexes": [10, 23]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [60, 64]
+        }
+    },
+    {
+        "year": 2023,
+        "day": 21,
+        "reason": "Multiple examples",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [4, 4, 4, 4, 4, 4, 4, 4]
+        },
+        "answers": {
+            "selector": "code",
+            "indexes": [16, 27, 29, 31, 33, 35, 37, 39]
         }
     }
 ]

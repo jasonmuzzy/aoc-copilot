@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "command": "npm run test",
+            "name": "npm run test",
+            "request": "launch",
+            "type": "node-terminal",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceRoot}",
+            "sourceMaps": true,
+        },
+        {
             "name": "Current TS File",
             "type": "node",
             "request": "launch",
