@@ -2,10 +2,6 @@ import egdb from './egdb.json';
 
 /**
  * TODO:
- * - 2022/19 multiply indexes 8*10 for part 2 answer
- * - 2022/24 no example input
- * - 2023/10 part 1 example 2 answer is shown, but not isolated (work-around: pick from other index that happens to have the same value)
- * - 2023/20 no part 2 example (show a message?)
  * - 2023/21 need extra info (number of steps) available at example indexes [15, 26, 28, 30, 32, 34, 36, 38] and input indexes [0, 21]
  */
 
@@ -18,10 +14,11 @@ type Example = {
 }
 
 function getExampleInputs($: cheerio.Root) {
-    const largerEgs = $("p:contains('larger example') + pre code");
+    const largerEgs = $("p:contains('larger example'),p:contains('complex example') + pre code");
     let largerEg: cheerio.Cheerio | undefined;
     for (let i = 0; i < largerEgs.length; ++i) {
-        if (largerEgs.eq(i).parent().prev('p').text().endsWith('larger example:')) {
+        if (largerEgs.eq(i).parent().prev('p').text().endsWith('larger example:') ||
+            largerEgs.eq(i).parent().prev('p').text().endsWith('complex example:')) {
             largerEg = largerEgs.eq(i);
             break;
         }
@@ -66,6 +63,12 @@ function getExamples(year: number, day: number, part1only: boolean, $: cheerio.R
                 ? $('article:last p em code').last().text()
                 : $('article:last p code em').last().text();
             examples.push({ part: 2, inputs, answer: answer2 });
+            if (year == 2022 && day == 19) {
+                examples.at(-1)!.answer = (
+                    parseInt($('code').eq(8).text())
+                    * parseInt($('code').eq(10).text())
+                ).toString();
+            }
         }
     }
     for (const test of addTests) examples.push(test);

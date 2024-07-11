@@ -19,7 +19,7 @@
 // List out the indexes of the <code> blocks for a puzzle
 import cheerio from 'cheerio';
 import { getPuzzle } from "./site";
-getPuzzle(2023, 21).then(puzzle => {
+getPuzzle(2022, 19).then(puzzle => {
     const $ = cheerio.load(puzzle);
     const selections = $('code');
     for (let i = 0; i < selections.length; i++) {

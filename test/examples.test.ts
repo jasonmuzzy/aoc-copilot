@@ -2,18 +2,13 @@ import cheerio from 'cheerio';
 import fs from 'fs';
 import path from 'path';
 
-import { getExamples } from './examples';
-import { getPuzzle } from './site';
+import { getExamples } from '../src/examples';
+import { getPuzzle } from '../src/site';
 
 /**
  * Run with `npm run test`
  */
 
-/**
- * TODO:
- * 2022: 19, 24
- * 2023: 
- */
 const year = 2022;
 
 describe('getExamples()', () => {
