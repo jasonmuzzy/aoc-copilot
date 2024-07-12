@@ -177,8 +177,8 @@
             "indexes": [17, 20, 24, 34, 39]
         },
         "answers": {
-            "selector": "code",
-            "indexes": [19, 38, 33, 38, 42]
+            "selector": "em",
+            "indexes": [17, 18, 35, 63, 69]
         }
     },
     {
@@ -221,6 +221,11 @@
         "answers": {
             "selector": "code",
             "indexes": [16, 27, 29, 31, 33, 35, 37, 39]
+        },
+        "additionalInfos": {
+            "key": "numberOfSteps",
+            "selector": "code",
+            "indexes": [15, 26, 28, 30, 32, 34, 36, 38]
         }
     }
 ]
