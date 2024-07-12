@@ -19,9 +19,9 @@
 // List out the indexes of the <code> blocks for a puzzle
 import cheerio from 'cheerio';
 import { getPuzzle } from "./site";
-getPuzzle(2022, 19).then(puzzle => {
+getPuzzle(2023, 10).then(puzzle => {
     const $ = cheerio.load(puzzle);
-    const selections = $('code');
+    const selections = $('em');
     for (let i = 0; i < selections.length; i++) {
         const text = selections.eq(i).text();
         console.log(`\x1b[36m${i.toString().padStart(3, '0') + ': '}\x1b[0m ${text.includes('\n') ? '\n' + text : text}`)

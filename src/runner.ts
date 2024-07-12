@@ -1,13 +1,15 @@
 import cheerio from 'cheerio';
 import path from 'path';
 
+import aidb from './aidb.json';
 import { Db, Example, getExamples } from './examples';
 import { getInput, getPuzzle, submitAnswer } from "./site";
 
 type Solver = (
     inputs: string[],
     part: number,
-    test: boolean
+    test: boolean,
+    additionalInfo?: { [key:string]: string }
 ) => Promise<number | string>;
 
 function getYearDay(filename: string) {
@@ -41,15 +43,15 @@ AOC_SESSION_COOKIE="session=<your session cookie value>"
 }
 
 function allPass(year: number, day: number, test: boolean, examples: Example[], solver: Solver) {
-    return Promise.all(examples.map(eg => passes(eg.inputs, year, day, eg.part, test, solver, eg.answer)))
+    return Promise.all(examples.map(eg => passes(eg.inputs, year, day, eg.part, test, solver, eg.answer, eg.additionalInfo)))
         .then(results => results.every(result => result == true));
 }
 
-async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string) {
+async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key:string]: string }) {
     let answer: number | string = 0;
     const start = performance.now();
     try {
-        answer = await solver(inputs, part, test);
+        answer = await solver(inputs, part, test, additionalInfo);
     } catch (error) {
         console.log("Example input:");
         for (const input of inputs) console.log(input);
@@ -67,16 +69,30 @@ async function passes(inputs: string[], year: number, day: number, part: number,
     }
 }
 
+/**
+ * Automatic runs the provided `solver` against examples and/or inputs
+ * @param yearDay accepts either a string in the format 'xxxYYDD*' where YY is the 2-digit year and DD is the 2-digit day, or an object with year and day properties; intended to be used with the `__filename` parameter for files names like 'aoc2301.ts'
+ * @param solver callback solver function
+ * @param addDb (optional) additional entries for the examples database, e.g. to add support for as-yet unsupported years or days
+ * @param addTests (optional) additional test cases
+ * @returns 
+ */
 async function run(yearDay: string | { year: number, day: number }, solver: Solver, addDb: Db = [], addTests: Example[] = []) {
     if (!preChecksPass()) return;
     const { year, day } = typeof yearDay === 'string' ? getYearDay(yearDay) : yearDay;
     Promise.all([getPuzzle(year, day), getInput(year, day)]).then(async ([puzzle, inputs]) => {
         const $ = cheerio.load(puzzle);
         const acceptedAnswers = $("p:contains('Your puzzle answer') > code");
+        const additionalInfos = aidb
+            .filter(ai => ai.year === year && ai.day === day)
+            .reduce<{ [key:string]: string }[]>((pv, cv) => pv = [
+                { [cv.key]: $(cv.selector).eq(cv.indexPart1).text() },
+                { [cv.key]: $(cv.selector).eq(cv.indexPart2).text() }
+            ], []);
         const examples = getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
         if (acceptedAnswers.length == 0) {
             if (await allPass(year, day, true, examples.filter(e => e.part == 1), solver)) {
-                const answer = await solver(inputs, 1, false);
+                const answer = await solver(inputs, 1, false, additionalInfos[0] || {});
                 try {
                     await submitAnswer(year, day, 1, answer);
                     console.log(`That's the right answer! ${answer} (${year} day ${day} part 1) (new submission)`);
@@ -85,10 +101,10 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
                 }
             }
         } else {
-            if (await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text())) {
+            if (await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
                 if (acceptedAnswers.length == 1) {
                     if (await allPass(year, day, true, examples.filter(e => e.part == 2), solver)) {
-                        const answer = await solver(inputs, 2, false);
+                        const answer = await solver(inputs, 2, false, additionalInfos[1] || {});
                         try {
                             await submitAnswer(year, day, 2, answer);
                             console.log(`That's the right answer! ${answer} (${year} day ${day} part 2) (new submission)`);
@@ -96,7 +112,7 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
                             console.error(error);
                         }
                     }
-                } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text())) {
+                } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
                     allPass(year, day, true, examples.filter(e => e.part == 2), solver);
                 }
             } else allPass(year, day, true, examples.filter(e => e.part == 1), solver);
