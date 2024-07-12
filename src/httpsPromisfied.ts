@@ -15,7 +15,6 @@ function request(method: string, path: string, cookie?: string, ca?: string, for
         };
         if (method === 'POST' && !!formData) options.headers!["Content-Type"] = "application/x-www-form-urlencoded";
         const req = https.request(options, res => {
-            // if (res.statusCode == 302) reject(new Error(`HTTP 302: It seems your cookie has expired. Please update .cookie file and try again.`));
             let html = "";
             res.on("data", chunk => html += chunk);
             res.on("end", () => resolve(html));
