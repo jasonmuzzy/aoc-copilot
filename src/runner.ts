@@ -42,9 +42,15 @@ AOC_SESSION_COOKIE="session=<your session cookie value>"
     return true;
 }
 
-function allPass(year: number, day: number, test: boolean, examples: Example[], solver: Solver) {
+function allPass(year: number, day: number, part: number, test: boolean, examples: Example[], solver: Solver) {
     return Promise.all(examples.map(eg => passes(eg.inputs, year, day, eg.part, test, solver, eg.answer, eg.additionalInfo)))
-        .then(results => results.every(result => result == true));
+        .then(results => {
+            if (results.length > 0) return results.every(result => result == true)
+            else {
+                console.log(`Sorry, no examples found for ${year} day ${day} part ${part}`);
+                return true
+            }
+        });
 }
 
 async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key:string]: string }) {
@@ -92,9 +98,10 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
             ], []);
         const examples = getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
         if (testsOnly) {
-            await allPass(year, day, true, acceptedAnswers.length > 0 ? examples : examples.filter(e => e.part === 1), solver);
+            await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
+            if (acceptedAnswers.length > 0) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
         } else if (acceptedAnswers.length == 0) {
-            if (await allPass(year, day, true, examples.filter(e => e.part == 1), solver)) {
+            if (await allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver)) {
                 const answer = await solver(inputs, 1, false, additionalInfos[0] || {});
                 try {
                     await submitAnswer(year, day, 1, answer);
@@ -106,7 +113,7 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
         } else {
             if (await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
                 if (acceptedAnswers.length == 1) {
-                    if (await allPass(year, day, true, examples.filter(e => e.part == 2), solver)) {
+                    if (await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver)) {
                         const answer = await solver(inputs, 2, false, additionalInfos[1] || {});
                         try {
                             await submitAnswer(year, day, 2, answer);
@@ -116,9 +123,9 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
                         }
                     }
                 } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
-                    allPass(year, day, true, examples.filter(e => e.part == 2), solver);
+                    allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
                 }
-            } else allPass(year, day, true, examples.filter(e => e.part == 1), solver);
+            } else allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
         }
     });
 }
