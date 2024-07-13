@@ -25,8 +25,8 @@ function getPuzzle(year: number, day: number, forceRefresh = false): Promise<str
         : read(`${year}/puzzles/${day}.html`)
     ).catch(() => {
         return request('GET', `/${year}/day/${day}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE)
-            .then(html => write(`${year}/puzzles/${day}.html`, html)
-                .then(() => html));
+            .then(puzzle => write(`${year}/puzzles/${day}.html`, puzzle)
+                .then(() => puzzle));
     });
 }
 
@@ -45,8 +45,9 @@ function submitAnswer(year: number, day: number, part: number, answer: number | 
                 answer: answer
             });
             return request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData);
-        }).then(html => {
-            const $ = cheerio.load(html);
+        }).then(response => write(`${year}/lastPOSTResponse.html`, response).then(() => response))
+        .then(response => {
+            const $ = cheerio.load(response);
             const alreadySolved = "You don't seem to be solving the right level";
             if ($('span.day-success').length > 0) {
                 return getPuzzle(year, day, true);

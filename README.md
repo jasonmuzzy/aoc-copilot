@@ -98,13 +98,7 @@ import { run } from 'aoc-copilot';
 
 async function solve(inputs: string[], part: number, test: boolean, additionalInfo?: { [key:string]: string }): Promise<number | string> {
     let answer = 0;
-    /**
-     * TODO: Remove the exception below which forces printing the input and expected answer to the console
-    */
-    throw new Error('Not implemented');
-    /**
-     * TODO: Implement solution
-    */
+    throw new Error('Not implemented'); // <-- Replace with your solution (raising an exception forces printing the example input and answer to the console)
     return answer;
 }
 
@@ -113,6 +107,8 @@ run(__filename, solve);
 
 <a id="extended-run-options"></a>
 ### Extended `run` Options
+
+**TODO:** document how to re-run examples for solved puzzles using testsOnly parameter.
 
 **TODO:** document how to supply own egdb entries to add support for as-yet unsupported years/days.
 
