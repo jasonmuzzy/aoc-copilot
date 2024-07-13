@@ -73,11 +73,12 @@ async function passes(inputs: string[], year: number, day: number, part: number,
  * Automatic runs the provided `solver` against examples and/or inputs
  * @param yearDay accepts either a string in the format 'xxxYYDD*' where YY is the 2-digit year and DD is the 2-digit day, or an object with year and day properties; intended to be used with the `__filename` parameter for files names like 'aoc2301.ts'
  * @param solver callback solver function
+ * @param testsOnly if true, only runs the examples, not the inputs
  * @param addDb (optional) additional entries for the examples database, e.g. to add support for as-yet unsupported years or days
  * @param addTests (optional) additional test cases
  * @returns 
  */
-async function run(yearDay: string | { year: number, day: number }, solver: Solver, addDb: Db = [], addTests: Example[] = []) {
+async function run(yearDay: string | { year: number, day: number }, solver: Solver, testsOnly = false, addDb: Db = [], addTests: Example[] = []) {
     if (!preChecksPass()) return;
     const { year, day } = typeof yearDay === 'string' ? getYearDay(yearDay) : yearDay;
     Promise.all([getPuzzle(year, day), getInput(year, day)]).then(async ([puzzle, inputs]) => {
@@ -90,7 +91,9 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
                 { [cv.key]: $(cv.selector).eq(cv.indexPart2).text() }
             ], []);
         const examples = getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
-        if (acceptedAnswers.length == 0) {
+        if (testsOnly) {
+            await allPass(year, day, true, acceptedAnswers.length > 0 ? examples : examples.filter(e => e.part === 1), solver);
+        } else if (acceptedAnswers.length == 0) {
             if (await allPass(year, day, true, examples.filter(e => e.part == 1), solver)) {
                 const answer = await solver(inputs, 1, false, additionalInfos[0] || {});
                 try {

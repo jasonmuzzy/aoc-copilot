@@ -26,10 +26,10 @@ function getExampleInputs($: cheerio.Root) {
 }
 
 function getExamples(year: number, day: number, part1only: boolean, $: cheerio.Root, addDb: Db = [], addTests: Example[] = []) {
-    const db = egdb.concat(addDb).find(e => e.year === year && e.day === day);
+    const db = addDb.concat(egdb).find(e => e.year === year && e.day === day); // User-supplied DB takes precedence
     const examples: Example[] = [];
     if (db) {
-        if (db.inputs.indexes.length !== db.answers.indexes.length) {
+        if (db.inputs.indexes.length !== db.answers.indexesOrLiterals.length) {
             throw new Error(`Inconsistency detected in egdb.json: lengths of inputs.indexes and answers.indexes differs for year ${year} day ${day}`);
         }
         if (db.additionalInfos && db.inputs.indexes.length !== db.additionalInfos.indexes.length) {
@@ -51,7 +51,9 @@ function getExamples(year: number, day: number, part1only: boolean, $: cheerio.R
                 part: i < db.part1length ? 1 : 2,
                 inputs: inputs.eq(inputIndex).text().split('\n'),
                 answer: (() => {
-                    const answer = answers.eq(db.answers.indexes[i]).text();
+                    const answer = typeof db.answers.indexesOrLiterals[i] === 'string'
+                        ? db.answers.indexesOrLiterals[i]
+                        : answers.eq(db.answers.indexesOrLiterals[i]).text();
                     if (answer.includes('\n')) {
                         const answers = answer.split('\n');
                         while (answers.at(-1) == '') answers.pop();
@@ -72,14 +74,6 @@ function getExamples(year: number, day: number, part1only: boolean, $: cheerio.R
                 ? $('article:last p em code').last().text()
                 : $('article:last p code em').last().text();
             examples.push({ part: 2, inputs, answer: answer2 }); // No additionalInfo for generically determined examples
-            if (year == 2022 && day == 19) { // TODO: replace year/day logic with something more generic
-                // The 2022 day 19 part 2 example gives the two numbers to multiply, but stops short of actually multiplying them.
-                // Wait and see what special handling is needed in 2020 and earlier before deciding on a solution.
-                examples.at(-1)!.answer = (
-                    parseInt($('code').eq(8).text())
-                    * parseInt($('code').eq(10).text())
-                ).toString();
-            }
         }
     }
     for (const test of addTests) examples.push(test);

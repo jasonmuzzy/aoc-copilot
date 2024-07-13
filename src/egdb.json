@@ -1,4 +1,33 @@
 [
+    
+    {
+        "year": 2020,
+        "day": 2,
+        "reason": "Answer for part 2 can be inferred by counting, but isn't directly given: index given for unrelated but correct <code> tag",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [0, 0]
+        },
+        "answers": {
+            "selector": "code",
+            "indexesOrLiterals": [5, 12]
+        }
+    },
+    {
+        "year": 2020,
+        "day": 4,
+        "reason": "Answers for part 2 can be inferred by counting, but are not directly given: literal values given",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [9, 55, 56]
+        },
+        "answers": {
+            "selector": "code",
+            "indexesOrLiterals": [16, "4", "0"]
+        }
+    },
     {
         "year": 2021,
         "day": 8,
@@ -10,7 +39,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [45, 81, 102]
+            "indexesOrLiterals": [45, 81, 102]
         }
     },
     {
@@ -24,7 +53,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [11, 19, 21, 28, 30, 31]
+            "indexesOrLiterals": [11, 19, 21, 28, 30, 31]
         }
     },
     {
@@ -38,7 +67,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [27, 26]
+            "indexesOrLiterals": [27, 26]
         }
     },
     {
@@ -52,7 +81,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [74, 76, 78, 80, 93, 97, 102, 107, 109, 113, 117, 121]
+            "indexesOrLiterals": [74, 76, 78, 80, 93, 97, 102, 107, 109, 113, 117, 121]
         }
     },
     {
@@ -66,7 +95,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [59, 62, 67]
+            "indexesOrLiterals": [59, 62, 67]
         }
     },
     {
@@ -80,7 +109,7 @@
         },
         "answers": {
             "selector": "em",
-            "indexes": [5, 7]
+            "indexesOrLiterals": [5, 7]
         }
     },
     {
@@ -94,7 +123,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [64, 71, 75]
+            "indexesOrLiterals": [64, 71, 75]
         }
     },
     {
@@ -108,7 +137,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [5, 7, 9, 11, 13, 16, 18, 20, 22, 24]
+            "indexesOrLiterals": [5, 7, 9, 11, 13, 16, 18, 20, 22, 24]
         }
     },
     {
@@ -122,7 +151,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [11, 19, 23]
+            "indexesOrLiterals": [11, 19, 23]
         }
     },
     {
@@ -136,7 +165,21 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [52, 63]
+            "indexesOrLiterals": [52, 63]
+        }
+    },
+    {
+        "year": 2022,
+        "day": 19,
+        "reason": "Part 2 gives the two values to multiply together (56 and 62) but doesn't actually multiply them out",
+        "part1length": 1,
+        "inputs": {
+            "selector": "code",
+            "indexes": [0, 0]
+        },
+        "answers": {
+            "selector": "code",
+            "indexesOrLiterals": [6, "3472"]
         }
     },
     {
@@ -150,7 +193,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [5, 24]
+            "indexesOrLiterals": [5, 24]
         }
     },
     {
@@ -164,7 +207,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [14, 18, 49]
+            "indexesOrLiterals": [14, 18, 49]
         }
     },
     {
@@ -178,7 +221,7 @@
         },
         "answers": {
             "selector": "em",
-            "indexes": [17, 18, 35, 63, 69]
+            "indexesOrLiterals": [17, 18, 35, 63, 69]
         }
     },
     {
@@ -192,7 +235,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [2, 5, 8]
+            "indexesOrLiterals": [2, 5, 8]
         }
     },
     {
@@ -206,7 +249,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [60, 64]
+            "indexesOrLiterals": [60, 64]
         }
     },
     {
@@ -220,7 +263,7 @@
         },
         "answers": {
             "selector": "code",
-            "indexes": [16, 27, 29, 31, 33, 35, 37, 39]
+            "indexesOrLiterals": [16, 27, 29, 31, 33, 35, 37, 39]
         },
         "additionalInfos": {
             "key": "numberOfSteps",
