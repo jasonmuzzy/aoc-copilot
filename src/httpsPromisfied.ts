@@ -33,7 +33,7 @@ CERTIFICATE="<your certificate(s)>" in your .env file.
 
 See options.ca at https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions
 `));
-            }
+            } else reject(error);
         });
         if (method === 'POST' && !!formData) req.write(formData);
         req.end()

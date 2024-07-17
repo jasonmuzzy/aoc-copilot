@@ -3,7 +3,7 @@ import path from 'path';
 
 import aidb from './aidb.json';
 import { Db, Example, getExamples } from './examples';
-import { getInput, getPuzzle, submitAnswer } from "./site";
+import { cookieSteps, getInput, getPuzzle, submitAnswer } from "./site";
 
 type Solver = (
     inputs: string[],
@@ -25,18 +25,10 @@ function getYearDay(filename: string) {
 
 function preChecksPass() {
     if (!process.env.AOC_SESSION_COOKIE) {
-        console.error(`
-Pre-checks failed:  Missing session cookie
+        console.error(`Pre-checks failed:  Missing session cookie
 
 A session cookie is required in order to log in to the adventofcode.com site.
-In Chromium-based browsers like Chrome and Edge you can obtain your cookie by
-visiting the site, logging in, opening developer tools, and clicking on
-Application then expanding Cookies under the Storage section, locating the
-adventofcode.com cookie, and copying the session value.
-
-Then, add the following line to a .env file in the root of the project:
-AOC_SESSION_COOKIE="session=<your session cookie value>"
-`);
+` + cookieSteps);
         return false;
     }
     return true;
