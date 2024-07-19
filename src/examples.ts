@@ -1,6 +1,23 @@
-import egdb from './egdb.json';
+import { readFile } from "node:fs/promises";
+import { join, normalize } from 'node:path';
 
-type Db = typeof egdb;
+type Egdb = {
+    reason: string,
+    part1length: number,
+    inputs: {
+        selector: string,
+        indexes: number[],
+    },
+    answers: {
+        selector: string,
+        indexesOrLiterals: (number | string)[],
+    },
+    additionalInfos?: {
+        key: string,
+        selector: string,
+        indexes: number[],
+    }
+}
 
 type Example = {
     part: number,
@@ -25,45 +42,46 @@ function getExampleInputs($: cheerio.Root) {
     else return $('article pre code').first();
 }
 
-function getExamples(year: number, day: number, part1only: boolean, $: cheerio.Root, addDb: Db = [], addTests: Example[] = []) {
-    const db = addDb.concat(egdb).find(e => e.year === year && e.day === day); // User-supplied DB takes precedence
+async function getExamples(year: number, day: number, part1only: boolean, $: cheerio.Root, addDb?: Egdb, addTests: Example[] = []) {
     const examples: Example[] = [];
-    if (db) {
-        if (db.inputs.indexes.length !== db.answers.indexesOrLiterals.length) {
-            throw new Error(`Inconsistency detected in egdb.json: lengths of inputs.indexes and answers.indexes differs for year ${year} day ${day}`);
+    try {
+        const egdbFilename = normalize(join(__dirname, '..', 'egdb', year.toString(), `${day}.json`));
+        const egdb: Egdb = addDb || JSON.parse(await readFile(egdbFilename, { encoding: 'utf-8' })); // User-supplied DB takes precedence
+        if (egdb.inputs.indexes.length !== egdb.answers.indexesOrLiterals.length) {
+            throw new Error(`Inconsistency detected in egdb: lengths of inputs.indexes and answers.indexes differs for year ${year} day ${day}`);
         }
-        if (db.additionalInfos && db.inputs.indexes.length !== db.additionalInfos.indexes.length) {
-            throw new Error(`Inconsistency detected in egdb.json: lengths of inputs.indexes and additionalInfos.indexes differs for year ${year} day ${day}`);
+        if (egdb.additionalInfos && egdb.inputs.indexes.length !== egdb.additionalInfos.indexes.length) {
+            throw new Error(`Inconsistency detected in egdb: lengths of inputs.indexes and additionalInfos.indexes differs for year ${year} day ${day}`);
         }
-        const inputs = $(db.inputs.selector);
-        const answers = db.answers.selector === db.inputs.selector
+        const inputs = $(egdb.inputs.selector);
+        const answers = egdb.answers.selector === egdb.inputs.selector
             ? inputs
-            : $(db.answers.selector);
-        const additionalInfos = db.additionalInfos
-            ? db.additionalInfos.selector === db.inputs.selector
+            : $(egdb.answers.selector);
+        const additionalInfos = egdb.additionalInfos
+            ? egdb.additionalInfos.selector === egdb.inputs.selector
                 ? inputs
-                : db.additionalInfos.selector === db.answers.selector
+                : egdb.additionalInfos.selector === egdb.answers.selector
                     ? answers
-                    : $(db.additionalInfos.selector)
+                    : $(egdb.additionalInfos.selector)
             : undefined;
-        db.inputs.indexes.filter((v, i) => !part1only || i < db.part1length).forEach((inputIndex, i) => {
+        egdb.inputs.indexes.filter((v, i) => !part1only || i < egdb.part1length).forEach((inputIndex, i) => {
             examples.push({
-                part: i < db.part1length ? 1 : 2,
+                part: i < egdb.part1length ? 1 : 2,
                 inputs: inputs.eq(inputIndex).text().split('\n'),
                 answer: (() => {
-                    const answer = typeof db.answers.indexesOrLiterals[i] === 'string'
-                        ? db.answers.indexesOrLiterals[i]
-                        : answers.eq(db.answers.indexesOrLiterals[i]).text();
+                    const answer = typeof egdb.answers.indexesOrLiterals[i] === 'string'
+                        ? egdb.answers.indexesOrLiterals[i] as string
+                        : answers.eq(egdb.answers.indexesOrLiterals[i] as number).text();
                     if (answer.includes('\n')) {
                         const answers = answer.split('\n');
                         while (answers.at(-1) == '') answers.pop();
                         return answers.join('\n');
                     } else return answer;
                 })(),
-                additionalInfo: db.additionalInfos ? { [db.additionalInfos.key]: additionalInfos!.eq(db.additionalInfos.indexes[i]).text() } : undefined
+                ...(egdb.additionalInfos) && { additionalInfo: { [egdb.additionalInfos.key]: additionalInfos!.eq(egdb.additionalInfos.indexes[i]).text() } }
             });
         });
-    } else {
+    } catch {
         const inputs = getExampleInputs($).text().split('\n');
         const answer1 = $('article:first p code em').length == 0 // <code><em> tags swapped
             ? $('article:first p em code').last().text()
@@ -82,7 +100,7 @@ function getExamples(year: number, day: number, part1only: boolean, $: cheerio.R
 }
 
 export {
-    Db,
+    Egdb,
     Example,
     getExamples
 }

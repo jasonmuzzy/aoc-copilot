@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import https from 'https';
+import { request as stdRequest, RequestOptions } from 'node:https';
 
 function request(method: string, path: string, cookie?: string, ca?: string, formData?: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        const options: https.RequestOptions = {
+        const options: RequestOptions = {
             hostname: "adventofcode.com",
             path,
             method,
@@ -14,7 +14,7 @@ function request(method: string, path: string, cookie?: string, ca?: string, for
             },
         };
         if (method === 'POST' && !!formData) options.headers!["Content-Type"] = "application/x-www-form-urlencoded";
-        const req = https.request(options, res => {
+        const req = stdRequest(options, res => {
             let html = "";
             res.on("data", chunk => html += chunk);
             res.on("end", () => resolve(html));

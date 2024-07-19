@@ -1,0 +1,17 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [4, 4, 4, 4, 4, 4, 4, 4]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [16, 27, 29, 31, 33, 35, 37, 39]
+    },
+    "additionalInfos": {
+        "key": "numberOfSteps",
+        "selector": "code",
+        "indexes": [15, 26, 28, 30, 32, 34, 36, 38]
+    }
+}

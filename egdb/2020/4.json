@@ -1,0 +1,12 @@
+{
+    "reason": "Answers for part 2 can be inferred by counting, but are not directly given: literal values given",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [9, 55, 56]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [16, "0", "4"]
+    }
+}

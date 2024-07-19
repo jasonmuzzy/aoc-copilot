@@ -1,24 +1,28 @@
-import cheerio from 'cheerio';
-import querystring from 'querystring'
-import * as readline from 'readline/promises';
+import { encode } from 'node:querystring'
+import { createInterface } from 'node:readline/promises';
+
+import { load } from 'cheerio';
 
 import { read, write } from './cache';
 import { request } from './httpsPromisfied';
 
-const cookieSteps = `In Chromium-based browsers like Chrome and Edge you can obtain your cookie by
-visiting the site, logging in, opening developer tools, and clicking on
+const cookieSteps = `
+In Chromium-based browsers like Chrome and Edge you can obtain your cookie by
+visiting the site, logging in, opening developer tools (F12), and clicking
 Application then expanding Cookies under the Storage section, locating the
 adventofcode.com cookie, and copying the session value.
 
 Then, add the following line to a .env file in the root of your project:
 AOC_SESSION_COOKIE="session=<your session cookie value>"
+
+NOTE: Protect your session ID!  For example, add .env to your .gitignore file.
 `;
 
-const errExpiredSessionCookie = `Expired Session Cookie
+const errExpiredSessionCookie = `
+Expired Session Cookie
 
 Your session cookie seems to have expired or is no longer valid.  Please
 retrieve a new session ID and update your .env file.
-
 ` + cookieSteps;
 
 async function getInput(year: number, day: number) {
@@ -45,7 +49,7 @@ async function getPuzzle(year: number, day: number, forceRefresh = false) {
         puzzle = await request('GET', `/${year}/day/${day}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
         await write(`${year}/puzzles/${day}.html`, puzzle);
     } finally {
-        const $ = cheerio.load(puzzle);
+        const $ = load(puzzle);
         const login = $(`a[href="/${year}/auth/login"]`);
         if (login.length > 0) throw new Error(errExpiredSessionCookie);
     }
@@ -91,7 +95,7 @@ async function countdown(until: Date): Promise<void> {
     }
 }
 
-async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<string> {
+async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<boolean> {
 
     // Get answers file
     const filename = `${year}/answers/${day}.json`;
@@ -113,13 +117,13 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     const prompt = `\nSubmit ${year} day ${day} part ${part} answer ${answer} (y/N)? `;
     if (yes) console.log(prompt, 'y');
     else {
-        const rl = readline.createInterface({
+        const rl = createInterface({
             input: process.stdin,
             output: process.stdout,
         });
         const userInput = await rl.question(prompt);
         rl.close();
-        if (userInput.toLowerCase() != 'y') throw new Error('Submission cancelled');
+        if (userInput.toLowerCase() != 'y') return true; // Cancelled
     }
 
     // Wait after last incorrect submission
@@ -139,7 +143,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
 
     // Submit the answer
     const path = `/${year}/day/${day}/answer`;
-    const formData = querystring.encode({
+    const formData = encode({
         level: part,
         answer: answer
     });
@@ -147,7 +151,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     response = await request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData);
     let timestamp = new Date().toJSON();
     await write(`${year}/lastPOSTResponse.html`, response);
-    let $ = cheerio.load(response);
+    let $ = load(response);
 
     // Check if answer was given too soon
     const tooSoon = 'You gave an answer too recently';
@@ -162,7 +166,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
             // Resubmit
             response = await request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData);
             timestamp = new Date().toJSON();
-            $ = cheerio.load(response);
+            $ = load(response);
         } else {
             throw new Error(msg);
         }
@@ -175,7 +179,8 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
         await write('lastSubmission.json', JSON.stringify({ year, day, part, answer: answer.toString(), correct: true, timestamp, wait: '' } as LastSubmission));
         answers.push({ part, answer: answer.toString(), correct: true, timestamp });
         await write(filename, JSON.stringify(answers));
-        return getPuzzle(year, day, true);
+        await getPuzzle(year, day, true);
+        return false; // Not cancelled
     } else if ($(`p:contains('${alreadySolved}')`).length > 0) {
         // Solving wrong level - happens due to a sync issue e.g. when the player submits an answer through the website directly unbeknownst to this copilot
         await getPuzzle(year, day, true)

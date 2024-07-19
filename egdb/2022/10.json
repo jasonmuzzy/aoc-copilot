@@ -1,0 +1,12 @@
+{
+    "reason": "Irregular format (part 2 CRT output)",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [30, 30]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [52, 63]
+    }
+}

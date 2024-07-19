@@ -1,0 +1,12 @@
+{
+    "reason": "Multiple examples (and no <pre> tag) in part 1, and no part 2 example",
+    "part1length": 4,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0, 57, 61, 65]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": ["357", 60, 64, 68]
+    }
+}
