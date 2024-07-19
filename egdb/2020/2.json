@@ -1,0 +1,12 @@
+{
+    "reason": "Answer for part 2 can be inferred by counting, but isn't directly given: index given for unrelated but correct <code> tag",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0, 0]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [5, 12]
+    }
+}

@@ -1,31 +1,40 @@
-import cheerio from 'cheerio';
-import path from 'path';
+import { readFile } from 'node:fs/promises';
+import { basename, join, normalize } from 'node:path';
 
-import aidb from './aidb.json';
-import { Db, Example, getExamples } from './examples';
-import { cookieSteps, getInput, getPuzzle, submitAnswer } from "./site";
+import * as cheerio from 'cheerio';
+
+import { Egdb, Example, getExamples } from './examples';
+import { cookieSteps, getInput, getPuzzle, submitAnswer } from './site';
+
+type Aidb = {
+    key: string,
+    selector: string,
+    indexPart1: number,
+    indexPart2: number,
+}
 
 type Solver = (
     inputs: string[],
     part: number,
     test: boolean,
-    additionalInfo?: { [key:string]: string }
+    additionalInfo?: { [key: string]: string }
 ) => Promise<number | string>;
 
 function getYearDay(filename: string) {
-    const basename = path.basename(filename);
-    if (!/^\d+$/.test(basename.substring(3, 7))) {
+    const bn = basename(filename);
+    if (!/^\d+$/.test(bn.substring(3, 7))) {
         throw new Error("File must be named like 'xxxYYDD*' for automatic year and day detection, e.g. 'aoc2301.js'.");
     }
     return {
-        year: parseInt(`20${basename.substring(3, 5)}`),
-        day: parseInt(basename.substring(5, 7))
+        year: parseInt(`20${bn.substring(3, 5)}`),
+        day: parseInt(bn.substring(5, 7))
     }
 }
 
 function preChecksPass() {
     if (!process.env.AOC_SESSION_COOKIE) {
-        console.error(`Pre-checks failed:  Missing session cookie
+        console.error(`
+Pre-checks failed:  Missing session cookie
 
 A session cookie is required in order to log in to the adventofcode.com site.
 ` + cookieSteps);
@@ -45,7 +54,7 @@ function allPass(year: number, day: number, part: number, test: boolean, example
         });
 }
 
-async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key:string]: string }) {
+async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key: string]: string }) {
     let answer: number | string = 0;
     const start = performance.now();
     try {
@@ -67,59 +76,64 @@ async function passes(inputs: string[], year: number, day: number, part: number,
     }
 }
 
+async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], additionalInfos: { [key: string]: string }[]) {
+    if (await allPass(year, day, part, true, examples.filter(e => e.part == part), solver)) {
+        const start = performance.now();
+        const answer = await solver(inputs, part, false, additionalInfos[part - 1] || {});
+        const end = performance.now();
+        const elapsed = (end - start) / 1000;
+        try {
+            const cancelled = await submitAnswer(year, day, part, answer);
+            if (cancelled) console.log(`Submission cancelled (${elapsed.toFixed(3)}s)`);
+            else console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (new submission) (${elapsed.toFixed(3)}s)`);
+        } catch (error) {
+            console.error(error, `(${elapsed.toFixed(3)}s)`);
+        }
+    }
+}
+
 /**
  * Automatic runs the provided `solver` against examples and/or inputs
  * @param yearDay accepts either a string in the format 'xxxYYDD*' where YY is the 2-digit year and DD is the 2-digit day, or an object with year and day properties; intended to be used with the `__filename` parameter for files names like 'aoc2301.ts'
  * @param solver callback solver function
  * @param testsOnly if true, only runs the examples, not the inputs
- * @param addDb (optional) additional entries for the examples database, e.g. to add support for as-yet unsupported years or days
+ * @param addDb (optional) ad-hoc entry for the example database to override the supplied entry or add support for an as-yet unsupported day
  * @param addTests (optional) additional test cases
  * @returns 
  */
-async function run(yearDay: string | { year: number, day: number }, solver: Solver, testsOnly = false, addDb: Db = [], addTests: Example[] = []) {
+async function run(yearDay: string | { year: number, day: number }, solver: Solver, testsOnly = false, addDb?: Egdb, addTests: Example[] = []) {
     if (!preChecksPass()) return;
     const { year, day } = typeof yearDay === 'string' ? getYearDay(yearDay) : yearDay;
-    Promise.all([getPuzzle(year, day), getInput(year, day)]).then(async ([puzzle, inputs]) => {
-        const $ = cheerio.load(puzzle);
-        const acceptedAnswers = $("p:contains('Your puzzle answer') > code");
-        const additionalInfos = aidb
-            .filter(ai => ai.year === year && ai.day === day)
-            .reduce<{ [key:string]: string }[]>((pv, cv) => pv = [
-                { [cv.key]: $(cv.selector).eq(cv.indexPart1).text() },
-                { [cv.key]: $(cv.selector).eq(cv.indexPart2).text() }
-            ], []);
-        const examples = getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
-        if (testsOnly) {
-            await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
-            if (acceptedAnswers.length > 0) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
-        } else if (acceptedAnswers.length == 0) {
-            if (await allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver)) {
-                const answer = await solver(inputs, 1, false, additionalInfos[0] || {});
-                try {
-                    await submitAnswer(year, day, 1, answer);
-                    console.log(`That's the right answer! ${answer} (${year} day ${day} part 1) (new submission)`);
-                } catch (error) {
-                    console.error(error);
-                }
+    const puzzle = await getPuzzle(year, day);
+    const inputs = await getInput(year, day);
+    const $ = cheerio.load(puzzle);
+    const acceptedAnswers = $("p:contains('Your puzzle answer') > code");
+    const additionalInfos: { [key: string]: string }[] = [];
+    try {
+        const aidbFilename = normalize(join(__dirname, '..', 'aidb', year.toString(), `${day}.json`));
+        const aidb = JSON.parse(await readFile(aidbFilename, { encoding: 'utf-8' })) as Aidb
+        additionalInfos.push(
+            { [aidb.key]: $(aidb.selector).eq(aidb.indexPart1).text() },
+            { [aidb.key]: $(aidb.selector).eq(aidb.indexPart2).text() }
+        );
+    } catch { }
+    const examples = await getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
+    if (testsOnly) {
+        await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
+        if (acceptedAnswers.length > 0) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
+    } else if (acceptedAnswers.length == 0) {
+        try {
+            await runInput(year, day, 1, solver, examples, inputs, additionalInfos);
+        } catch { }
+    } else {
+        if (await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
+            if (acceptedAnswers.length == 1) {
+                await runInput(year, day, 2, solver, examples, inputs, additionalInfos);
+            } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
+                allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
             }
-        } else {
-            if (await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
-                if (acceptedAnswers.length == 1) {
-                    if (await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver)) {
-                        const answer = await solver(inputs, 2, false, additionalInfos[1] || {});
-                        try {
-                            await submitAnswer(year, day, 2, answer);
-                            console.log(`That's the right answer! ${answer} (${year} day ${day} part 2) (new submission)`);
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    }
-                } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
-                    allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
-                }
-            } else allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
-        }
-    });
+        } else allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
+    };
 }
 
 export {

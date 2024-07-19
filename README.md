@@ -127,7 +127,7 @@ run(__filename, solve);
 <a id="contributing"></a>
 ## Contributing
 
-Contributions to the [example database](src/egdb.md) are needed for years 2020 and earlier.
+Contributions to the [example database](egdb/README.md) are needed for years 2020 and earlier.
 
 <a id="acknowledgements"></a>
 ## Acknowledgements

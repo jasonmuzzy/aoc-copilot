@@ -1,5 +1,5 @@
-import { mkdir, readFile, writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 
 // https://stackoverflow.com/a/26227660
 const HOME_DIR =
@@ -9,18 +9,16 @@ const HOME_DIR =
         : process.env.HOME + "/.config")
 const SUB_DIR = 'AoC-Copilot';
 
-function read(filePath: string) {
+async function read(filePath: string) {
     const pathname = join(HOME_DIR, SUB_DIR, filePath);
-    return mkdir(dirname(pathname), { recursive: true }).then(() => {
-        return readFile(pathname, { encoding: 'utf-8' });
-    });
+    await mkdir(dirname(pathname), { recursive: true });
+    return readFile(pathname, { encoding: 'utf-8' });
 }
 
-function write(filePath: string, data: string) {
+async function write(filePath: string, data: string) {
     const pathname = join(HOME_DIR, SUB_DIR, filePath);
-    return mkdir(dirname(pathname), { recursive: true }).then(() => {
-        return writeFile(pathname, data);
-    });
+    await mkdir(dirname(pathname), { recursive: true });
+    return writeFile(pathname, data);
 }
 
 export {

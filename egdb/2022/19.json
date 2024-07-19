@@ -1,0 +1,12 @@
+{
+    "reason": "Part 2 gives the two values to multiply together (56 and 62) but doesn't actually multiply them out",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0, 0]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [6, "3472"]
+    }
+}

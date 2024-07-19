@@ -1,6 +1,8 @@
-import cheerio from 'cheerio';
-import fs from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
+
+import * as cheerio from 'cheerio';
+// import {expect, jest, test} from '@jest/globals';
 
 import { getExamples } from '../src/examples';
 import { getPuzzle } from '../src/site';
@@ -9,56 +11,14 @@ import { getPuzzle } from '../src/site';
  * Run with `npm run test`
  */
 
-describe('getExamples()', () => {
-    describe('2020', () => {
-        const year = 2020;
-        test.each(fs.readdirSync(`./examples/${year}`, { encoding: 'utf-8' }))('%s answer', file => {
-            const expecteds = JSON.parse(fs.readFileSync(`./examples/${year}/${file}`, { encoding: 'utf-8' }));
-            const day = parseInt(path.parse(file).name);
-            return getPuzzle(year, day).then(async html => {
-                const $ = cheerio.load(html);
-                const actuals = getExamples(year, day, false, $);
-                expect(actuals).toEqual(expecteds);
-            });
-        }, 5000);
-    });
-
-    describe('2021', () => {
-        const year = 2021;
-        test.each(fs.readdirSync(`./examples/${year}`, { encoding: 'utf-8' }))('%s answer', file => {
-            const expecteds = JSON.parse(fs.readFileSync(`./examples/${year}/${file}`, { encoding: 'utf-8' }));
-            const day = parseInt(path.parse(file).name);
-            return getPuzzle(year, day).then(async html => {
-                const $ = cheerio.load(html);
-                const actuals = getExamples(year, day, false, $);
-                expect(actuals).toEqual(expecteds);
-            });
-        }, 5000);
-    });
-
-    describe('2022', () => {
-        const year = 2022;
-        test.each(fs.readdirSync(`./examples/${year}`, { encoding: 'utf-8' }))('%s answer', file => {
-            const expecteds = JSON.parse(fs.readFileSync(`./examples/${year}/${file}`, { encoding: 'utf-8' }));
-            const day = parseInt(path.parse(file).name);
-            return getPuzzle(year, day).then(async html => {
-                const $ = cheerio.load(html);
-                const actuals = getExamples(year, day, false, $);
-                expect(actuals).toEqual(expecteds);
-            });
-        }, 5000);
-    });
-
-    describe('2023', () => {
-        const year = 2023;
-        test.each(fs.readdirSync(`./examples/${year}`, { encoding: 'utf-8' }))('%s answer', file => {
-            const expecteds = JSON.parse(fs.readFileSync(`./examples/${year}/${file}`, { encoding: 'utf-8' }));
-            const day = parseInt(path.parse(file).name);
-            return getPuzzle(year, day).then(async html => {
-                const $ = cheerio.load(html);
-                const actuals = getExamples(year, day, false, $);
-                expect(actuals).toEqual(expecteds);
-            });
-        }, 5000);
-    });
-})
+describe.each([2020, 2021, 2022, 2023])('%d', year => {
+    return test.each(readdirSync(`./examples/${year}`, { encoding: 'utf-8' }).sort((a, b) => parseInt(a.split('.')[0]) - parseInt(b.split('.')[0])))('%s answer', async (file) => { //, done: jest.DoneCallback) => { // adding the done parameter causes Jest to just spin forever
+        const expecteds = JSON.parse(readFileSync(`./examples/${year}/${file}`, { encoding: 'utf-8' }));
+        const day = parseInt(path.parse(file).name);
+        const puzzle = await getPuzzle(year, day);
+        const $ = cheerio.load(puzzle);
+        const actuals = await getExamples(year, day, false, $);
+        expect(actuals).toEqual(expecteds);
+        // done();
+    }, 5000);
+}, 10000);
