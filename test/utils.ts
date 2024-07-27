@@ -30,18 +30,6 @@
 //     });
 // }
 
-// List out the indexes of the <code> blocks for a puzzle
-// import * as cheerio from 'cheerio';
-// import { getPuzzle } from '../src/site'
-// getPuzzle(2020, 10).then(puzzle => {
-//     const $ = cheerio.load(puzzle);
-//     const selections = $('code');
-//     for (let i = 0; i < selections.length; i++) {
-//         const text = selections.eq(i).text();
-//         console.log(`\x1b[36m${i.toString().padStart(3, '0') + ': '}\x1b[0m ${text.includes('\n') ? '\n' + text : text}`)
-//     }
-// });
-
 // Get examples
 // import * as cheerio from 'cheerio';
 // import { getExamples } from './examples';
@@ -64,3 +52,7 @@
 //     }
 // }
 // test().then(() => console.log('done')).catch(err => console.error(err));
+
+// Test calendar and headers
+// import { getCalendar } from '../src/site'
+// getCalendar(2020).then(() => {}).catch(err => console.error(err));

@@ -1,7 +1,7 @@
 {
   "name": "aoc-copilot",
   "private": false,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Advent of Code automatic runner for examples and inputs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,6 +10,7 @@
     "dist",
     "egdb"
   ],
+  "bin": "./dist/bin.js",
   "scripts": {
     "build": "rm -rf ./dist && tsc",
     "test": "jest"
@@ -39,6 +40,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "yargs": "^17.7.2"
   }
 }
