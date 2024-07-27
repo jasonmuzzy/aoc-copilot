@@ -30,6 +30,29 @@
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
             "console": "integratedTerminal",
+        },
+        {
+            "name": "refresh command",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/bin.ts",
+                "refresh",
+                "2023",
+                "13",
+                "--puzzle",
+                "false",
+                "--input",
+                "-v"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
         }
     ]
 }

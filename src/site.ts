@@ -1,3 +1,4 @@
+import { IncomingHttpHeaders } from 'node:http';
 import { encode } from 'node:querystring'
 import { createInterface } from 'node:readline/promises';
 
@@ -25,13 +26,39 @@ Your session cookie seems to have expired or is no longer valid.  Please
 retrieve a new session ID and update your .env file.
 ` + cookieSteps;
 
-async function getInput(year: number, day: number) {
+function validateYearDay(year: number, day: number) {
+    const now = new Date();
+    const est = new Date(now.getTime() + (now.getTimezoneOffset() -300) * 60 * 1000);
+    if (year < 2015 ||
+        year > est.getFullYear() ||
+        day < 1 ||
+        day > 25 ||
+        (year === est.getFullYear() && est.getMonth() < 12) ||
+        (year === est.getFullYear() && est.getMonth() === 12 && est.getDate() < day)
+    ) {
+        throw new Error(`You don't seem to be solving a valid year/day ("${year}"/"${day}")`);
+    }
+}
+
+async function getCalendar(year: number) {
+    validateYearDay(year, 1);
+    const calendar = await request('GET', `/${year}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
+    console.log(`Local time  ${new Date().toString()}`);
+    console.log(`Server time ${new Date(calendar.headers.date || '').toString()}`);
+    await write(`${year}/calendar.html`, calendar.body);
+    await write(`${year}/headers.json`, JSON.stringify(calendar.headers, null, 4));
+    return calendar;
+}
+
+async function getInput(year: number, day: number, forceRefresh = false) {
+    validateYearDay(year, day);
     let inputs: string[] = [];
     try {
+        if (forceRefresh) throw new Error('Force refresh');
         const input = await read(`${year}/inputs/${day}`);
         inputs = input.split('\n');
     } catch (err) {
-        const input = await request('GET', `/${year}/day/${day}/input`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
+        const { headers, body: input } = await request('GET', `/${year}/day/${day}/input`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
         if (input === 'Puzzle inputs differ by user.  Please log in to get your puzzle input.\n') throw new Error(errExpiredSessionCookie);
         inputs = input.split('\n');
         while (inputs.at(-1) === '') inputs.pop();
@@ -41,12 +68,14 @@ async function getInput(year: number, day: number) {
 }
 
 async function getPuzzle(year: number, day: number, forceRefresh = false) {
+    validateYearDay(year, day);
     let puzzle = '';
     try {
         if (forceRefresh) throw new Error('Force refresh');
         puzzle = await read(`${year}/puzzles/${day}.html`);
     } catch (err) {
-        puzzle = await request('GET', `/${year}/day/${day}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
+        let headers: IncomingHttpHeaders;
+        ({ headers, body: puzzle } = await request('GET', `/${year}/day/${day}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE));
         await write(`${year}/puzzles/${day}.html`, puzzle);
     } finally {
         const $ = load(puzzle);
@@ -96,6 +125,7 @@ async function countdown(until: Date): Promise<void> {
 }
 
 async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<boolean> {
+    validateYearDay(year, day);
 
     // Get answers file
     const filename = `${year}/answers/${day}.json`;
@@ -147,8 +177,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
         level: part,
         answer: answer
     });
-    let response = '';
-    response = await request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData);
+    let { headers, body: response } = await request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData);
     let timestamp = new Date().toJSON();
     await write(`${year}/lastPOSTResponse.html`, response);
     let $ = load(response);
@@ -164,7 +193,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
             const [s, m = 0, h = 0, d = 0] = match.reverse().map(e => parseInt(e)); // Does it ever go beyond minutes?  Who knows!
             await countdown(new Date(Date.now() + (s + m * 60 + h * 60 * 60 + d * 24 * 60 * 60) * 1000));
             // Resubmit
-            response = await request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData);
+            ({ headers, body: response } = await request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData));
             timestamp = new Date().toJSON();
             $ = load(response);
         } else {
@@ -196,6 +225,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
 
 export {
     cookieSteps,
+    getCalendar,
     getInput,
     getPuzzle,
     submitAnswer
