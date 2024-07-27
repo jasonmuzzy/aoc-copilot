@@ -32,17 +32,14 @@
             "console": "integratedTerminal",
         },
         {
-            "name": "refresh command",
+            "name": "index command",
             "type": "node",
             "request": "launch",
             "args": [
                 "src/bin.ts",
-                "refresh",
+                "index",
                 "2023",
-                "13",
-                "--puzzle",
-                "false",
-                "--input",
+                "em",
                 "-v"
             ],
             "runtimeArgs": [

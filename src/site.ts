@@ -26,17 +26,23 @@ Your session cookie seems to have expired or is no longer valid.  Please
 retrieve a new session ID and update your .env file.
 ` + cookieSteps;
 
-function validateYearDay(year: number, day: number) {
+function isNumChar(ne: any) {
+    return String(ne).split('').every(c => ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(c));
+}
+
+function validateYearDay(year: any, day: any) {
     const now = new Date();
-    const est = new Date(now.getTime() + (now.getTimezoneOffset() -300) * 60 * 1000);
-    if (year < 2015 ||
+    const est = new Date(now.getTime() + (now.getTimezoneOffset() - 300) * 60 * 1000);
+    if (!isNumChar(year) ||
+        !isNumChar(day) ||
+        year < 2015 ||
         year > est.getFullYear() ||
         day < 1 ||
         day > 25 ||
         (year === est.getFullYear() && est.getMonth() < 12) ||
         (year === est.getFullYear() && est.getMonth() === 12 && est.getDate() < day)
     ) {
-        throw new Error(`You don't seem to be solving a valid year/day ("${year}"/"${day}")`);
+        throw new Error(`Invalid year/day ("${year}"/"${day}")`);
     }
 }
 
@@ -228,5 +234,6 @@ export {
     getCalendar,
     getInput,
     getPuzzle,
-    submitAnswer
+    submitAnswer,
+    validateYearDay
 }

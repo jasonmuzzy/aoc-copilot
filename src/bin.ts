@@ -3,20 +3,18 @@ import * as cheerio from 'cheerio';
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
-import { getInput, getPuzzle } from '../src/site'
+import { getInput, getPuzzle, validateYearDay } from './site'
 
 yargs(hideBin(process.argv))
-    .command(['index', 'search'], 'list the indexes and values of a selector within a puzzle; useful for searching for examples', (yargs) => {
+    .command(['index <year> <day> [selector]', 'search'], 'list the indexes and values of a selector within a puzzle; useful for searching for examples', (yargs) => {
         return yargs
             .positional('year', {
                 describe: 'Puzzle year to index',
-                type: 'number',
-                default: 2020
+                type: 'number'
             })
             .positional('day', {
                 describe: 'Puzzle day to index',
-                type: 'number',
-                default: 1
+                type: 'number'
             })
             .positional('selector', {
                 describe: 'jQuery-style selector',
@@ -24,8 +22,15 @@ yargs(hideBin(process.argv))
                 default: 'code'
             })
     }, (argv) => {
-        if (argv.verbose) console.info(`Index ${argv.year} day ${argv.day} selector '${argv.selector}':`)
-        getPuzzle(argv.year, argv.day).then(puzzle => {
+        if (argv.verbose) console.info(argv);
+        try {
+            validateYearDay(argv.year, argv.day);
+        } catch (err) {
+            console.error((err as Error).message);
+            return;
+        }
+        console.log(`Puzzle ${argv.year} day ${argv.day} indexes matching selector '${argv.selector}':`);
+        getPuzzle(argv.year!, argv.day!).then(puzzle => {
             const $ = cheerio.load(puzzle);
             const selections = $(argv.selector);
             for (let i = 0; i < selections.length; i++) {
@@ -34,17 +39,15 @@ yargs(hideBin(process.argv))
             }
         });
     })
-    .command(['refresh', 'download'], 'Force refresh of a cached file', (yargs) => {
+    .command(['refresh <year> <day>', 'download'], 'Force refresh of a cached file', (yargs) => {
         return yargs
             .positional('year', {
                 describe: 'Year to refresh',
-                type: 'number',
-                default: 2020
+                type: 'number'
             })
             .positional('day', {
                 describe: 'Day to refresh',
-                type: 'number',
-                default: 1
+                type: 'number'
             })
             .option('puzzle', {
                 alias: 'p',
@@ -59,13 +62,20 @@ yargs(hideBin(process.argv))
                 default: false
             })
     }, (argv) => {
+        if (argv.verbose) console.log(argv);
+        try {
+            validateYearDay(argv.year, argv.day);
+        } catch (err) {
+            console.error((err as Error).message);
+            return;
+        }
         if (argv.puzzle) {
-            if (argv.verbose) process.stdout.write(`Refresh puzzle ${argv.year} day ${argv.day}... `)
-            getPuzzle(argv.year, argv.day, true).then(() => argv.verbose && console.log('Done'));
+            process.stdout.write(`Refresh puzzle ${argv.year} day ${argv.day}... `)
+            getPuzzle(argv.year!, argv.day!, true).then(() => console.log('Done'));
         }
         if (argv.input) {
-            if (argv.verbose) process.stdout.write(`Refresh input ${argv.year} day ${argv.day}... `)
-            getInput(argv.year, argv.day, true).then(() => argv.verbose && console.log('Done'));
+            process.stdout.write(`Refresh input ${argv.year} day ${argv.day}... `)
+            getInput(argv.year!, argv.day!, true).then(() => console.log('Done'));
         }
     })
     .option('verbose', {
