@@ -234,6 +234,7 @@ export {
     getCalendar,
     getInput,
     getPuzzle,
+    sleep,
     submitAnswer,
     validateYearDay
 }

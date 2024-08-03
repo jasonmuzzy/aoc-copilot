@@ -23,7 +23,7 @@ type Example = {
     part: number,
     inputs: string[],
     answer: string,
-    additionalInfo?: { [key:string]: string }
+    additionalInfo?: { [key: string]: string }
 }
 
 function getExampleInputs($: cheerio.Root) {
@@ -82,16 +82,16 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
             });
         });
     } catch {
+        const answer = (part: number) => {
+            const elements = $(`article:${part === 1 ? 'first' : 'last'} p:has(em,code)`).find("em,code").find("em,code");
+            return elements.length < 2
+                ? elements.text()
+                : elements.eq([...elements].map((e, i) => ({ e, score: (/^\d+$/.test(elements.eq(i).text()) ? 1 : 0) + (e.prev === null ? 1 : 0), i })).sort((a, b) => a.score === b.score ? b.i - a.i : b.score - a.score)[0].i).text();
+        }
         const inputs = getExampleInputs($).text().split('\n');
-        const answer1 = $('article:first p code em').length == 0 // <code><em> tags swapped
-            ? $('article:first p em code').last().text()
-            : $('article:first p code em').last().text();
-        examples.push({ part: 1, inputs, answer: answer1 }); // No additionalInfo for generically determined examples
+        examples.push({ part: 1, inputs, answer: answer(1) }); // No additionalInfo for generically determined examples
         if (day != 25 && !part1only) {
-            const answer2 = $('article:last p code em').length == 0
-                ? $('article:last p em code').last().text()
-                : $('article:last p code em').last().text();
-            examples.push({ part: 2, inputs, answer: answer2 }); // No additionalInfo for generically determined examples
+            examples.push({ part: 2, inputs, answer: answer(2) });
         }
     }
     for (const test of addTests) examples.push(test);
