@@ -1,0 +1,12 @@
+{
+    "reason": "Non-numeric answer with an earlier number wrapped in <code><em> with nothing between <code> and <em>",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0]
+    },
+    "answers": {
+        "selector": "em",
+        "indexesOrLiterals": [11]
+    }
+}

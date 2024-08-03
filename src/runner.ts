@@ -45,35 +45,30 @@ A session cookie is required in order to log in to the adventofcode.com site.
 
 function allPass(year: number, day: number, part: number, test: boolean, examples: Example[], solver: Solver) {
     return Promise.all(examples.map(eg => passes(eg.inputs, year, day, eg.part, test, solver, eg.answer, eg.additionalInfo)))
-        .then(results => {
-            if (results.length > 0) return results.every(result => result == true)
-            else {
-                console.log(`Sorry, no examples found for ${year} day ${day} part ${part}`);
-                return true
-            }
-        });
+        .then(results => results.length > 0
+            ? results.every(result => result == true)
+            : (console.log(`Sorry, no examples found for ${year} day ${day} part ${part}`), true)
+        );
 }
 
-async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key: string]: string }) {
-    let answer: number | string = 0;
+function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key: string]: string }): Promise<boolean> {
     const start = performance.now();
-    try {
-        answer = await solver(inputs, part, test, additionalInfo);
-    } catch (error) {
+    return solver(inputs, part, test, additionalInfo).then(answer => {
+        const end = performance.now();
+        const elapsed = (end - start) / 1000;
+        if (answer == expected) {
+            console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (${test ? "example" : "regression"}) (${elapsed.toFixed(3)}s)`);
+            return true;
+        } else {
+            console.log(`That's not the right answer. Expected: ${expected} actual: ${answer} (${year} day ${day} part ${part}) (${test ? "example" : "regression"}) (${elapsed.toFixed(3)}s)`);
+            return false;
+        }
+    }).catch(error => {
         console.log("Example input:");
         for (const input of inputs) console.log(input);
         console.log(`Expected answer: ${expected}`);
         throw error;
-    }
-    const end = performance.now();
-    const elapsed = (end - start) / 1000;
-    if (answer == expected) {
-        console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (${test ? "example" : "regression"}) (${elapsed.toFixed(3)}s)`);
-        return true;
-    } else {
-        console.log(`That's not the right answer. Expected: ${expected} actual: ${answer} (${year} day ${day} part ${part}) (${test ? "example" : "regression"}) (${elapsed.toFixed(3)}s)`);
-        return false;
-    }
+    });
 }
 
 async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], additionalInfos: { [key: string]: string }[]) {
@@ -130,9 +125,9 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
             if (acceptedAnswers.length == 1) {
                 await runInput(year, day, 2, solver, examples, inputs, additionalInfos);
             } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
-                allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
+                await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
             }
-        } else allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
+        } else await allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
     };
 }
 

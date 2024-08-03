@@ -1,0 +1,12 @@
+{
+    "reason": "Irregular format (part 1 answer has text between the <code> and <em> tags, while an earlier value does not)",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [20, 20]
+    },
+    "answers": {
+        "selector": "em",
+        "indexesOrLiterals": [12, 19]
+    }
+}
