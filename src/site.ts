@@ -135,7 +135,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
 
     // Get answers file
     const filename = `${year}/answers/${day}.json`;
-    let answers: { part: number, answer: string, correct: boolean, timestamp: string, wait?: string }[];
+    let answers: { part: number, answer: string, correct: boolean, timestamp: string, problem?: string, wait?: string }[];
     try {
         answers = JSON.parse(await read(filename));
     } catch (err) {
@@ -148,6 +148,12 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     if (correct) throw new Error(`Already submitted correct answer ${correct.answer} for ${year} day ${day} part ${part} on ${correct.timestamp}`);
     const duplicate = partAnswers.find(a => a.answer === answer.toString());
     if (duplicate) throw new Error(`Already submitted incorrect answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
+    if (typeof answer === 'number') {
+        const tooLows = partAnswers.filter(a => a.problem === 'too low').sort((a, b) => parseInt(b.answer) - parseInt(a.answer));
+        if (tooLows.length > 0 && answer < parseInt(tooLows[0].answer)) throw new Error(`${answer} is too low because it's less than ${tooLows[0].answer} which was too low for ${year} day ${day} part ${part} on ${tooLows[0].timestamp}`);
+        const tooHighs = partAnswers.filter(a => a.problem === 'too high').sort((a, b) => parseInt(a.answer) - parseInt(b.answer));
+        if (tooHighs.length > 0 && answer > parseInt(tooHighs[0].answer)) throw new Error(`${answer} is too high because it's greater than ${tooHighs[0].answer} which was too high for ${year} day ${day} part ${part} on ${tooHighs[0].timestamp}`);
+    }
 
     // Prompt user to confirm submission
     const prompt = `\nSubmit ${year} day ${day} part ${part} answer ${answer} (y/N)? `;
@@ -221,9 +227,9 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
         await getPuzzle(year, day, true)
         throw new Error($(`p:contains('${alreadySolved}')`).text());
     }
-    const wait = /Please wait (?<wait>.*) before trying again\./gi.exec($('article p').text())?.groups?.wait;
-    await write('lastSubmission.json', JSON.stringify({ year, day, part, answer: answer.toString(), correct: false, timestamp, wait } as LastSubmission));
-    answers.push({ part, answer: answer.toString(), correct: false, timestamp, wait });
+    const { problem, wait } = /That's not the right answer(\.|; your answer is (?<problem>.*?)\.).*lease wait (?<wait>(one|\d+) minutes?)/g.exec($('article p').text())?.groups as { problem?: string, wait: string };
+    await write('lastSubmission.json', JSON.stringify({ year, day, part, answer: answer.toString(), correct: false, timestamp, problem, wait } as LastSubmission));
+    answers.push({ part, answer: answer.toString(), correct: false, timestamp, problem, wait });
     await write(filename, JSON.stringify(answers));
     throw new Error($('article p').text());
 
