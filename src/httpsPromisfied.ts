@@ -22,8 +22,7 @@ function request(method: string, path: string, cookie?: string, ca?: string, for
         })
         req.on("error", error => {
             if ((error as any)?.code === 'SELF_SIGNED_CERT_IN_CHAIN') { // https://www.reddit.com/r/typescript/comments/11yilc1/how_the_hell_do_you_handle_exceptions_in/
-                reject(new Error(`
-HTTP Error: SELF_SIGNED_CERT_IN_CHAIN
+                reject(new Error(`HTTP Error: ${(error as any)?.code}
 
 This error occurs on networks that uses a self-signed certificate to inspect
 encrypted traffic, which is common in coporate environments, but could also
@@ -34,7 +33,16 @@ CERTIFICATE="<your certificate(s)>" in your .env file.
 
 See options.ca at https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions
 `));
-            } else reject(error);
+} else if ((error as any)?.code === 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY') {
+    reject(new Error(`HTTP Error: ${(error as any)?.code}
+
+This error may occur when you've added CERTIFICATE="<your certificate(s)>" in
+your .env file but are not on a network that uses self-signed certificates.
+
+Try connecting to the network that uses self-signed certificates -- commonly a
+corporate network -- or removing the certificate from your .env file.
+`));
+} else reject(error);
         });
         if (method === 'POST' && !!formData) req.write(formData);
         req.end()
