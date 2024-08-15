@@ -6,7 +6,7 @@ type Egdb = {
     part1length: number,
     inputs: {
         selector: string,
-        indexes: number[],
+        indexes: number[] | number[][],
     },
     answers: {
         selector: string,
@@ -67,7 +67,9 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
         egdb.inputs.indexes.filter((v, i) => !part1only || i < egdb.part1length).forEach((inputIndex, i) => {
             examples.push({
                 part: i < egdb.part1length ? 1 : 2,
-                inputs: inputs.eq(inputIndex).text().split('\n'),
+                inputs: typeof inputIndex === 'number'
+                    ? inputs.eq(inputIndex).text().split('\n')
+                    : inputIndex.reduce((pv, cv) => (pv.push(...inputs.eq(cv).text().split('\n')), pv), [] as string[]),
                 answer: (() => {
                     const answer = typeof egdb.answers.indexesOrLiterals[i] === 'string'
                         ? egdb.answers.indexesOrLiterals[i] as string
