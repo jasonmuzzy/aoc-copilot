@@ -82,11 +82,10 @@ async function getPuzzle(year: number, day: number, forceRefresh = false) {
     } catch (err) {
         let headers: IncomingHttpHeaders;
         ({ headers, body: puzzle } = await request('GET', `/${year}/day/${day}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE));
-        await write(`${year}/puzzles/${day}.html`, puzzle);
-    } finally {
         const $ = load(puzzle);
         const login = $(`a[href="/${year}/auth/login"]`);
         if (login.length > 0) throw new Error(errExpiredSessionCookie);
+        await write(`${year}/puzzles/${day}.html`, puzzle);
     }
     return puzzle;
 }
@@ -130,7 +129,7 @@ async function countdown(until: Date): Promise<void> {
     }
 }
 
-async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<boolean> {
+async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<{ cancelled: boolean, response?: string }> {
     validateYearDay(year, day);
 
     // Get answers file
@@ -165,7 +164,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
         });
         const userInput = await rl.question(prompt);
         rl.close();
-        if (userInput.toLowerCase() != 'y') return true; // Cancelled
+        if (userInput.toLowerCase() != 'y') return { cancelled: true };
     }
 
     // Wait after last incorrect submission
@@ -221,7 +220,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
         answers.push({ part, answer: answer.toString(), correct: true, timestamp });
         await write(filename, JSON.stringify(answers));
         await getPuzzle(year, day, true);
-        return false; // Not cancelled
+        return { cancelled: false, response };
     } else if ($(`p:contains('${alreadySolved}')`).length > 0) {
         // Solving wrong level - happens due to a sync issue e.g. when the player submits an answer through the website directly unbeknownst to this copilot
         await getPuzzle(year, day, true)

@@ -78,9 +78,19 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
         const end = performance.now();
         const elapsed = (end - start) / 1000;
         try {
-            const cancelled = await submitAnswer(year, day, part, answer);
+            const { cancelled, response } = await submitAnswer(year, day, part, answer);
             if (cancelled) console.log(`Submission cancelled (${elapsed.toFixed(3)}s)`);
-            else console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (new submission) (${elapsed.toFixed(3)}s)`);
+            else {
+                console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (new submission) (${elapsed.toFixed(3)}s)`);
+                if (day === 25) {
+                    const $ = cheerio.load(response!);
+                    if (parseInt($('span[class="star-count"]').text() || '0*') < 49) {
+                        console.log(`You don't seem to have enough stars to complete day 25 (https://adventofcode.com/${year}/day/25) so go check your advent calendar (https://adventofcode.com/${year}) for unfinished days!`);
+                    } else {
+                        console.log(`You have 49 stars, now go get that last one (https://adventofcode.com/${year}/day/25)!`);
+                    }
+                }
+            }
         } catch (error) {
             console.error(error, `(${elapsed.toFixed(3)}s)`);
         }
@@ -99,9 +109,9 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
 async function run(yearDay: string | { year: number, day: number }, solver: Solver, testsOnly = false, addDb?: Egdb, addTests: Example[] = []) {
     if (!preChecksPass()) return;
     const { year, day } = typeof yearDay === 'string' ? getYearDay(yearDay) : yearDay;
-    const puzzle = await getPuzzle(year, day);
+    let puzzle = await getPuzzle(year, day);
     const inputs = await getInput(year, day);
-    const $ = cheerio.load(puzzle);
+    let $ = cheerio.load(puzzle);
     const acceptedAnswers = $("p:contains('Your puzzle answer') > code");
     const additionalInfos: { [key: string]: string }[] = [];
     try {
@@ -115,17 +125,33 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
     const examples = await getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
     if (testsOnly) {
         await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
-        if (acceptedAnswers.length > 0) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
+        if (acceptedAnswers.length > 0 && day != 25) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
     } else if (acceptedAnswers.length == 0) {
         try {
             await runInput(year, day, 1, solver, examples, inputs, additionalInfos);
         } catch { }
     } else {
         if (await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
-            if (acceptedAnswers.length == 1) {
-                await runInput(year, day, 2, solver, examples, inputs, additionalInfos);
-            } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
-                await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
+            if (day === 25) {
+                let stars = parseInt($('span[class="star-count"]').text() || '0*');
+                if (stars === 49) {
+                    puzzle = await getPuzzle(year, day, true);
+                    $ = cheerio.load(puzzle);
+                    stars = parseInt($('span[class="star-count"]').text() || '0*');
+                }
+                if (stars < 49) {
+                    console.log(`You don't seem to have enough stars to complete day 25 (https://adventofcode.com/${year}/day/25) so go check your advent calendar (https://adventofcode.com/${year}) for unfinished days!`);
+                } else if (stars === 49) {
+                    console.log(`You have 49 stars, now go get that last one (https://adventofcode.com/${year}/day/25)!`);
+                } else if (stars === 50) {
+                    console.log(`Congratulations on completing Advent of Code ${year}!  You can go admire your advent calendar (https://adventofcode.com/${year})!`);
+                }
+            } else {
+                if (acceptedAnswers.length == 1) {
+                    await runInput(year, day, 2, solver, examples, inputs, additionalInfos);
+                } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
+                    await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
+                }
             }
         } else await allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
     };
