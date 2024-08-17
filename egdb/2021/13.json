@@ -1,5 +1,5 @@
 {
-    "reason": "Irregular format",
+    "reason": "Irregular format (part 2 requires user to read the letters off the screen)",
     "part1length": 1,
     "inputs": {
         "selector": "code",
@@ -7,6 +7,6 @@
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": [27, 26]
+        "indexesOrLiterals": [27, "O"]
     }
 }

@@ -1,6 +1,6 @@
 # Commands
 
-AoC Copilot supports a few custom commands:
+AoC Copilot (AoCC) supports a few custom commands:
 - [Index](#index)
 - [Refresh](#refresh)
 - [Cache](#cache)
@@ -19,7 +19,7 @@ npx aoc-copilot <command> --help
 
 ## Development
 
-Commands in this group are useful during development - both of puzzle solutions as well as further enhancement of this Copilot.
+Commands in this group are useful during development - both of puzzle solutions as well as further enhancement of AoCC.
 
 <a id="index"></a>
 ### Index
@@ -82,7 +82,7 @@ The second-most common selector is `em` and an inspection of the html for that p
 <a id="refresh"></a>
 ### Refresh
 
-Force the re-download of the puzzle page, and optionally the inputs.  Useful if your local cache has gotten out of sync with your actual progress, for example if you manually enter an answer on the website and the Copilot is unaware of it.
+Force the re-download of the puzzle page, and optionally the inputs.  Useful if your local cache has gotten out of sync with your actual progress, for example if you manually enter an answer on the website and AoCC is unaware of it.
 
 Usage:
 

@@ -6,6 +6,7 @@ import { load } from 'cheerio';
 
 import { read, write } from './cache';
 import { request } from './httpsPromisfied';
+import * as stats from './stats';
 
 const cookieSteps = `
 In Chromium-based browsers like Chrome and Edge you can obtain your cookie by
@@ -30,39 +31,29 @@ function isNumChar(ne: any) {
     return String(ne).split('').every(c => ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(c));
 }
 
-function validateYearDay(year: any, day: any) {
-    const now = new Date();
-    const est = new Date(now.getTime() + (now.getTimezoneOffset() - 300) * 60 * 1000);
+async function validateYearDay(year: any, day: any) {
+    const drop = new Date(`${day} Dec ${year} 00:00:00 EST`);
     if (!isNumChar(year) ||
         !isNumChar(day) ||
         year < 2015 ||
-        year > est.getFullYear() ||
         day < 1 ||
-        day > 25 ||
-        (year === est.getFullYear() && est.getMonth() < 12) ||
-        (year === est.getFullYear() && est.getMonth() === 12 && est.getDate() < day)
+        day > 25
     ) {
         throw new Error(`Invalid year/day ("${year}"/"${day}")`);
+    } else if (drop.valueOf() > Date.now()) {
+        console.log(`\nNeed to wait until puzzle drops on ${drop}`);
+        await countdown(drop);
     }
 }
 
-async function getCalendar(year: number) {
-    validateYearDay(year, 1);
-    const calendar = await request('GET', `/${year}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
-    console.log(`Local time  ${new Date().toString()}`);
-    console.log(`Server time ${new Date(calendar.headers.date || '').toString()}`);
-    await write(`${year}/calendar.html`, calendar.body);
-    await write(`${year}/headers.json`, JSON.stringify(calendar.headers, null, 4));
-    return calendar;
-}
-
 async function getInput(year: number, day: number, forceRefresh = false) {
-    validateYearDay(year, day);
+    await validateYearDay(year, day);
     let inputs: string[] = [];
     try {
         if (forceRefresh) throw new Error('Force refresh');
         const input = await read(`${year}/inputs/${day}`);
         inputs = input.split('\n');
+        while (inputs.at(-1) === '') inputs.pop();
     } catch (err) {
         const { headers, body: input } = await request('GET', `/${year}/day/${day}/input`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
         if (input === 'Puzzle inputs differ by user.  Please log in to get your puzzle input.\n') throw new Error(errExpiredSessionCookie);
@@ -74,7 +65,7 @@ async function getInput(year: number, day: number, forceRefresh = false) {
 }
 
 async function getPuzzle(year: number, day: number, forceRefresh = false) {
-    validateYearDay(year, day);
+    await validateYearDay(year, day);
     let puzzle = '';
     try {
         if (forceRefresh) throw new Error('Force refresh');
@@ -86,6 +77,7 @@ async function getPuzzle(year: number, day: number, forceRefresh = false) {
         const login = $(`a[href="/${year}/auth/login"]`);
         if (login.length > 0) throw new Error(errExpiredSessionCookie);
         await write(`${year}/puzzles/${day}.html`, puzzle);
+        await stats.startPart1(year, day);
     }
     return puzzle;
 }
@@ -116,21 +108,30 @@ function sleep(ms = 1000): Promise<void> {
     });
 }
 
+function hms(ms: number) {
+    let hrs = Math.floor(ms / 1000 / 60 / 60);
+    ms -= hrs * 60 * 60 * 1000;
+    let mins = Math.floor(ms / 1000 / 60);
+    ms -= mins * 60 * 1000;
+    let secs = Math.floor(ms / 1000);
+    return `${hrs.toFixed(0).padStart(2, '0')}:${mins.toFixed(0).padStart(2, '0')}:${secs.toFixed(0).padStart(2, '0')}`
+}
+
 async function countdown(until: Date): Promise<void> {
     let remaining = until.getTime() - Date.now();
     if (remaining > 0) {
         console.log();
         while (remaining > 0) {
-            process.stdout.write(`\rWaiting \x1b[101m${(remaining / 1000).toFixed(0).padStart(3, ' ')}\x1b[0ms... `);
+            process.stdout.write(`\rWaiting \x1b[101m${hms(remaining)}\x1b[0m... `);
             await sleep(remaining > 1000 ? 1000 : remaining);
             remaining = until.getTime() - Date.now();
         }
-        console.log('\rWaiting \x1b[102m  0\x1b[0ms... Done');
+        console.log('\rWaiting \x1b[102m00:00:00\x1b[0m... Done');
     }
 }
 
-async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<{ cancelled: boolean, response?: string }> {
-    validateYearDay(year, day);
+async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<{ cancelled: boolean, response?: string, dayStats?: stats.Stats }> {
+    await validateYearDay(year, day);
 
     // Get answers file
     const filename = `${year}/answers/${day}.json`;
@@ -146,12 +147,21 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     const correct = partAnswers.find(a => a.correct);
     if (correct) throw new Error(`Already submitted correct answer ${correct.answer} for ${year} day ${day} part ${part} on ${correct.timestamp}`);
     const duplicate = partAnswers.find(a => a.answer === answer.toString());
-    if (duplicate) throw new Error(`Already submitted incorrect answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
+    if (duplicate) {
+        await stats.avoidedAttempt(year, day, part);
+        throw new Error(`Already submitted incorrect answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
+    }
     if (typeof answer === 'number') {
         const tooLows = partAnswers.filter(a => a.problem === 'too low').sort((a, b) => parseInt(b.answer) - parseInt(a.answer));
-        if (tooLows.length > 0 && answer < parseInt(tooLows[0].answer)) throw new Error(`${answer} is too low because it's less than ${tooLows[0].answer} which was too low for ${year} day ${day} part ${part} on ${tooLows[0].timestamp}`);
+        if (tooLows.length > 0 && answer < parseInt(tooLows[0].answer)) {
+            await stats.avoidedAttempt(year, day, part);
+            throw new Error(`${answer} is too low because it's less than ${tooLows[0].answer} which was too low for ${year} day ${day} part ${part} on ${tooLows[0].timestamp}`);
+        }
         const tooHighs = partAnswers.filter(a => a.problem === 'too high').sort((a, b) => parseInt(a.answer) - parseInt(b.answer));
-        if (tooHighs.length > 0 && answer > parseInt(tooHighs[0].answer)) throw new Error(`${answer} is too high because it's greater than ${tooHighs[0].answer} which was too high for ${year} day ${day} part ${part} on ${tooHighs[0].timestamp}`);
+        if (tooHighs.length > 0 && answer > parseInt(tooHighs[0].answer)) {
+            await stats.avoidedAttempt(year, day, part);
+            throw new Error(`${answer} is too high because it's greater than ${tooHighs[0].answer} which was too high for ${year} day ${day} part ${part} on ${tooHighs[0].timestamp}`);
+        }
     }
 
     // Prompt user to confirm submission
@@ -220,25 +230,28 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
         answers.push({ part, answer: answer.toString(), correct: true, timestamp });
         await write(filename, JSON.stringify(answers));
         await getPuzzle(year, day, true);
-        return { cancelled: false, response };
+        const dayStats = await stats.finish(year, day, part);
+        return { cancelled: false, response, dayStats };
     } else if ($(`p:contains('${alreadySolved}')`).length > 0) {
-        // Solving wrong level - happens due to a sync issue e.g. when the player submits an answer through the website directly unbeknownst to this copilot
+        // Solving wrong level - happens due to a sync issue e.g. when the player submits an answer through the website directly unbeknownst to AoCC
         await getPuzzle(year, day, true)
+        await stats.solvedElsewhere(year, day, part);
         throw new Error($(`p:contains('${alreadySolved}')`).text());
     }
     const { problem, wait } = /That's not the right answer(\.|; your answer is (?<problem>.*?)\.).*lease wait (?<wait>(one|\d+) minutes?)/g.exec($('article p').text())?.groups as { problem?: string, wait: string };
     await write('lastSubmission.json', JSON.stringify({ year, day, part, answer: answer.toString(), correct: false, timestamp, problem, wait } as LastSubmission));
     answers.push({ part, answer: answer.toString(), correct: false, timestamp, problem, wait });
     await write(filename, JSON.stringify(answers));
+    await stats.incorrectAttempt(year, day, part);
     throw new Error($('article p').text());
 
 };
 
 export {
     cookieSteps,
-    getCalendar,
     getInput,
     getPuzzle,
+    hms,
     sleep,
     submitAnswer,
     validateYearDay

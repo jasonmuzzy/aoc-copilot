@@ -52,7 +52,3 @@
 //     }
 // }
 // test().then(() => console.log('done')).catch(err => console.error(err));
-
-// Test calendar and headers
-// import { getCalendar } from '../src/site'
-// getCalendar(2020).then(() => {}).catch(err => console.error(err));
