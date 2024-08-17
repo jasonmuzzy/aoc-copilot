@@ -4,7 +4,7 @@ import { basename, join, normalize } from 'node:path';
 import * as cheerio from 'cheerio';
 
 import { Egdb, Example, getExamples } from './examples';
-import { cookieSteps, getInput, getPuzzle, submitAnswer } from './site';
+import { cookieSteps, getInput, getPuzzle, hms, submitAnswer } from './site';
 
 type Aidb = {
     key: string,
@@ -78,10 +78,14 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
         const end = performance.now();
         const elapsed = (end - start) / 1000;
         try {
-            const { cancelled, response } = await submitAnswer(year, day, part, answer);
+            const { cancelled, response, dayStats } = await submitAnswer(year, day, part, answer);
             if (cancelled) console.log(`Submission cancelled (${elapsed.toFixed(3)}s)`);
             else {
                 console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (new submission) (${elapsed.toFixed(3)}s)`);
+                const timeToFinish = part === 1
+                    ? Date.parse(dayStats!.part1Finished) - Date.parse(dayStats!.part1Started)
+                    : Date.parse(dayStats!.part2Finished) - Date.parse(dayStats!.part1Finished);
+                console.log(`It took you ${hms(timeToFinish)} to finish (started ${new Date(part === 1 ? dayStats!.part1Started : dayStats!.part1Finished)})`);
                 if (day === 25) {
                     const $ = cheerio.load(response!);
                     if (parseInt($('span[class="star-count"]').text() || '0*') < 49) {
