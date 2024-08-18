@@ -38,8 +38,9 @@
             "args": [
                 "src/bin.ts",
                 "index",
-                "2023",
-                "em",
+                "2019",
+                "3",
+                "code",
                 "-v"
             ],
             "runtimeArgs": [

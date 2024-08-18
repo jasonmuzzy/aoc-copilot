@@ -1,5 +1,6 @@
 /**
  * TODO:
+ * - Add runner switch to bypass tests simply
  * - Add more tests
  *   - https://jestjs.io/docs/mock-functions
  *   - https://jestjs.io/docs/manual-mocks#mocking-node-modules
@@ -21,6 +22,7 @@
  * - Expand documentation
  * - Wait until midnight EST before downloading a new puzzle
  * - Calculate how long it took from first download to completion of parts 1 and 2
+ * - Add transforms to answers such as: replaceAll, match, html (use .html() instead of .text())
 */
 
 export { run } from './runner';
