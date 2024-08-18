@@ -7,6 +7,13 @@
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": ["357", 60, 64, 68]
+        "indexesOrLiterals": [56, 60, 64, 68],
+        "transforms": [{
+            "functions": [
+                { "fx": "match", "pattern": "\\d+$" },
+                { "fx": "join", "separator": "" }
+            ],
+            "appliesTo": [0]       
+        }]
     }
 }

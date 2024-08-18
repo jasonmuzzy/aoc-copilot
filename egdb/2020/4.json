@@ -7,6 +7,13 @@
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": [16, "0", "4"]
+        "indexesOrLiterals": [16, 40, 56],
+        "transforms": [{
+            "functions": [
+                { "fx": "split", "separator": "\n\n" },
+                { "fx": "length" }
+            ],
+            "appliesTo": [2]       
+        }]
     }
 }

@@ -7,6 +7,13 @@
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": [2, 5, 7, 9, 14, "966", "50346"]
+        "indexesOrLiterals": [2, 5, 7, 9, 14, 24, 26],
+        "transforms": [{
+            "functions": [
+                { "fx": "match", "pattern": "\\d+$" },
+                { "fx": "join", "separator": "" }
+            ],
+            "appliesTo": [5, 6]       
+        }]
     }
 }

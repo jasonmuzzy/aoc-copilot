@@ -7,6 +7,10 @@
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": ["35", "220", 59, 64]
+        "indexesOrLiterals": [[49, 50], [52, 53], 59, 64],
+        "transforms": [{
+            "functions": [{ "fx": "product" }],
+            "appliesTo": [0, 1]
+        }]
     }
 }

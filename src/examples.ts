@@ -1,16 +1,19 @@
 import { readFile } from "node:fs/promises";
 import { join, normalize } from 'node:path';
 
+import * as tx from './transform';
+
 type Egdb = {
     reason: string,
     part1length: number,
     inputs: {
         selector: string,
-        indexes: number[] | number[][],
+        indexes: (number | number[])[],
     },
     answers: {
         selector: string,
-        indexesOrLiterals: (number | string)[],
+        indexesOrLiterals: (number | number[] | string)[],
+        transforms?: tx.Transform[],
     },
     additionalInfos?: {
         key: string,
@@ -68,12 +71,21 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
             examples.push({
                 part: i < egdb.part1length ? 1 : 2,
                 inputs: typeof inputIndex === 'number'
-                    ? inputs.eq(inputIndex).text().split('\n')
+                    ? inputs.eq(inputIndex).html()?.includes('<br') ? inputs.eq(inputIndex).html()!.split('<br>') : inputs.eq(inputIndex).text().split('\n')
                     : inputIndex.reduce((pv, cv) => (pv.push(...inputs.eq(cv).text().split('\n')), pv), [] as string[]),
                 answer: (() => {
-                    const answer = typeof egdb.answers.indexesOrLiterals[i] === 'string'
-                        ? egdb.answers.indexesOrLiterals[i] as string
-                        : answers.eq(egdb.answers.indexesOrLiterals[i] as number).text();
+                    let answer = '';
+                    if (typeof egdb.answers.indexesOrLiterals[i] === 'string') {
+                        answer = egdb.answers.indexesOrLiterals[i];
+                    } else {
+                        let interim = typeof egdb.answers.indexesOrLiterals[i] === 'number'
+                            ? answers.eq(egdb.answers.indexesOrLiterals[i]).text()
+                            : egdb.answers.indexesOrLiterals[i].reduce((pv, cv) => (pv.push(answers.eq(cv).text()), pv), [] as string[]);
+                        const transform = egdb.answers.transforms?.find(tx => tx.appliesTo.includes(i));
+                        if (!!transform) answer = tx.transform(transform.functions, interim);
+                        else if (typeof interim === 'string') answer = interim;
+                        else throw new Error(`No tranformations specified but answers.indexesOrLiterals is an array`);
+                    }
                     if (answer.includes('\n')) {
                         const answers = answer.split('\n');
                         while (answers.at(-1) == '') answers.pop();
@@ -90,7 +102,7 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                 ? elements.text()
                 : elements.eq([...elements].map((e, i) => ({ e, score: (/^\d+$/.test(elements.eq(i).text()) ? 1 : 0) + (e.prev === null ? 1 : 0), i })).sort((a, b) => a.score === b.score ? b.i - a.i : b.score - a.score)[0].i).text();
         }
-        const inputs = getExampleInputs($).text().split('\n');
+        const inputs = getExampleInputs($).html()?.includes('<br') ? getExampleInputs($).html()!.split('<br>') : getExampleInputs($).text().split('\n');
         examples.push({ part: 1, inputs, answer: answer(1) }); // No additionalInfo for generically determined examples
         if (day != 25 && !part1only) {
             examples.push({ part: 2, inputs, answer: answer(2) });

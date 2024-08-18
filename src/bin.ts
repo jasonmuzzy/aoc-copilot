@@ -22,23 +22,22 @@ yargs(hideBin(process.argv))
                 type: 'string',
                 default: 'code'
             });
-    }, (argv) => {
+    }, async (argv) => {
         if (argv.verbose) console.info(argv);
         try {
-            validateYearDay(argv.year, argv.day);
+            await validateYearDay(argv.year, argv.day);
         } catch (err) {
             console.error((err as Error).message);
             return;
         }
         console.info(`Puzzle ${argv.year} day ${argv.day} indexes matching selector '${argv.selector}':`);
-        getPuzzle(argv.year!, argv.day!).then(puzzle => {
-            const $ = cheerio.load(puzzle);
-            const selections = $(argv.selector);
-            for (let i = 0; i < selections.length; i++) {
-                const text = selections.eq(i).text();
-                console.info(`\x1b[36m${i.toString().padStart(3, '0') + ': '}\x1b[0m ${text.includes('\n') ? '\n' + text : text}`);
-            }
-        });
+        const puzzle = await getPuzzle(argv.year!, argv.day!);
+        const $ = cheerio.load(puzzle);
+        const selections = $(argv.selector);
+        for (let i = 0; i < selections.length; i++) {
+            const text = selections.eq(i).html()?.includes('<br>') ? selections.eq(i).html()!.replaceAll('<br>', '\n') : selections.eq(i).text();
+            console.info(`\x1b[36m${i.toString().padStart(3, '0') + ': '}\x1b[0m ${text.includes('\n') ? '\n' + text : text}`);
+        }
     })
     .command(['refresh <year> <day>', 'download'], 'Force refresh of a cached file', (yargs) => {
         return yargs
@@ -79,7 +78,7 @@ yargs(hideBin(process.argv))
             getInput(argv.year!, argv.day!, true).then(() => console.info('Done'));
         }
     })
-    .command('cache', 'Print cache location', () => {}, () => {
+    .command('cache', 'Print cache location', () => { }, () => {
         console.info(`Cache location: ${CACHE_DIR}`);
     })
     .option('verbose', {

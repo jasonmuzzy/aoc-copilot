@@ -1,12 +1,19 @@
 {
     "reason": "Irregular format",
-    "part1length": 1,
+    "part1length": 3,
     "inputs": {
         "selector": "code",
-        "indexes": [[0,7], [0,7]]
+        "indexes": [[0,7], 15, 17, [0,7], 27, 29]
     },
     "answers": {
-        "selector": "em",
-        "indexesOrLiterals": ["6", 13]
+        "selector": "code",
+        "indexesOrLiterals": [14, 16, 18, 26, 28, 30],
+        "transforms": [{
+            "functions": [
+                { "fx": "match", "pattern": "\\d+$" },
+                { "fx": "join", "separator": "" }
+            ],
+            "appliesTo": [0, 3]       
+        }]
     }
 }

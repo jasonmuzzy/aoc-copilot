@@ -179,17 +179,22 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
 
     // Wait after last incorrect submission
     type LastSubmission = { year: number, day: number, part: number, answer: string, correct: boolean, timestamp: string, wait: string };
-    const lastSubmission = JSON.parse(await read('lastSubmission.json')) as LastSubmission;
-    if (!lastSubmission.correct) {
-        const lastTs = new Date(lastSubmission.timestamp);
-        const until = new Date(lastTs.getTime() + ms(lastSubmission.wait));
-        if (until.getTime() > Date.now()) {
-            console.log(`\nRate limiting on the adventofcode.com site requires waiting a variable amount of time after submitting an incorrect ` +
-                `answer.  You submitted incorrect answer "${lastSubmission.answer}" for ${lastSubmission.year} day ${lastSubmission.day} part ` +
-                `${lastSubmission.part} on ${lastTs.toString()}, requiring you to wait ${lastSubmission.wait} until ${until.toString()} ` +
-                `before submitting another answer for any puzzle.`);
-            await countdown(until);
+    let lastSubmission: LastSubmission;
+    try {
+        lastSubmission = JSON.parse(await read('lastSubmission.json'));
+        if (!lastSubmission.correct) {
+            const lastTs = new Date(lastSubmission.timestamp);
+            const until = new Date(lastTs.getTime() + ms(lastSubmission.wait));
+            if (until.getTime() > Date.now()) {
+                console.log(`\nRate limiting on the adventofcode.com site requires waiting a variable amount of time after submitting an incorrect ` +
+                    `answer.  You submitted incorrect answer "${lastSubmission.answer}" for ${lastSubmission.year} day ${lastSubmission.day} part ` +
+                    `${lastSubmission.part} on ${lastTs.toString()}, requiring you to wait ${lastSubmission.wait} until ${until.toString()} ` +
+                    `before submitting another answer for any puzzle.`);
+                await countdown(until);
+            }
         }
+    } catch (error) {
+        lastSubmission = { year, day, part, answer: '', correct: false, timestamp: '', wait: '' };
     }
 
     // Submit the answer
@@ -252,6 +257,7 @@ export {
     getInput,
     getPuzzle,
     hms,
+    isNumChar,
     sleep,
     submitAnswer,
     validateYearDay
