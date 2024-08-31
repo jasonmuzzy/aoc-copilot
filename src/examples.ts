@@ -19,6 +19,7 @@ type Egdb = {
         key: string,
         selector: string,
         indexes: number[],
+        transforms?: tx.Transform[],
     }
 }
 
@@ -40,7 +41,7 @@ function getExampleInputs($: cheerio.Root) {
         }
     }
     if (largerEg) return largerEg;
-    const eg = $("p:contains('example')").nextAll("pre").find('code');
+    const eg = $("p:contains('xample'):contains(':')").nextAll("pre").find('code');
     if (eg.length > 0) return eg.first();
     else return $('article pre code').first();
 }
@@ -92,7 +93,12 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                         return answers.join('\n');
                     } else return answer;
                 })(),
-                ...(egdb.additionalInfos) && { additionalInfo: { [egdb.additionalInfos.key]: additionalInfos!.eq(egdb.additionalInfos.indexes[i]).text() } }
+                ...(egdb.additionalInfos) && { additionalInfo: { [egdb.additionalInfos.key]: (() => {
+                    let value = additionalInfos!.eq(egdb.additionalInfos.indexes[i]).text();
+                    const transform = egdb.additionalInfos.transforms?.find(tx => tx.appliesTo.includes(i));
+                    if (!!transform) value = tx.transform(transform.functions, value);
+                    return value;
+                })() } }
             });
         });
     } catch {

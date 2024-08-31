@@ -1,0 +1,27 @@
+{
+    "reason": "Multiple examples part 1, no examples part 2",
+    "part1length": 3,
+    "inputs": {
+        "selector": "code",
+        "indexes": [14, 15, 16]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [14, 15, 16],
+        "transforms": [
+            {
+                "functions": [
+                    { "fx": "split", "separator": "," },
+                    { "fx": "slice", "start": 1, "end": 3 },
+                    { "fx": "product" }
+                ], "appliesTo": [1]
+            },
+            {
+                "functions": [
+                    { "fx": "split", "separator": "," },
+                    { "fx": "at", "index": 1 }
+                ], "appliesTo": [2]
+            }
+        ]
+    }
+}

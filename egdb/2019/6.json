@@ -1,0 +1,12 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [23, 46]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [40, 54]
+    }
+}

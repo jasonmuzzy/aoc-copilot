@@ -1,0 +1,16 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [2, 15]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [7, 23],
+        "transforms": [{
+            "functions": [{ "fx": "replaceAll", "oldValue": "\n", "newValue": "" }],
+            "appliesTo": [1]
+        }]
+    }
+}

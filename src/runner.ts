@@ -43,12 +43,14 @@ A session cookie is required in order to log in to the adventofcode.com site.
     return true;
 }
 
-function allPass(year: number, day: number, part: number, test: boolean, examples: Example[], solver: Solver) {
-    return Promise.all(examples.map(eg => passes(eg.inputs, year, day, eg.part, test, solver, eg.answer, eg.additionalInfo)))
-        .then(results => results.length > 0
-            ? results.every(result => result == true)
-            : (console.log(`Sorry, no examples found for ${year} day ${day} part ${part}`), true)
-        );
+async function allPass(year: number, day: number, part: number, test: boolean, examples: Example[], solver: Solver) {
+    let allPassed = true;
+    if (examples.length === 0) console.log(`Sorry, no examples found for ${year} day ${day} part ${part}`);
+    for (let example of examples) {
+        const passed = await passes(example.inputs, year, day, example.part, test, solver, example.answer, example.additionalInfo);
+        if (!passed) allPassed = false;
+    }
+    return allPassed;;
 }
 
 function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key: string]: string }): Promise<boolean> {
