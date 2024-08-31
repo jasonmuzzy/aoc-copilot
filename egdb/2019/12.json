@@ -1,0 +1,31 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 2,
+    "inputs": {
+        "selector": "code",
+        "indexes": [21, 30, 21, 30]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [29, 31, 34, 37],
+        "transforms": [{
+            "functions": [
+                { "fx": "match", "pattern": "\\d+(?=\\n$)", "flags": "" },
+                { "fx": "join", "separator": "" }
+            ],
+            "appliesTo": [1]
+        }]
+    },
+    "additionalInfos": {
+        "key": "steps",
+        "selector": "p",
+        "indexes": [9, 11, 9, 11],
+        "transforms": [{
+            "functions": [
+                { "fx": "match", "pattern": "\\d+", "flags": "" },
+                { "fx": "join", "separator": "" }
+            ],
+            "appliesTo": [0, 1, 2, 3]
+        }]
+    }
+}

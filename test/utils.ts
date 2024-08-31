@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio';
 
 import { Egdb, getExamples } from '../src/examples';
 import { getPuzzle, isNumChar } from '../src/site';
+import * as utils from '../src/utils';
 
 // Prints all the colors in the terminal
 function printColors() {
@@ -28,7 +29,7 @@ async function writeExampleFiles(year: number, dayFrom: number, dayTo: number) {
         await fs.writeFile(`./examples/${year}/${day}.json`, JSON.stringify(examples), { encoding: "utf-8" })
     }
 }
-// writeExampleFiles(2019, 3, 3).then(() => console.log('Done')).catch(error => console.error(error));
+// writeExampleFiles(2019, 6, 6).then(() => console.log('Done')).catch(error => console.error(error));
 
 // Find literal answers in egdb
 async function findLiterals() {

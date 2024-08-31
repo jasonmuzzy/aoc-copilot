@@ -22,7 +22,8 @@
  * - Expand documentation
  * - Wait until midnight EST before downloading a new puzzle
  * - Calculate how long it took from first download to completion of parts 1 and 2
- * - Add transforms to answers such as: replaceAll, match, html (use .html() instead of .text())
+ * - Add transforms to answers such as: replaceAll, match, etc.
+ * - Fix where test results don't print until after all tests complete for a part e.g. 2019 day 5 part 2
 */
 
 export { run } from './runner';

@@ -16,6 +16,20 @@
             "sourceMaps": true,
         },
         {
+            "name": "Current JS File",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${relativeFile}"
+            ],
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+        },
+        {
             "name": "Current TS File",
             "type": "node",
             "request": "launch",
@@ -39,9 +53,8 @@
                 "src/bin.ts",
                 "index",
                 "2019",
-                "3",
-                "code",
-                "-v"
+                "12",
+                "code"
             ],
             "runtimeArgs": [
                 "--nolazy",
