@@ -36,20 +36,20 @@ function lcm(numbers: number[]): number {
 function primeFactors(n: number) {
     const factors = [];
     while (n % 2 === 0) {
-      factors.push(2);
-      n = n / 2;
+        factors.push(2);
+        n = n / 2;
     }
     for (let i = 3; i <= Math.sqrt(n); i += 2) {
-      while (n % i === 0) {
-        factors.push(i);
-        n = n / i;
-      }
+        while (n % i === 0) {
+            factors.push(i);
+            n = n / i;
+        }
     }
     if (n > 2) {
-      factors.push(n);
+        factors.push(n);
     }
     return factors;
-  }
+}
 
 // Takes x,y coordinates and turns it into a printable string representing the overall grid
 function printableGrid(coords: Iterable<string | { x: number, y: number }>, occupied = '#', empty = ' ') {
@@ -57,10 +57,10 @@ function printableGrid(coords: Iterable<string | { x: number, y: number }>, occu
     const yxs: [number, number][] = [];
     for (let coord of coords) {
         if (typeof coord === 'string') {
-            ({lhs, rhs} = splitOn(coord, ','));
+            ({ lhs, rhs } = splitOn(coord, ','));
             x = parseInt(lhs);
             y = parseInt(rhs);
-        } else ({x, y} = coord);
+        } else ({ x, y } = coord);
         yxs.push([y, x]);
         minx = Math.min(minx, x);
         maxx = Math.max(maxx, x);
@@ -97,8 +97,10 @@ function reduce(numerator: number, denominator: number) {
 }
 
 function splitOn(str: string, delimiter: string) {
-    const [lhs, rhs] = [str.substring(0, str.indexOf(delimiter)), str.substring(str.indexOf(delimiter) + 1)];
-    return { lhs, rhs };
+    const i = str.indexOf(delimiter);
+    return i === -1
+        ? { lhs: str, rhs: '' }
+        : { lhs: str.substring(0, i), rhs: str.substring(i + delimiter.length) };
 }
 
 function xyArray(a: any[]): number[][] {

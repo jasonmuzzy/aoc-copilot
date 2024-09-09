@@ -1,0 +1,31 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 4,
+    "inputs": {
+        "selector": "code",
+        "indexes": [16, 18, 20, 22, 30, 32, 34]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [17, 19, 21, 23, 31, 33, 35],
+        "transforms": [{
+            "functions": [
+                { "fx": "match", "pattern": "\\d+(?=\\n$)", "flags": "" },
+                { "fx": "join", "separator": "" }
+            ],
+            "appliesTo": [0]
+        }]
+    },
+    "additionalInfos": {
+        "key": "phases",
+        "selector": "code, em",
+        "indexes": [22, 29, 29, 29, 29, 29, 29],
+        "transforms": [{
+            "functions": [
+                { "fx": "match", "pattern": "(?<=After )\\d+(?= phases: \\d+\\n$)", "flags": "" },
+                { "fx": "join", "separator": "" }
+            ],
+            "appliesTo": [0]
+        }]
+    }
+}

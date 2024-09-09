@@ -26,7 +26,7 @@ describe('Unit tests', () => {
     describe('primeFactors()', () => {
         test('of 12', () => expect(mut.primeFactors(12)).toEqual([2,2,3]));
         test('of 1113', () => expect(mut.primeFactors(1113)).toEqual([3,7,53]));
-        test('of 10939706', () => expect(mut.primeFactors(10939706)).toEqual([3,7,53]));
+        test('of 10939706', () => expect(mut.primeFactors(10939706)).toEqual([2,19,287887]));
     });
 
     describe('printableGrid()', () => {
@@ -52,6 +52,8 @@ describe('Unit tests', () => {
 
     describe('splitOn()', () => {
         test('5,10', () => expect(mut.splitOn('5,10', ',')).toEqual({ lhs: "5", rhs: "10" }));
+        test('left middle right', () => expect(mut.splitOn('left middle right', ' middle ')).toEqual({ lhs: "left", rhs: "right" }));
+        test('not found', () => expect(mut.splitOn('not found', ' middle ')).toEqual({ lhs: "not found", rhs: "" }));
     });
 
     describe('xyArray()', () => {
