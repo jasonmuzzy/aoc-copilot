@@ -44,10 +44,14 @@ A session cookie is required in order to log in to the adventofcode.com site.
 }
 
 async function allPass(year: number, day: number, part: number, test: boolean, examples: Example[], solver: Solver) {
-    let allPassed = true;
+    let allPassed = true, passed = false;
     if (examples.length === 0) console.log(`Sorry, no examples found for ${year} day ${day} part ${part}`);
     for (let example of examples) {
-        const passed = await passes(example.inputs, year, day, example.part, test, solver, example.answer, example.additionalInfo);
+        try {
+            passed = await passes(example.inputs, year, day, example.part, test, solver, example.answer, example.additionalInfo);
+        } catch (err) {
+            passed = false;
+        }
         if (!passed) allPassed = false;
     }
     return allPassed;;
@@ -66,15 +70,15 @@ function passes(inputs: string[], year: number, day: number, part: number, test:
             return false;
         }
     }).catch(error => {
-        console.log("Example input:");
+        console.log("\nExample input:");
         for (const input of inputs) console.log(input);
-        console.log(`Expected answer: ${expected}`);
+        console.log(`\nExpected answer: ${expected}`);
         throw error;
     });
 }
 
-async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], additionalInfos: { [key: string]: string }[]) {
-    if (await allPass(year, day, part, true, examples.filter(e => e.part == part), solver)) {
+async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], additionalInfos: { [key: string]: string }[], skipTests: boolean) {
+    if (skipTests || await allPass(year, day, part, true, examples.filter(e => e.part == part), solver)) {
         const start = performance.now();
         const answer = await solver(inputs, part, false, additionalInfos[part - 1] || {});
         const end = performance.now();
@@ -112,8 +116,15 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
  * @param addTests (optional) additional test cases
  * @returns 
  */
-async function run(yearDay: string | { year: number, day: number }, solver: Solver, testsOnly = false, addDb?: Egdb, addTests: Example[] = []) {
+async function run(yearDay: string | { year: number, day: number }, solver: Solver, options: boolean | { testsOnly?: boolean, skipTests?: boolean, onlyPart?: 1 | 2 } = false, addDb?: Egdb, addTests: Example[] = []) {
     if (!preChecksPass()) return;
+    if (typeof options === 'object' && options.testsOnly && options.skipTests) throw new Error('Cannot specify both testsOnly and skipTests');
+    const runOptions = {
+        testsOnly: typeof options === 'boolean' ? options : (options.testsOnly ?? false),
+        skipTests: typeof options === 'boolean' ? false : !!options.skipTests,
+        runPart1: typeof options === 'boolean' ? true : (options.onlyPart ?? 1) === 1,
+        runPart2: typeof options === 'boolean' ? true : (options.onlyPart ?? 2) === 2,
+    }
     const { year, day } = typeof yearDay === 'string' ? getYearDay(yearDay) : yearDay;
     let puzzle = await getPuzzle(year, day);
     const inputs = await getInput(year, day);
@@ -129,15 +140,15 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
         );
     } catch { }
     const examples = await getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
-    if (testsOnly) {
-        await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
-        if (acceptedAnswers.length > 0 && day != 25) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
+    if (runOptions.testsOnly) {
+        if (runOptions.runPart1) await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
+        if (runOptions.runPart2 && acceptedAnswers.length > 0 && day != 25) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
     } else if (acceptedAnswers.length == 0) {
         try {
-            await runInput(year, day, 1, solver, examples, inputs, additionalInfos);
+            if (runOptions.runPart1) await runInput(year, day, 1, solver, examples, inputs, additionalInfos, runOptions.skipTests);
         } catch { }
     } else {
-        if (await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
+        if (!runOptions.runPart1 || await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
             if (day === 25) {
                 let stars = parseInt($('span[class="star-count"]').text() || '0*');
                 if (stars === 49) {
@@ -152,14 +163,14 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
                 } else if (stars === 50) {
                     console.log(`Congratulations on completing Advent of Code ${year}!  You can go admire your advent calendar (https://adventofcode.com/${year})!`);
                 }
-            } else {
+            } else if (runOptions.runPart2) {
                 if (acceptedAnswers.length == 1) {
-                    await runInput(year, day, 2, solver, examples, inputs, additionalInfos);
+                    await runInput(year, day, 2, solver, examples, inputs, additionalInfos, runOptions.skipTests);
                 } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
                     await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
                 }
             }
-        } else await allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
+        } else if (runOptions.runPart1) await allPass(year, day, 1, true, examples.filter(e => e.part == 1), solver);
     };
 }
 
