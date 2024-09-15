@@ -10,8 +10,8 @@
         "indexesOrLiterals": [56, 60, 64, 68],
         "transforms": [{
             "functions": [
-                { "fx": "match", "pattern": "\\d+$", "flags": "g" },
-                { "fx": "join", "separator": "" }
+                { "match": ["\\d+$", "g"] },
+                { "at": [0] }
             ],
             "appliesTo": [0]       
         }]

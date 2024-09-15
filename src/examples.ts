@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join, normalize } from 'node:path';
 
-import * as tx from './transform';
+import * as fx from './fx';
 
 type Egdb = {
     reason: string,
@@ -9,17 +9,27 @@ type Egdb = {
     inputs: {
         selector: string,
         indexes: (number | number[])[],
+        transforms?: {
+            functions: fx.Fx[],
+            appliesTo: number[]
+        }[],
     },
     answers: {
         selector: string,
         indexesOrLiterals: (number | number[] | string)[],
-        transforms?: tx.Transform[],
+        transforms?: {
+            functions: fx.Fx[],
+            appliesTo: number[]
+        }[],
     },
     additionalInfos?: {
         key: string,
         selector: string,
         indexes: number[],
-        transforms?: tx.Transform[],
+        transforms?: {
+            functions: fx.Fx[],
+            appliesTo: number[]
+        }[],
     }
 }
 
@@ -71,34 +81,55 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
         egdb.inputs.indexes.filter((v, i) => !part1only || i < egdb.part1length).forEach((inputIndex, i) => {
             examples.push({
                 part: i < egdb.part1length ? 1 : 2,
-                inputs: typeof inputIndex === 'number'
-                    ? inputs.eq(inputIndex).html()?.includes('<br') ? inputs.eq(inputIndex).html()!.split('<br>') : inputs.eq(inputIndex).text().split('\n')
-                    : inputIndex.reduce((pv, cv) => (pv.push(...inputs.eq(cv).text().split('\n')), pv), [] as string[]),
+                inputs: (() => {
+                    let result: string[] = [];
+                    result = typeof inputIndex === 'number'
+                        ? inputs.eq(inputIndex).html()?.includes('<br') ? inputs.eq(inputIndex).html()!.split('<br>') : inputs.eq(inputIndex).text().split('\n')
+                        : inputIndex.reduce((pv, cv) => (pv.push(...inputs.eq(cv).text().split('\n')), pv), [] as string[]);
+                    const transform = egdb.inputs.transforms?.find(tx => tx.appliesTo.includes(i));
+                    if (!!transform) {
+                        const output = fx.interpolate(result, transform.functions);
+                        if (!(Array.isArray(output) && output.every(row => typeof row === 'string'))) throw new Error('Transformation did not return a string[]');
+                        result = output;
+                    }
+                    return result;
+        })(),
                 answer: (() => {
-                    let answer = '';
+                    let result = '';
                     if (typeof egdb.answers.indexesOrLiterals[i] === 'string') {
-                        answer = egdb.answers.indexesOrLiterals[i];
+                        result = egdb.answers.indexesOrLiterals[i];
                     } else {
                         let interim = typeof egdb.answers.indexesOrLiterals[i] === 'number'
                             ? answers.eq(egdb.answers.indexesOrLiterals[i]).text()
-                            : egdb.answers.indexesOrLiterals[i].reduce((pv, cv) => (pv.push(answers.eq(cv).text()), pv), [] as string[]);
+                            : egdb.answers.indexesOrLiterals[i].reduce((pv, cv) => { pv.push(answers.eq(cv).text()); return pv; }, [] as string[]);
                         const transform = egdb.answers.transforms?.find(tx => tx.appliesTo.includes(i));
-                        if (!!transform) answer = tx.transform(transform.functions, interim);
-                        else if (typeof interim === 'string') answer = interim;
+                        if (!!transform) {
+                            const output = fx.interpolate(interim, transform.functions);
+                            if (typeof output !== 'string') throw new Error('Transformation did not return a string');
+                            result = output;
+                        } else if (typeof interim === 'string') result = interim;
                         else throw new Error(`No tranformations specified but answers.indexesOrLiterals is an array`);
                     }
-                    if (answer.includes('\n')) {
-                        const answers = answer.split('\n');
+                    if (result.includes('\n')) {
+                        const answers = result.split('\n');
                         while (answers.at(-1) == '') answers.pop();
                         return answers.join('\n');
-                    } else return answer;
+                    } else return result;
                 })(),
-                ...(egdb.additionalInfos) && { additionalInfo: { [egdb.additionalInfos.key]: (() => {
-                    let value = additionalInfos!.eq(egdb.additionalInfos.indexes[i]).text();
-                    const transform = egdb.additionalInfos.transforms?.find(tx => tx.appliesTo.includes(i));
-                    if (!!transform) value = tx.transform(transform.functions, value);
-                    return value;
-                })() } }
+                ...(egdb.additionalInfos) && {
+                    additionalInfo: {
+                        [egdb.additionalInfos.key]: (() => {
+                            let result = additionalInfos!.eq(egdb.additionalInfos.indexes[i]).text();
+                            const transform = egdb.additionalInfos.transforms?.find(tx => tx.appliesTo.includes(i));
+                            if (!!transform) {
+                                const output = fx.interpolate(result, transform.functions);
+                                if (typeof output !== 'string') throw new Error('Transformation did not return a string');
+                                result = output;
+                            }
+                            return result;
+                        })()
+                    }
+                }
             });
         });
     } catch {
