@@ -9,7 +9,15 @@
         "selector": "code",
         "indexesOrLiterals": [[49, 50], [52, 53], 59, 64],
         "transforms": [{
-            "functions": [{ "fx": "product" }],
+            "functions": [
+                { "map": [
+                    [{ "parseInt": [] }]
+                ] },
+                { "reduce": [
+                    [{ "multiply": [] }]
+                ] },
+                { "toString": [] }
+            ],
             "appliesTo": [0, 1]
         }]
     }

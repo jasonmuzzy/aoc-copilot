@@ -29,9 +29,9 @@ async function writeExampleFiles(year: number, dayFrom: number, dayTo: number) {
         await fs.writeFile(`./examples/${year}/${day}.json`, JSON.stringify(examples), { encoding: "utf-8" })
     }
 }
-// writeExampleFiles(2019, 6, 6).then(() => console.log('Done')).catch(error => console.error(error));
+// writeExampleFiles(2019, 18, 18).then(() => console.log('Done')).catch(error => console.error(error));
 
-// Find literal answers in egdb
+// Find arrays, literals and functions in egdb
 async function findLiterals() {
     const years = (await fs.readdir('./egdb')).filter(year => isNumChar(year)).map(year => parseInt(year)).sort((a, b) => a - b);
     for (const year of years) {
@@ -42,9 +42,21 @@ async function findLiterals() {
             .sort((a, b) => a - b);
         for (const day of days) {
             const egdb = JSON.parse(await fs.readFile(`./egdb/${year}/${day}.json`, { encoding: 'utf-8' })) as Egdb;
-            egdb.answers.indexesOrLiterals.forEach((v, i) => {
-                if (typeof v === 'string') console.log(`${year} day ${day} index ${i}: "${v}"`);
+            egdb.inputs.indexes.forEach((v, i) => {
+                if (typeof v === 'string') console.log(`inputs ${year} day ${day} index ${i}: "${v}"`);
+                if (Array.isArray(v)) console.log(`inputs ${year} day ${day} index ${i}: "${JSON.stringify(v)}"`);
             });
+            if (!!egdb.inputs.transforms) console.log(`inputs ${year} day ${day}: "${JSON.stringify(egdb.inputs.transforms)}"`);
+            egdb.answers.indexesOrLiterals.forEach((v, i) => {
+                if (typeof v === 'string') console.log(`answers ${year} day ${day} index ${i}: "${v}"`);
+                if (Array.isArray(v)) console.log(`answers ${year} day ${day} index ${i}: "${JSON.stringify(v)}"`);
+            });
+            if (!!egdb.answers.transforms) console.log(`answers ${year} day ${day}: "${JSON.stringify(egdb.answers.transforms)}"`);
+            egdb.additionalInfos?.indexes.forEach((v, i) => {
+                if (typeof v === 'string') console.log(`additionalInfos ${year} day ${day} index ${i}: "${v}"`);
+                if (Array.isArray(v)) console.log(`additionalInfos ${year} day ${day} index ${i}: "${JSON.stringify(v)}"`);
+            });
+            if (!!egdb.additionalInfos?.transforms) console.log(`additionalInfos ${year} day ${day}: "${JSON.stringify(egdb.additionalInfos.transforms)}"`);
         }
     };
 }

@@ -10,8 +10,8 @@
         "indexesOrLiterals": [17, 19, 21, 23, 31, 33, 35],
         "transforms": [{
             "functions": [
-                { "fx": "match", "pattern": "\\d+(?=\\n$)", "flags": "" },
-                { "fx": "join", "separator": "" }
+                { "match": ["\\d+(?=\\n$)", ""] },
+                { "at": [0] }
             ],
             "appliesTo": [0]
         }]
@@ -22,8 +22,8 @@
         "indexes": [22, 29, 29, 29, 29, 29, 29],
         "transforms": [{
             "functions": [
-                { "fx": "match", "pattern": "(?<=After )\\d+(?= phases: \\d+\\n$)", "flags": "" },
-                { "fx": "join", "separator": "" }
+                { "match": ["(?<=After )\\d+(?= phases: \\d+\\n$)", ""] },
+                { "at": [0] }
             ],
             "appliesTo": [0]
         }]

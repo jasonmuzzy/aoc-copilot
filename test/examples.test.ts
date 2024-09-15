@@ -7,7 +7,7 @@ import { getExamples } from '../src/examples';
 import { getPuzzle } from '../src/site';
 
 /**
- * Run with `npm run test`
+ * Run with `npm run test` or `npx jest examples.test.ts`
  */
 
 describe.each([2019, 2020, 2021, 2022, 2023])('%d', year => {

@@ -10,8 +10,9 @@
         "indexesOrLiterals": [16, 40, 56],
         "transforms": [{
             "functions": [
-                { "fx": "split", "separator": "\n\n" },
-                { "fx": "length" }
+                { "split": ["\n\n"] },
+                { "length": [] },
+                { "toString": [] }
             ],
             "appliesTo": [2]       
         }]

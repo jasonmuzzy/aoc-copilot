@@ -9,7 +9,7 @@
         "selector": "code",
         "indexesOrLiterals": [41],
         "transforms": [{
-            "functions": [{ "fx": "replaceAll", "oldValue": "\n", "newValue": "" }],
+            "functions": [{ "replaceAll": ["\n", ""] }],
             "appliesTo": [0]       
         }]
     }
