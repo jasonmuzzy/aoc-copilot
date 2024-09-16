@@ -30,7 +30,6 @@ describe('Unit tests', () => {
     });
 
     describe('printableGrid()', () => {
-        console.log(mut.printableGrid(['-1,-1','0,0','1,1'],'#','.'));
         test("from array of strings", () => expect(mut.printableGrid(['-1,-1','0,0','1,1'])).toEqual('#  \n # \n  #'));
         test("from set of strings", () => expect(mut.printableGrid(new Set(['-1,-1','0,0','1,1']))).toEqual('#  \n # \n  #'));
         test("from array of objects", () => expect(mut.printableGrid([{x: -1, y: -1},{x: 0, y: 0},{x: 1, y: 1}])).toEqual('#  \n # \n  #'));

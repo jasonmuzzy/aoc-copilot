@@ -70,7 +70,50 @@ function floydWarshall(graph: Map<string, Map<string, number>>) {
     return distances;
 }
 
+/**
+ * Converts a maze-like grid into a graph
+ * @param grid 
+ * @param pointsOfInterest 
+ * @param unpassables (optional)
+ * @returns graph
+ */
+function gridToGraph(grid: string[][], pointsOfInterest: string[], unpassables = '#') {
+    const graph: Map<string, Map<string, number>> = new Map();
+    const pois: [number, number][] = [];
+    for (let [y, row] of grid.entries()) {
+        for (let [x, cell] of row.entries()) {
+            if (pointsOfInterest.includes(cell)) pois.push([x, y]);
+        }
+    }
+    for (let [x, y] of pois) {
+        const neighbors: Map<string, number> = new Map();
+        graph.set(`${x},${y}`, neighbors);
+        const unvisiteds: [number, number, number][] = [[0, x, y]];
+        const visiteds: Set<string> = new Set();
+        while (unvisiteds.length > 0) {
+            const [d, qx, qy] = queue.pop(unvisiteds)!;
+            if (visiteds.has(`${qx},${qy}`)) continue;
+            visiteds.add(`${qx},${qy}`);
+            for (let [nx, ny] of [[qx, qy - 1], [qx + 1, qy], [qx, qy + 1], [qx - 1, qy]]) {
+                if (unpassables.includes(grid[ny][nx]) || visiteds.has(`${nx},${ny}`)) continue;
+                if (pointsOfInterest.includes(grid[ny][nx])) neighbors.set(`${nx},${ny}`, d + 1);
+                else queue.push(unvisiteds, [d + 1, nx, ny]);
+            }
+        }
+    }
+    const poiGraph: Map<string, Map<string, number>> = new Map([...graph].map(([m, nmap]) => {
+        const [x, y] = m.split(',').map(Number);
+        const newNs = new Map([...nmap].map(([nk, d]) => {
+            const [nx, ny] = nk.split(',').map(Number);
+            return [grid[ny][nx], d];
+        }));
+        return [grid[y][x], newNs];
+    }));
+    return poiGraph;
+}
+
 export {
     dijkstra,
-    floydWarshall
+    floydWarshall,
+    gridToGraph,
 }
