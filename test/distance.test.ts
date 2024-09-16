@@ -77,4 +77,41 @@ describe('Unit tests', () => {
             ['4|4', 0],
         ]));
     });
+
+    test('gridToGraph', () => {
+        const grid = [
+            '########',
+            '#@  a b#',
+            '###A####',
+            '#    Bc#',
+            '########',
+        ]
+        expect(mut.gridToGraph(grid.map(row => row.split('')), '@abcdABC'.split(''))).toEqual(new Map([
+            ['@', new Map([
+                ['a', 3],
+                ['A', 3],
+            ])],
+            ['a', new Map([
+                ['@', 3],
+                ['A', 2],
+                ['b', 2],
+            ])],
+            ['b', new Map([
+                ['a', 2],
+            ])],
+            ['A', new Map([
+                ['@', 3],
+                ['a', 2],
+                ['B', 3],
+            ])],
+            ['B', new Map([
+                ['A', 3],
+                ['c', 1],
+            ])],
+            ['c', new Map([
+                ['B', 1],
+            ])],
+        ]
+        ));
+    });
 });
