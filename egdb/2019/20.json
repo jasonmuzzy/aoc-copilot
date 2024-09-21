@@ -1,0 +1,13 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 2,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0, 19, 0, 19, 47]
+    },
+    "answers": {
+        "selector": "article p, em",
+        "indexesOrLiterals": [6, 9, 4, "0", 24],
+        "transforms": [{ "functions": [{ "match": ["\\d+", "g"] }, { "at": [-1] }], "appliesTo": [2] }]
+    }
+}
