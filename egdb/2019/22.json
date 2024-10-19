@@ -1,0 +1,21 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 4,
+    "inputs": {
+        "selector": "code",
+        "indexes": [22, 23, 24, 25],
+        "transforms": [{ "functions": [{ "slice": [0, -2] }], "appliesTo": [0, 1, 2, 3] }]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [22, 23, 24, 25],
+        "transforms": [{
+            "functions": [
+                { "split": ["\n"] },
+                { "at": [-2] },
+                { "match": ["(?<=Result: ).*", ""] },
+                { "at": [0] }
+            ], "appliesTo": [0, 1, 2, 3]
+        }]
+    }
+}

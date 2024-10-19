@@ -27,11 +27,12 @@ run(__filename, solve, {
 //     //     "selector": "code, em",
 //     //     "indexes": [],
 //     //     "transforms": [{
-//     //         "functions": [
-//     //             { "fx": "match", "pattern": "\\d+", "flags": "g" },
-//     //             { "fx": "join", "separator": "" }
-//     //         ],
-//     //         "appliesTo": []
+//     //     "functions": [
+//     //             { "split": ["\n"] },
+//     //             { "at": [-2] },
+//     //             { "match": ["(?<=Result: ).*", ""] },
+//     //             { "at": [0] }
+//     //         ], "appliesTo": [0, 1, 2, 3]
 //     //     }]
 //     }
 // }); //, [{

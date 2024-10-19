@@ -1,17 +1,18 @@
 {
     "reason": "Multiple examples",
-    "part1length": 3,
+    "part1length": 4,
     "inputs": {
         "selector": "code",
-        "indexes": [6, 14, 32, 48, 48, 52, 52, 56, 56, 60, 60, 66, 66, 67, 67, 68, 68, 68]
+        "indexes": [6, 6, 14, 32, 48, 48, 52, 52, 56, 56, 60, 60, 66, 66, 67, 67, 68, 68, 68],
+        "transforms": [{ "functions": [{ "join": [""] }, { "match": [".*", ""]}], "appliesTo": [16, 17, 18] }]
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": [37, 37, 37, 50, 51, 54, 55, 58, 59, 62, 63, 64, 65, 64, 65, 69, 71, 73]
+        "indexesOrLiterals": [7, 10, 7, 7, 50, 51, 54, 55, 58, 59, 62, 63, 64, 65, 64, 65, 69, 71, 73]
     },
     "additionalInfos": {
         "key": "systemId",
         "selector": "code",
-        "indexes": [37, 37, 37, 49, 75, 3, 5, 57, 75, 3, 5, 64, 75, 64, 75, 75, 72, 2]
+        "indexes": [7, 10, 7, 7, 49, 75, 3, 5, 57, 75, 3, 5, 64, 75, 64, 75, 75, 72, 2]
     }
 }
