@@ -5,27 +5,8 @@ import { createInterface } from 'node:readline/promises';
 import { load } from 'cheerio';
 
 import { read, write } from './cache';
-import { request } from './httpsPromisfied';
+import { cookieSteps, errExpiredSessionCookie, request } from './httpsPromisfied';
 import * as stats from './stats';
-
-const cookieSteps = `
-In Chromium-based browsers like Chrome and Edge you can obtain your cookie by
-visiting the site, logging in, opening developer tools (F12), and clicking
-Application then expanding Cookies under the Storage section, locating the
-adventofcode.com cookie, and copying the session value.
-
-Then, add the following line to a .env file in the root of your project:
-AOC_SESSION_COOKIE="session=<your session cookie value>"
-
-NOTE: Protect your session ID!  For example, add .env to your .gitignore file.
-`;
-
-const errExpiredSessionCookie = `
-Expired Session Cookie
-
-Your session cookie seems to have expired or is no longer valid.  Please
-retrieve a new session ID and update your .env file.
-` + cookieSteps;
 
 function isNumChar(ne: any) {
     return String(ne).split('').every(c => ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(c));

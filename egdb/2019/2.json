@@ -1,16 +1,12 @@
 {
     "reason": "Irregular format, no part 2 example",
-    "part1length": 1,
+    "part1length": 5,
     "inputs": {
         "selector": "code",
-        "indexes": [14]
+        "indexes": [14, 44, 47, 51, 53]
     },
     "answers": {
-        "selector": "code",
-        "indexesOrLiterals": [41],
-        "transforms": [{
-            "functions": [{ "replaceAll": ["\n", ""] }],
-            "appliesTo": [0]       
-        }]
+        "selector": "em",
+        "indexesOrLiterals": [12, 13, 13, 13, 16]
     }
 }

@@ -33,24 +33,6 @@ function lcm(numbers: number[]): number {
     return a;
 }
 
-function primeFactors(n: number) {
-    const factors = [];
-    while (n % 2 === 0) {
-        factors.push(2);
-        n = n / 2;
-    }
-    for (let i = 3; i <= Math.sqrt(n); i += 2) {
-        while (n % i === 0) {
-            factors.push(i);
-            n = n / i;
-        }
-    }
-    if (n > 2) {
-        factors.push(n);
-    }
-    return factors;
-}
-
 // Takes x,y coordinates and turns it into a printable string representing the overall grid
 function printableGrid(coords: Iterable<string | { x: number, y: number }>, occupied = '#', empty = ' ') {
     let lhs = '', rhs = '', x = 0, y = 0, minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity;
@@ -113,7 +95,6 @@ export {
     DefaultMap,
     gcd,
     lcm,
-    primeFactors,
     printableGrid,
     product,
     range,

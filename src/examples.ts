@@ -58,13 +58,16 @@ function getExampleInputs($: cheerio.Root) {
 
 async function getExamples(year: number, day: number, part1only: boolean, $: cheerio.Root, addDb?: Egdb, addTests: Example[] = []) {
     const examples: Example[] = [];
+    let internalError = false;
     try {
         const egdbFilename = normalize(join(__dirname, '..', 'egdb', year.toString(), `${day}.json`));
         const egdb: Egdb = addDb || JSON.parse(await readFile(egdbFilename, { encoding: 'utf-8' })); // User-supplied DB takes precedence
         if (egdb.inputs.indexes.length !== egdb.answers.indexesOrLiterals.length) {
+            internalError = true;
             throw new Error(`Inconsistency detected in egdb: lengths of inputs.indexes and answers.indexes differs for year ${year} day ${day}`);
         }
         if (egdb.additionalInfos && egdb.inputs.indexes.length !== egdb.additionalInfos.indexes.length) {
+            internalError = true;
             throw new Error(`Inconsistency detected in egdb: lengths of inputs.indexes and additionalInfos.indexes differs for year ${year} day ${day}`);
         }
         const inputs = $(egdb.inputs.selector);
@@ -89,7 +92,10 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                     const transform = egdb.inputs.transforms?.find(tx => tx.appliesTo.includes(i));
                     if (!!transform) {
                         const output = fx.interpolate(result, transform.functions);
-                        if (!(Array.isArray(output) && output.every(row => typeof row === 'string'))) throw new Error('Transformation did not return a string[]');
+                        if (!(Array.isArray(output) && output.every(row => typeof row === 'string'))) {
+                            internalError = true;
+                            throw new Error('Transformation did not return a string[]');
+                        }
                         result = output;
                     }
                     return result;
@@ -105,10 +111,16 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                         const transform = egdb.answers.transforms?.find(tx => tx.appliesTo.includes(i));
                         if (!!transform) {
                             const output = fx.interpolate(interim, transform.functions);
-                            if (typeof output !== 'string') throw new Error('Transformation did not return a string');
+                            if (typeof output !== 'string') {
+                                internalError = true;
+                                throw new Error('Transformation did not return a string');
+                            }
                             result = output;
                         } else if (typeof interim === 'string') result = interim;
-                        else throw new Error(`No tranformations specified but answers.indexesOrLiterals is an array`);
+                        else {
+                            internalError = true;
+                            throw new Error(`No tranformations specified but answers.indexesOrLiterals is an array`);
+                        }
                     }
                     if (result.includes('\n')) {
                         const answers = result.split('\n');
@@ -123,7 +135,10 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                             const transform = egdb.additionalInfos.transforms?.find(tx => tx.appliesTo.includes(i));
                             if (!!transform) {
                                 const output = fx.interpolate(result, transform.functions);
-                                if (typeof output !== 'string') throw new Error('Transformation did not return a string');
+                                if (typeof output !== 'string') {
+                                    internalError = true;
+                                    throw new Error('Transformation did not return a string');
+                                }
                                 result = output;
                             }
                             return result;
@@ -132,7 +147,8 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                 }
             });
         });
-    } catch {
+    } catch (err) {
+        if (internalError) throw err;
         const answer = (part: number) => {
             const elements = $(`article:${part === 1 ? 'first' : 'last'} p:has(em,code)`).find("em,code").find("em,code");
             return elements.length < 2

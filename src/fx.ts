@@ -28,6 +28,7 @@ function interpolate(data: string | number | (string | number)[] | undefined, fx
 
 const ops: { [key: string]: Function } = {
     at(this: string[], index: number) { return this.at(index); },
+    join(this: string[], separator: string) { return this.join(separator); },
     length(this: string[]) { return this.length; },
     match(this: string, pattern: string, flags?: string) { return this.match(new RegExp(pattern, flags)); },
     multiply(a: number, b: number) { return a * b; },

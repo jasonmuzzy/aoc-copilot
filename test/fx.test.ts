@@ -7,6 +7,9 @@ describe('Unit tests', () => {
     test('at', () => {
         expect(mut.interpolate(['13', '42', '99'], [{ 'at': [1] }])).toEqual('42');
     });
+    test('join', () => {
+        expect(mut.interpolate(['1,2,3,', '4,5,6,', '7,8,9', ''], [{ 'join': [''] }])).toEqual('1,2,3,4,5,6,7,8,9');
+    });
     test('length', () => {
         expect(mut.interpolate(['13', '42', '99'], [{ 'length': [] }])).toEqual(3);
     });
@@ -40,6 +43,12 @@ describe('Unit tests', () => {
 });
 
 describe('Integration tests', () => {
+    test('join match', () => {
+        const expected = ['1,2,3,4,5,6,7,8,9'];
+        const actual = mut.interpolate(['1,2,3,', '4,5,6,', '7,8,9', ''], [{ 'join': [''] }, { 'match': ['.*', ''] }]);
+        expect(actual).toEqual(expect.arrayContaining(expected));
+        expect(actual).toHaveLength(1);
+    });
     test('map substring', () => {
         expect(mut.interpolate(['-a-', '-b-', '-c-'], [{ 'map': [[{ 'substring': [1, 2] }]] }])).toEqual(['a', 'b', 'c']);
     });

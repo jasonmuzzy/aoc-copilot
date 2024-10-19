@@ -23,12 +23,6 @@ describe('Unit tests', () => {
         test('of 4 numbers', () => expect(mut.lcm([8, 12, 16, 20])).toBe(240));
     });
 
-    describe('primeFactors()', () => {
-        test('of 12', () => expect(mut.primeFactors(12)).toEqual([2,2,3]));
-        test('of 1113', () => expect(mut.primeFactors(1113)).toEqual([3,7,53]));
-        test('of 10939706', () => expect(mut.primeFactors(10939706)).toEqual([2,19,287887]));
-    });
-
     describe('printableGrid()', () => {
         test("from array of strings", () => expect(mut.printableGrid(['-1,-1','0,0','1,1'])).toEqual('#  \n # \n  #'));
         test("from set of strings", () => expect(mut.printableGrid(new Set(['-1,-1','0,0','1,1']))).toEqual('#  \n # \n  #'));
