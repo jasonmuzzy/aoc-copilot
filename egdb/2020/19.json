@@ -1,5 +1,5 @@
 {
-    "reason": "Irregular part 1 format; multiple examples",
+    "reason": "Multiple examples",
     "part1length": 1,
     "inputs": {
         "selector": "code",

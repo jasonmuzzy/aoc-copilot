@@ -1,5 +1,5 @@
 {
-    "reason": "Irregular format (part 1 answer has text between the <code> and <em> tags, while an earlier value does not)",
+    "reason": "Multiple examples",
     "part1length": 1,
     "inputs": {
         "selector": "code",

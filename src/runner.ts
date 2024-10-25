@@ -1,17 +1,9 @@
-import { readFile } from 'node:fs/promises';
-import { basename, join, normalize } from 'node:path';
+import { basename } from 'node:path';
 
 import * as cheerio from 'cheerio';
 
 import { Egdb, Example, getExamples } from './examples';
 import { cookieSteps, getInput, getPuzzle, hms, submitAnswer } from './site';
-
-type Aidb = {
-    key: string,
-    selector: string,
-    indexPart1: number,
-    indexPart2: number,
-}
 
 type Solver = (
     inputs: string[],
@@ -77,10 +69,10 @@ function passes(inputs: string[], year: number, day: number, part: number, test:
     });
 }
 
-async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], additionalInfos: { [key: string]: string }[], skipTests: boolean) {
+async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], skipTests: boolean) {
     if (skipTests || await allPass(year, day, part, true, examples.filter(e => e.part == part), solver)) {
         const start = performance.now();
-        const answer = await solver(inputs, part, false, additionalInfos[part - 1] || {});
+        const answer = await solver(inputs, part, false);
         const end = performance.now();
         const elapsed = (end - start) / 1000;
         try {
@@ -111,7 +103,7 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
  * Automatic runs the provided `solver` against examples and/or inputs
  * @param yearDay accepts either a string in the format 'xxxYYDD*' where YY is the 2-digit year and DD is the 2-digit day, or an object with year and day properties; intended to be used with the `__filename` parameter for files names like 'aoc2301.ts'
  * @param solver callback solver function
- * @param testsOnly if true, only runs the examples, not the inputs
+ * @param options (optional) run tests or inputs only, or only part 1 or 2
  * @param addDb (optional) ad-hoc entry for the example database to override the supplied entry or add support for an as-yet unsupported day
  * @param addTests (optional) additional test cases
  * @returns 
@@ -130,25 +122,16 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
     const inputs = await getInput(year, day);
     let $ = cheerio.load(puzzle);
     const acceptedAnswers = $("p:contains('Your puzzle answer') > code");
-    const additionalInfos: { [key: string]: string }[] = [];
-    try {
-        const aidbFilename = normalize(join(__dirname, '..', 'aidb', year.toString(), `${day}.json`));
-        const aidb = JSON.parse(await readFile(aidbFilename, { encoding: 'utf-8' })) as Aidb
-        additionalInfos.push(
-            { [aidb.key]: $(aidb.selector).eq(aidb.indexPart1).text() },
-            { [aidb.key]: $(aidb.selector).eq(aidb.indexPart2).text() }
-        );
-    } catch { }
     const examples = await getExamples(year, day, acceptedAnswers.length == 0, $, addDb, addTests);
     if (runOptions.testsOnly) {
         if (runOptions.runPart1) await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
         if (runOptions.runPart2 && acceptedAnswers.length > 0 && day != 25) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
     } else if (acceptedAnswers.length == 0) {
         try {
-            if (runOptions.runPart1) await runInput(year, day, 1, solver, examples, inputs, additionalInfos, runOptions.skipTests);
+            if (runOptions.runPart1) await runInput(year, day, 1, solver, examples, inputs, runOptions.skipTests);
         } catch { }
     } else {
-        if (!runOptions.runPart1 || await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text(), additionalInfos[0])) {
+        if (!runOptions.runPart1 || await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text())) {
             if (day === 25) {
                 let stars = parseInt($('span[class="star-count"]').text() || '0*');
                 if (stars === 49) {
@@ -165,8 +148,8 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
                 }
             } else if (runOptions.runPart2) {
                 if (acceptedAnswers.length == 1) {
-                    await runInput(year, day, 2, solver, examples, inputs, additionalInfos, runOptions.skipTests);
-                } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text(), additionalInfos[1])) {
+                    await runInput(year, day, 2, solver, examples, inputs, runOptions.skipTests);
+                } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text())) {
                     await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
                 }
             }

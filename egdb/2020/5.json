@@ -1,5 +1,5 @@
 {
-    "reason": "Multiple examples (and no <pre> tag) in part 1, and no part 2 example",
+    "reason": "Multiple examples; transformations",
     "part1length": 4,
     "inputs": {
         "selector": "code",
