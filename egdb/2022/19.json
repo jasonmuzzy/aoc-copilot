@@ -1,5 +1,5 @@
 {
-    "reason": "Part 2 gives the two values to multiply together (56 and 62) but doesn't actually multiply them out",
+    "reason": "Implied answer; transformations",
     "part1length": 1,
     "inputs": {
         "selector": "code",

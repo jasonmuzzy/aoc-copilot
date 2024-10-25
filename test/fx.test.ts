@@ -44,16 +44,16 @@ describe('Unit tests', () => {
 
 describe('Integration tests', () => {
     test('join match', () => {
-        const expected = ['1,2,3,4,5,6,7,8,9'];
-        const actual = mut.interpolate(['1,2,3,', '4,5,6,', '7,8,9', ''], [{ 'join': [''] }, { 'match': ['.*', ''] }]);
-        expect(actual).toEqual(expect.arrayContaining(expected));
-        expect(actual).toHaveLength(1);
+        expect(mut.interpolate(['1,2,3,', '4,5,6,', '7,8,9', ''], [{ 'join': [''] }, { 'match': ['.+', 'g'] }])).toEqual(['1,2,3,4,5,6,7,8,9']);
     });
     test('map substring', () => {
         expect(mut.interpolate(['-a-', '-b-', '-c-'], [{ 'map': [[{ 'substring': [1, 2] }]] }])).toEqual(['a', 'b', 'c']);
     });
     test('match at', () => {
         expect(mut.interpolate('10 + 20 = 30', [{ 'match': ['\\d+$', 'g'] }, { 'at': [0] }])).toEqual('30');
+    });
+    test('multiply at', () => {
+        expect(mut.interpolate(['10', '22'], [{ 'multiply': [[{ 'at': [0] }], [{ 'at': [1] }]] }, { 'toString': [] }])).toEqual('220');
     });
     test('split length toString', () => {
         expect(mut.interpolate('row 1\nrow2\nrow3', [{ 'split': ['\n'] }, { 'length': [] }, { 'toString': [] }])).toEqual('3');

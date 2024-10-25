@@ -1,13 +1,13 @@
 {
   "name": "aoc-copilot",
   "private": false,
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Advent of Code automatic runner for examples and inputs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "aidb",
     "dist",
+    "docs",
     "egdb"
   ],
   "bin": "dist/bin.js",

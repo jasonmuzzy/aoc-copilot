@@ -1,5 +1,5 @@
 {
-    "reason": "Answers for part 2 can be inferred by counting, but are not directly given: literal values given",
+    "reason": "Multiple examples; transformations",
     "part1length": 1,
     "inputs": {
         "selector": "code",

@@ -4,7 +4,6 @@ import * as cheerio from 'cheerio';
 
 import { Egdb, getExamples } from '../src/examples';
 import { getPuzzle, isNumChar } from '../src/site';
-import * as utils from '../src/utils';
 
 // Prints all the colors in the terminal
 function printColors() {
@@ -26,10 +25,10 @@ async function writeExampleFiles(year: number, dayFrom: number, dayTo: number) {
         const puzzle = await getPuzzle(year, day);
         const $ = cheerio.load(puzzle);
         const examples = await getExamples(year, day, false, $);
-        await fs.writeFile(`./examples/${year}/${day}.json`, JSON.stringify(examples), { encoding: "utf-8" })
+        await fs.writeFile(`./examples/${year}/${day}.json`, JSON.stringify(examples), { encoding: "utf-8" });
     }
 }
-// writeExampleFiles(2019, 18, 18).then(() => console.log('Done')).catch(error => console.error(error));
+// writeExampleFiles(2019, 5, 5).then(() => console.log('Done')).catch(error => console.error(error));
 
 // Find arrays, literals and functions in egdb
 async function findLiterals() {

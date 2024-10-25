@@ -2,7 +2,7 @@ type Fx = { [key: string]: (string | number | Fx[])[] }
 
 function interpolate(data: string | number | (string | number)[] | undefined, fxs: Fx[]): string | number | (string | number)[] | undefined {
     for (let fx of fxs) {
-        const [[id, args]] = Object.entries(fx);
+        const [[id, [...args]]] = Object.entries(fx);
         if (['map', 'reduce'].includes(id) && Array.isArray(data)) {
             if (id === 'map') {
                 data = data.map(rowData => interpolate(rowData, args[0] as Fx[]) as string);
@@ -14,9 +14,9 @@ function interpolate(data: string | number | (string | number)[] | undefined, fx
             }
 
         } else {
-            for (let arg of args) {
+            for (let [i, arg] of args.entries()) {
                 if (Array.isArray(arg)) {
-                    arg = interpolate(data, arg) as string | number;
+                    args[i] = interpolate(data, arg) as string | number;
                 }
             }
             data = ops[id].apply(data, args);
@@ -31,7 +31,7 @@ const ops: { [key: string]: Function } = {
     join(this: string[], separator: string) { return this.join(separator); },
     length(this: string[]) { return this.length; },
     match(this: string, pattern: string, flags?: string) { return this.match(new RegExp(pattern, flags)); },
-    multiply(a: number, b: number) { return a * b; },
+    multiply(multiplicand: number, multiplier: number) { return multiplicand * multiplier; },
     parseInt(this: string) { return parseInt(this); },
     replaceAll(this: string, oldValue: string, newValue: string) { return this.replaceAll(oldValue, newValue); },
     slice(this: string[], start: number, end?: number) { return this.slice(start, end); },

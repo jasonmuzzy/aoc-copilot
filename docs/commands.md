@@ -24,7 +24,7 @@ Commands in this group are useful during development - both of puzzle solutions 
 <a id="index"></a>
 ### Index
 
-Display the index numbers and corresponding values for a selector which is particularly useful in creating an [example database](../egdb/README.md) entry.
+Display the index numbers and corresponding values for a selector which is particularly useful in creating an [example database](./egdb.md) entry.
 
 Usage:
 
@@ -55,27 +55,24 @@ Puzzle 2020 day 2 indexes matching selector 'code':
 
 Values without line breaks are shown immediately to the right of the index (e.g. indexes 1, 2 and 3), and multi-line ones are shown starting on a new line after the index (e.g. index 0).
 
-Sometimes the default selector `code` doesn't isolate a value sufficiently and an alternate selector is required.  For example, in 2020 day 18 one of the example answers `71` is buried in a `<code>` block together with the steps leading up to that result:
+You can use compound selectors, too:
 
 ```shell
-# npx aoc-copilot index 2020 18
-...
-004: 
-1 + 2 * 3 + 4 * 5 + 6
-  3   * 3 + 4 * 5 + 6
-      9   + 4 * 5 + 6
-         13   * 5 + 6
-             65   + 6
-                 71
-...
+npx aoc-copilot index 2020 2 "code, em"
 ```
 
-The second-most common selector is `em` and an inspection of the html for that puzzle confirms that the desired value `71` is isolated in an `<em>` block, and re-running with the `em` selector reveals the corresponding index value is `7`:
-
 ```shell
-# npx aoc-copilot index 2020 18 em
-...
-007:  71
+Puzzle 2020 day 2 indexes matching selector 'code, em':
+000:  passwords
+001:  the corporate policy when that password was set
+002:  
+1-3 a: abcde
+1-3 b: cdefg
+2-9 c: ccccccccc
+
+003:  1-3 a
+004:  a
+005:  1
 ...
 ```
 
