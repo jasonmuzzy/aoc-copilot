@@ -64,6 +64,9 @@ function passes(inputs: string[], year: number, day: number, part: number, test:
     }).catch(error => {
         console.log("\nExample input:");
         for (const input of inputs) console.log(input);
+        if (additionalInfo !== undefined) {
+            console.log(`\nAdditional info:\n${Object.entries(additionalInfo).map(([k, v]) => `${k}: ${v}`).join('\n')}`)
+        }
         console.log(`\nExpected answer: ${expected}`);
         throw error;
     });
@@ -149,7 +152,7 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
             } else if (runOptions.runPart2) {
                 if (acceptedAnswers.length == 1) {
                     await runInput(year, day, 2, solver, examples, inputs, runOptions.skipTests);
-                } else if (!passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text())) {
+                } else if (!(await passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text()))) {
                     await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
                 }
             }

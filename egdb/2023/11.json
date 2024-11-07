@@ -1,0 +1,21 @@
+{
+    "reason": "Multiple tests",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [2, 2, 2]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [22, 27, 29]
+    },
+    "additionalInfos": {
+        "key": "times",
+        "selector": "code",
+        "indexes": [5, 26, 28],
+        "transforms": [{
+            "functions": [{ "substring": [23, 24] }],
+            "appliesTo": [0]
+        }]
+    }
+}
