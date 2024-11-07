@@ -25,12 +25,12 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 Currently, years 2019 - 2023 are fully tested and supported for all features.
 
 **Q**.  What about 2024 and beyond?  Can I use it as soon as a new puzzle drops?<br>
-**A**.  Yes, probably for most days.  Advent of Code follows a very consistent structure from year-to-year, so most features of AoCC should work with 2024 and beyond.  The availability of examples is the only thing that is likely to vary.  AoCC uses a default search strategy for extracting examples from most puzzles.  In 2023, the default search strategy automatically extracted examples for 19 out of 25 days.  The other 6 days contained multiple examples each so they required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the default search strategy working for 20 days.  So, I expect 2024 will follow a similar pattern and AoCC will be able to automatically extract examples for most days.
+**A**.  Yes, probably for most days.  Advent of Code follows a very consistent structure from year-to-year, so most features of AoCC should work with 2024 and beyond.  The availability of examples is the only thing that is likely to vary.  AoCC uses a default search strategy for extracting examples from most puzzles.  In 2023, the default search strategy automatically extracted examples for 18 out of 25 days.  The other 6 days contained multiple examples each so they required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the default search strategy working for 20 days.  So, I expect 2024 will follow a similar pattern and AoCC will be able to automatically extract examples for most days.
 
 **Q**.  What do I do if AoCC doesn't properly extract examples for a day?  Am I stuck?<br>
 **A**.  No, you're not stuck.  You have two options when configuring the [runner](docs/runner.md):
-1) Skip the tests and only run against actual inputs by setting `skipTests` to true
-2) Provide the `addDb` parameter to the runner so it knows where to find the tests.  If you go this route then please consider [contributing](#contributing) it to the [example database](docs/egdb.md) so others can benefit as well!
+1) Skip the examples and only run against actual inputs by setting `skipTests` to true
+2) Provide the `addDb` parameter to the runner so it knows where to find the examples.  If you go this route then please consider [contributing](#contributing) it to the [example database](docs/egdb.md) so others can benefit as well!
 
 **Q**.  What about 2015 - 2018?<br>
 **A**.  Based on how differently 2019 was structured compared to more recent years, I don't expect *any* examples to be automatically available for 2018 or earlier.  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
@@ -125,7 +125,7 @@ The console will show the example and expected answer.
 
 Replace the `throw new Error` line of code with your solution and set `answer` to the result.  Run it again.
 
-First AoCC will run your solver against the example.  If the test passes then AoCC will run it against the actual input and offer to submit the answer for you.  If not it will stop and let you know.
+First AoCC will run your solver against the example.  If the example passes then AoCC will run it against the actual input and offer to submit the answer for you.  If not it will stop and let you know.
 
 <a id="solver"></a>
 ### Solver
