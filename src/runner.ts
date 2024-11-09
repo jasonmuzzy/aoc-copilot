@@ -62,6 +62,7 @@ function passes(inputs: string[], year: number, day: number, part: number, test:
             return false;
         }
     }).catch(error => {
+        console.error(error);
         console.log("\nExample input:");
         for (const input of inputs) console.log(input);
         if (additionalInfo !== undefined) {
