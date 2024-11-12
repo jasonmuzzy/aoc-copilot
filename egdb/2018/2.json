@@ -1,0 +1,19 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[0, 1, 4, 6, 8, 11, 13], 18]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [16, 25],
+        "transforms": [{
+            "functions": [
+                { "split": [" "] },
+                { "at": ["-1"] }
+            ],
+            "appliesTo": [0]
+        }]
+    }
+}
