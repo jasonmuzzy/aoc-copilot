@@ -78,6 +78,8 @@ Some puzzles don't include any examples in which case the following EGDB entry c
 
 Since `inputs.indexes` is empty no examples are provided for either part.
 
+**Note for contributors**:  you can also use the `no-examples.json` file to indicate that one or both parts don't have examples.  This is useful when the DSS works fine for one part, but there are no examples for the other.
+
 <a id="multiple-examples"></a>
 ### Multiple Examples
 
@@ -250,6 +252,7 @@ For `answers` and `additionalInfo`, the first function will always receive a str
 | Function | `this` | Argument 1 | Argument 2 | Returns |
 |----------|--------|------------|------------|---------|
 | at | array | index | | array element at `index` (negatives allowed) |
+| concat | string | ...strings | | concatenated string |
 | join | array | separator | | array elements joined by `separator` |
 | length | string \| array | | | length of a string or number of elements in an array |
 | match | string | pattern | flags? | results of RegExp match |

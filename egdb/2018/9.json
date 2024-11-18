@@ -1,0 +1,20 @@
+{
+    "reason": "Irregular format, no part 2 example",
+    "part1length": 6,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[12, 9], [13, 14], [16, 17], [19, 20], [22, 23], [25, 26]],
+        "transforms": [{
+            "functions": [
+                { "join": [" players; last marble is worth "] },
+                { "concat": [" points"] },
+                { "match": [".*", "g"] }
+            ],
+            "appliesTo": [0, 1, 2, 3, 4, 5]
+        }]
+    },
+    "answers": {
+        "selector": "em",
+        "indexesOrLiterals": [39, 40, 41, 42, 43, 44]
+    }
+}
