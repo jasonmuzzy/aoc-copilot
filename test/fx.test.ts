@@ -7,6 +7,9 @@ describe('Unit tests', () => {
     test('at', () => {
         expect(mut.interpolate(['13', '42', '99'], [{ 'at': [1] }])).toEqual('42');
     });
+    test('concat', () => {
+        expect(mut.interpolate('10 players; last marble is worth 1618', [{ 'concat': [' points'] }])).toEqual('10 players; last marble is worth 1618 points');
+    });
     test('join', () => {
         expect(mut.interpolate(['1,2,3,', '4,5,6,', '7,8,9', ''], [{ 'join': [''] }])).toEqual('1,2,3,4,5,6,7,8,9');
     });
@@ -43,6 +46,9 @@ describe('Unit tests', () => {
 });
 
 describe('Integration tests', () => {
+    test('join concat', () => {
+        expect(mut.interpolate(['10', '1618'], [{ 'join': [' players; last marble is worth '] }, { 'concat': [' points'] }])).toEqual('10 players; last marble is worth 1618 points');
+    });
     test('join match', () => {
         expect(mut.interpolate(['1,2,3,', '4,5,6,', '7,8,9', ''], [{ 'join': [''] }, { 'match': ['.+', 'g'] }])).toEqual(['1,2,3,4,5,6,7,8,9']);
     });

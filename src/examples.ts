@@ -99,7 +99,7 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                         result = output;
                     }
                     return result;
-        })(),
+                })(),
                 answer: (() => {
                     let result = '';
                     if (typeof egdb.answers.indexesOrLiterals[i] === 'string') {
@@ -148,6 +148,13 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
             });
         });
     } catch (err) {
+        // Look for "no-examples" file which is useful when the default search strategy works fine
+        // for part 1 but there is no part 2 example.
+        let noExamples: number[] = [];
+        try {
+            const egdbFilename = normalize(join(__dirname, '..', 'egdb', year.toString(), `no-examples.json`));
+            noExamples = (JSON.parse(await readFile(egdbFilename, { encoding: 'utf-8' })) as { [key: string]: number[] })[day.toString()] ?? [];
+        } catch { }
         if (internalError) throw err;
         const answer = (part: number) => {
             const elements = $(`article:${part === 1 ? 'first' : 'last'} p:has(em,code)`).find("em,code").find("em,code");
@@ -156,9 +163,9 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
                 : elements.eq([...elements].map((e, i) => ({ e, score: (/^\d+$/.test(elements.eq(i).text()) ? 1 : 0) + (e.prev === null ? 1 : 0), i })).sort((a, b) => a.score === b.score ? b.i - a.i : b.score - a.score)[0].i).text();
         }
         const inputs = getExampleInputs($).html()?.includes('<br') ? getExampleInputs($).html()!.split('<br>') : getExampleInputs($).text().split('\n');
-        examples.push({ part: 1, inputs, answer: answer(1) }); // No additionalInfo for generically determined examples
+        if (noExamples.indexOf(1) === -1) examples.push({ part: 1, inputs, answer: answer(1) }); // No additionalInfo for generically determined examples
         if (day != 25 && !part1only) {
-            examples.push({ part: 2, inputs, answer: answer(2) });
+            if (noExamples.indexOf(2) === -1) examples.push({ part: 2, inputs, answer: answer(2) });
         }
     }
     for (const test of addTests) examples.push(test);

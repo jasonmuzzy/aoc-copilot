@@ -3,7 +3,15 @@ import { basename } from 'node:path';
 import * as cheerio from 'cheerio';
 
 import { Egdb, Example, getExamples } from './examples';
-import { cookieSteps, getInput, getPuzzle, hms, submitAnswer } from './site';
+import { cookieSteps, getInput, getPuzzle, hms, Incorrect, submitAnswer } from './site';
+
+class NotImplemented extends Error {
+    name: string;
+    constructor(message: string) {
+        super(message);
+        this.name = 'NotImplemented';
+    }
+}
 
 type Solver = (
     inputs: string[],
@@ -62,25 +70,29 @@ function passes(inputs: string[], year: number, day: number, part: number, test:
             return false;
         }
     }).catch(error => {
-        console.error(error);
-        console.log("\nExample input:");
-        for (const input of inputs) console.log(input);
-        if (additionalInfo !== undefined) {
-            console.log(`\nAdditional info:\n${Object.entries(additionalInfo).map(([k, v]) => `${k}: ${v}`).join('\n')}`)
+        if (error?.name === 'NotImplemented') {
+            console.log("\nExample input:");
+            for (const input of inputs) console.log(input);
+            if (additionalInfo !== undefined) {
+                console.log(`\nAdditional info:\n${Object.entries(additionalInfo).map(([k, v]) => `${k}: ${v}`).join('\n')}`)
+            }
+            console.log(`\nExpected answer: ${expected}`);
+            return false;
+        } else {
+            console.error(error);
+            throw error;
         }
-        console.log(`\nExpected answer: ${expected}`);
-        throw error;
     });
 }
 
-async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], skipTests: boolean) {
+async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], skipTests: boolean, forceSubmit: boolean) {
     if (skipTests || await allPass(year, day, part, true, examples.filter(e => e.part == part), solver)) {
         const start = performance.now();
         const answer = await solver(inputs, part, false);
         const end = performance.now();
         const elapsed = (end - start) / 1000;
         try {
-            const { cancelled, response, dayStats } = await submitAnswer(year, day, part, answer);
+            const { cancelled, response, dayStats } = await submitAnswer(year, day, part, answer, forceSubmit);
             if (cancelled) console.log(`Submission cancelled (${elapsed.toFixed(3)}s)`);
             else {
                 console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (new submission) (${elapsed.toFixed(3)}s)`);
@@ -98,7 +110,11 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
                 }
             }
         } catch (error) {
-            console.error(error, `(${elapsed.toFixed(3)}s)`);
+            if ((error as Incorrect)?.name === 'Incorrect') {
+                console.log(error, `(${elapsed.toFixed(3)}s)`);
+            } else {
+                console.error(error, `(${elapsed.toFixed(3)}s)`);
+            }
         }
     }
 }
@@ -112,7 +128,7 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
  * @param addTests (optional) additional test cases
  * @returns 
  */
-async function run(yearDay: string | { year: number, day: number }, solver: Solver, options: boolean | { testsOnly?: boolean, skipTests?: boolean, onlyPart?: 1 | 2 } = false, addDb?: Egdb, addTests: Example[] = []) {
+async function run(yearDay: string | { year: number, day: number }, solver: Solver, options: boolean | { testsOnly?: boolean, skipTests?: boolean, onlyPart?: 1 | 2, forceSubmit?: boolean } = false, addDb?: Egdb, addTests: Example[] = []) {
     if (!preChecksPass()) return;
     if (typeof options === 'object' && options.testsOnly && options.skipTests) throw new Error('Cannot specify both testsOnly and skipTests');
     const runOptions = {
@@ -120,6 +136,7 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
         skipTests: typeof options === 'boolean' ? false : !!options.skipTests,
         runPart1: typeof options === 'boolean' ? true : (options.onlyPart ?? 1) === 1,
         runPart2: typeof options === 'boolean' ? true : (options.onlyPart ?? 2) === 2,
+        forceSubmit: typeof options === 'boolean' ? false : !!options.forceSubmit,
     }
     const { year, day } = typeof yearDay === 'string' ? getYearDay(yearDay) : yearDay;
     let puzzle = await getPuzzle(year, day);
@@ -132,7 +149,7 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
         if (runOptions.runPart2 && acceptedAnswers.length > 0 && day != 25) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
     } else if (acceptedAnswers.length == 0) {
         try {
-            if (runOptions.runPart1) await runInput(year, day, 1, solver, examples, inputs, runOptions.skipTests);
+            if (runOptions.runPart1) await runInput(year, day, 1, solver, examples, inputs, runOptions.skipTests, runOptions.forceSubmit);
         } catch { }
     } else {
         if (!runOptions.runPart1 || await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text())) {
@@ -152,7 +169,7 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
                 }
             } else if (runOptions.runPart2) {
                 if (acceptedAnswers.length == 1) {
-                    await runInput(year, day, 2, solver, examples, inputs, runOptions.skipTests);
+                    await runInput(year, day, 2, solver, examples, inputs, runOptions.skipTests, runOptions.forceSubmit);
                 } else if (!(await passes(inputs, year, day, 2, false, solver, acceptedAnswers.last().text()))) {
                     await allPass(year, day, 2, true, examples.filter(e => e.part == 2), solver);
                 }
@@ -162,5 +179,6 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
 }
 
 export {
+    NotImplemented,
     run
 }

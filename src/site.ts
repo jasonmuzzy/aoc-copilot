@@ -8,8 +8,16 @@ import { read, write } from './cache';
 import { cookieSteps, errExpiredSessionCookie, request } from './httpsPromisfied';
 import * as stats from './stats';
 
+class Incorrect extends Error {
+    name: string;
+    constructor(message: string) {
+        super(message);
+        this.name = 'Incorrect';
+    }
+}
+
 function isNumChar(ne: any) {
-    return String(ne).split('').every(c => ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(c));
+    return String(ne).split('').every(c => '0123456789'.includes(c));
 }
 
 async function validateYearDay(year: any, day: any) {
@@ -59,6 +67,20 @@ async function getPuzzle(year: number, day: number, forceRefresh = false) {
         if (login.length > 0) throw new Error(errExpiredSessionCookie);
         await write(`${year}/puzzles/${day}.html`, puzzle);
         await stats.startPart1(year, day);
+    }
+    // Get stylesheet for preview
+    const [sitev] = (puzzle.match(/(?<=style.css\?)\d+/g) ?? ['']);
+    const cachev = await (async () => {
+        try {
+            return await read('/static/version');
+        } catch {
+            return '';
+        }
+    })();
+    if (cachev != sitev) { // Get CSS if it doesn't exist or is an older version
+        const { body: css } = await request('GET', `/static/style.css?${sitev}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
+        await write(`static/style.css`, css);
+        await write(`static/version`, sitev);
     }
     return puzzle;
 }
@@ -130,18 +152,18 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     const duplicate = partAnswers.find(a => a.answer === answer.toString());
     if (duplicate) {
         await stats.avoidedAttempt(year, day, part);
-        throw new Error(`Already submitted incorrect answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
+        throw new Incorrect(`Already submitted incorrect answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
     }
     if (typeof answer === 'number') {
         const tooLows = partAnswers.filter(a => a.problem === 'too low').sort((a, b) => parseInt(b.answer) - parseInt(a.answer));
         if (tooLows.length > 0 && answer < parseInt(tooLows[0].answer)) {
             await stats.avoidedAttempt(year, day, part);
-            throw new Error(`${answer} is too low because it's less than ${tooLows[0].answer} which was too low for ${year} day ${day} part ${part} on ${tooLows[0].timestamp}`);
+            throw new Incorrect(`${answer} is too low because it's less than ${tooLows[0].answer} which was too low for ${year} day ${day} part ${part} on ${tooLows[0].timestamp}`);
         }
         const tooHighs = partAnswers.filter(a => a.problem === 'too high').sort((a, b) => parseInt(a.answer) - parseInt(b.answer));
         if (tooHighs.length > 0 && answer > parseInt(tooHighs[0].answer)) {
             await stats.avoidedAttempt(year, day, part);
-            throw new Error(`${answer} is too high because it's greater than ${tooHighs[0].answer} which was too high for ${year} day ${day} part ${part} on ${tooHighs[0].timestamp}`);
+            throw new Incorrect(`${answer} is too high because it's greater than ${tooHighs[0].answer} which was too high for ${year} day ${day} part ${part} on ${tooHighs[0].timestamp}`);
         }
     }
 
@@ -229,7 +251,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     answers.push({ part, answer: answer.toString(), correct: false, timestamp, problem, wait });
     await write(filename, JSON.stringify(answers));
     await stats.incorrectAttempt(year, day, part);
-    throw new Error($('article p').text());
+    throw new Incorrect($('article p').text());
 
 };
 
@@ -238,6 +260,7 @@ export {
     getInput,
     getPuzzle,
     hms,
+    Incorrect,
     isNumChar,
     sleep,
     submitAnswer,

@@ -1,0 +1,26 @@
+{
+    "reason": "Multiple examples",
+    "part1length": 2,
+    "inputs": {
+        "selector": "code",
+        "indexes": [11, 15, 22],
+        "transforms": [
+            {
+                "functions": [{ "map": [[{ "substring": [0, 1] }]] }],
+                "appliesTo": [0]
+            },
+            {
+                "functions": [{ "slice": [0, 6] }],
+                "appliesTo": [1]
+            },
+            {
+                "functions": [{ "slice": [0, 7] }],
+                "appliesTo": [2]
+            }
+        ]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": ["0,3", 20, 23]
+    }
+}

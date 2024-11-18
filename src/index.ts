@@ -1,1 +1,1 @@
-export { run } from './runner';
+export { NotImplemented, run } from './runner';

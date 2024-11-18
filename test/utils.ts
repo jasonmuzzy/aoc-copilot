@@ -28,7 +28,7 @@ async function writeExampleFiles(year: number, dayFrom: number, dayTo: number) {
         await fs.writeFile(`./examples/${year}/${day}.json`, JSON.stringify(examples), { encoding: "utf-8" });
     }
 }
-// writeExampleFiles(2019, 5, 5).then(() => console.log('Done')).catch(error => console.error(error));
+// writeExampleFiles(2018, 13, 13).then(() => console.log('Done')).catch(error => console.error(error));
 
 // Find arrays, literals and functions in egdb
 async function findLiterals() {
