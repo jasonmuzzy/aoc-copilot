@@ -18,7 +18,10 @@ function dijkstra(graph: Map<string, Map<string, number>>, start: string, end?: 
     let distance: number | undefined, neighbor: string | undefined, prev: string | undefined;
     while (unvisiteds.length > 0) {
         ([distance, neighbor, prev] = queue.pop(unvisiteds)!);
-        if (distances.has(neighbor)) continue;
+        if (distances.has(neighbor)) {
+            distance = undefined;
+            continue;
+        }
         distances.set(neighbor, distance);
         if (end != undefined) {
             prevs.set(neighbor, prev);
