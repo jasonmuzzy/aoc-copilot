@@ -152,7 +152,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     const duplicate = partAnswers.find(a => a.answer === answer.toString());
     if (duplicate) {
         await stats.avoidedAttempt(year, day, part);
-        throw new Incorrect(`Already submitted incorrect answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
+        throw new Incorrect(`Already submitted ${duplicate.problem ?? 'incorrect'} answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
     }
     if (typeof answer === 'number') {
         const tooLows = partAnswers.filter(a => a.problem === 'too low').sort((a, b) => parseInt(b.answer) - parseInt(a.answer));

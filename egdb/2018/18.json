@@ -1,0 +1,18 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [3],
+        "transforms": [{
+            "functions": [
+                { "slice": [1, 11] }
+            ],
+            "appliesTo": [0]
+        }]
+    },
+    "answers": {
+        "selector": "em",
+        "indexesOrLiterals": [18]
+    }
+}
