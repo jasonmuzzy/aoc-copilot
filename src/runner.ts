@@ -111,7 +111,7 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
             }
         } catch (error) {
             if ((error as Incorrect)?.name === 'Incorrect') {
-                console.log(error, `(${elapsed.toFixed(3)}s)`);
+                console.log(`Incorrect: ${(error as Incorrect).message} (${elapsed.toFixed(3)}s)`);
             } else {
                 console.error(error, `(${elapsed.toFixed(3)}s)`);
             }

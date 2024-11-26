@@ -1,0 +1,29 @@
+{
+    "reason": "Irregular format",
+    "part1length": 5,
+    "inputs": {
+        "selector": "code",
+        "indexes": [43, 45, 47, 49, 50],
+        "transforms": [{
+            "functions": [
+                { "at": [0] },
+                { "substring": [7] },
+                { "match": [".*", "g"] }
+            ],
+            "appliesTo": [3, 4]
+        }]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [44, 46, 48, 49, 50],
+        "transforms": [{
+            "functions": [
+                { "split": ["\n"] },
+                { "at": [1] },
+                { "match": ["\\d+", "g"] },
+                { "at": [0] }
+            ],
+            "appliesTo": [3, 4]
+        }]
+    }
+}
