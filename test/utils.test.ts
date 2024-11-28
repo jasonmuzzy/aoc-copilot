@@ -5,6 +5,19 @@ import * as mut from '../src/utils';
  */
 
 describe('Unit tests', () => {
+    describe('adjacents', () => {
+        describe('orthogonal', () => {
+            test('top left corner', () => expect(mut.adjacents(0, 0, 10, 10)).toEqual([[1, 0], [0, 1]]));
+            test('top edge', () => expect(mut.adjacents(5, 0, 10, 10)).toEqual([[4, 0], [6, 0], [5, 1]]));
+            test('middle', () => expect(mut.adjacents(5, 5, 10, 10)).toEqual([[5, 4], [4, 5], [6, 5], [5, 6]]));
+        });
+        describe('orthogonal + diagonal', () => {
+            test('bottom right corner', () => expect(mut.adjacents(9, 9, 10, 10, 0, 0, true)).toEqual([[8, 8], [9, 8], [8, 9]]));
+            test('left edge', () => expect(mut.adjacents(0, 5, 10, 10, 0, 0, true)).toEqual([[0, 4], [1, 4], [1, 5], [0, 6], [1, 6]]));
+            test('middle', () => expect(mut.adjacents(5, 5, 10, 10, 0, 0, true)).toEqual([[4, 4], [5, 4], [6, 4], [4, 5], [6, 5], [4, 6], [5, 6], [6, 6]]));
+        });
+    });
+
     describe('DefaultMap', () => {
         const map = new mut.DefaultMap<string, number>([['a', 1]], 0);
         test('get() map.has(key)', () => expect(map.get('a')).toBe(1));
@@ -45,6 +58,7 @@ describe('Unit tests', () => {
 
     describe('splitOn()', () => {
         test('5,10', () => expect(mut.splitOn('5,10', ',')).toEqual({ lhs: "5", rhs: "10" }));
+        test('5,10,15', () => expect(mut.splitOn('5,10,15', ',')).toEqual({ lhs: "5", rhs: "10,15" }));
         test('left middle right', () => expect(mut.splitOn('left middle right', ' middle ')).toEqual({ lhs: "left", rhs: "right" }));
         test('not found', () => expect(mut.splitOn('not found', ' middle ')).toEqual({ lhs: "not found", rhs: "" }));
     });

@@ -1,3 +1,15 @@
+function adjacents(x: number, y: number, endx: number, endy: number, startx = 0, starty = 0, diagonals = false) {
+    const result: [number, number][] = [];
+    for (let y1 = Math.max(starty, y - 1); y1 <= Math.min(endy - 1, y + 1); y1++) {
+        for (let x1 = Math.max(startx, x - 1); x1 <= Math.min(endx - 1, x + 1); x1++) {
+            if ((x1 !== x || y1 !== y) && (diagonals || x1 === x || y1 === y)) {
+                result.push([x1, y1]);
+            }
+        }
+    }
+    return result;
+}
+
 class DefaultMap<K, V> extends Map<K, V> {
     default: V;
     constructor(entries: [K, V][], defaultValue: V) {
@@ -73,18 +85,19 @@ function range(n: number): number[] {
     return [...Array(n).keys()];
 }
 
+// Reduce a fraction
 function reduce(numerator: number, denominator: number) {
     const divisor = _gcd(numerator, denominator);
     return { numerator: numerator / divisor, denominator: denominator / divisor };
 }
 
+// Splits a string into two instead of into an array
 function splitOn(str: string, delimiter: string) {
-    const i = str.indexOf(delimiter);
-    return i === -1
-        ? { lhs: str, rhs: '' }
-        : { lhs: str.substring(0, i), rhs: str.substring(i + delimiter.length) };
+    const [lhs, ...rhs] = str.split(delimiter);
+    return { lhs, rhs: rhs.join(delimiter) };
 }
 
+// Returns an array of [x, y] coordinates for a 2d array
 function xyArray(a: any[]): number[][] {
     return a.length == 0
         ? []
@@ -92,6 +105,7 @@ function xyArray(a: any[]): number[][] {
 }
 
 export {
+    adjacents,
     DefaultMap,
     gcd,
     lcm,
