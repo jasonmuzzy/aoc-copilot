@@ -24,7 +24,7 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 
 Currently, years 2019 - 2023 are fully tested and supported for all features.
 
-*Year 2018 is in process, with days 1 - 21 supported.*
+*Year 2018 is in process, with days 1 - 23 supported.*
 
 **Q**.  What about 2024 and beyond?  Can I use it as soon as a new puzzle drops?<br>
 **A**.  Yes, probably for most days.  Advent of Code follows a very consistent structure from year-to-year, so most features of AoCC should work with 2024 and beyond.  The availability of examples is the only thing that is likely to vary.  AoCC uses a default search strategy for extracting examples from most puzzles.  In 2023, the default search strategy automatically extracted examples for 18 out of 25 days.  The other 6 days contained multiple examples each so they required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the default search strategy working for 20 days.  So, I expect 2024 will follow a similar pattern and AoCC will be able to automatically extract examples for most days.
@@ -105,7 +105,7 @@ CERTIFICATE="-----BEGIN CERTIFICATE-----
 
 Create a new file named `aocYYDD.ts` where YY is the two-digit year and DD is the two-digit day of the puzzle you are solving and paste the following code:
 ```TypeScript
-import { run } from 'aoc-copilot';
+import { NotImplemented, run } from 'aoc-copilot';
 
 async function solve(
     inputs: string[], // Contents of the example or actual inputs
@@ -114,7 +114,7 @@ async function solve(
     additionalInfo?: { [key: string]: string } // Additional info for some puzzles with multiple examples
 ): Promise<number | string> {
     let answer: number | string = 0;
-    throw new Error('Not implemented'); // <-- Replace with your solution
+    throw new NotImplemented('Not implemented'); // <-- Replace with your solution
     return answer;
 }
 

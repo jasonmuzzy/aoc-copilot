@@ -1,0 +1,19 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code, em",
+        "indexes": [[9, 44, 10, 45], [9, 44, 10, 45]],
+        "transforms": [{
+            "functions": [
+                { "join": [": "] },
+                { "split": [": coordinates of the "] }
+            ],
+            "appliesTo": [0, 1]
+        }]
+    },
+    "answers": {
+        "selector": "code, em",
+        "indexesOrLiterals": [106, 169]
+    }
+}
