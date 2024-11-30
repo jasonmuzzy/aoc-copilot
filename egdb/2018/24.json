@@ -1,0 +1,20 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [7, 7],
+        "transforms": [{
+            "functions": [
+                { "join": ["\\n"] },
+                { "replaceAll": ["\\n ", " "] },
+                { "split": ["\\n"] }
+            ],
+            "appliesTo": [0, 1]
+        }]
+    },
+    "answers": {
+        "selector": "em",
+        "indexesOrLiterals": [25, 30]
+    }
+}

@@ -22,9 +22,7 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 <a id="years-supported"></a>
 ## Years Supported
 
-Currently, years 2019 - 2023 are fully tested and supported for all features.
-
-*Year 2018 is in process, with days 1 - 23 supported.*
+Currently, years 2018 - 2023 are fully tested and supported for all features.
 
 **Q**.  What about 2024 and beyond?  Can I use it as soon as a new puzzle drops?<br>
 **A**.  Yes, probably for most days.  Advent of Code follows a very consistent structure from year-to-year, so most features of AoCC should work with 2024 and beyond.  The availability of examples is the only thing that is likely to vary.  AoCC uses a default search strategy for extracting examples from most puzzles.  In 2023, the default search strategy automatically extracted examples for 18 out of 25 days.  The other 6 days contained multiple examples each so they required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the default search strategy working for 20 days.  So, I expect 2024 will follow a similar pattern and AoCC will be able to automatically extract examples for most days.
@@ -34,8 +32,8 @@ Currently, years 2019 - 2023 are fully tested and supported for all features.
 1) Skip the examples and only run against actual inputs by setting `skipTests` to true
 2) Provide the `addDb` parameter to the runner so it knows where to find the examples.  If you go this route then please consider [contributing](#contributing) it to the [example database](docs/egdb.md) so others can benefit as well!
 
-**Q**.  What about 2015 - 2018?<br>
-**A**.  Based on how differently 2019 was structured compared to more recent years, I don't expect *any* examples to be automatically available for 2018 or earlier.  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
+**Q**.  What about 2015 - 2017?<br>
+**A**.  Based on how differently 2018 and 2019 were structured compared to more recent years, I don't expect *any* examples to be automatically available for 2017 or earlier.  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
 
 <a id="installation"></a>
 ## Installation
