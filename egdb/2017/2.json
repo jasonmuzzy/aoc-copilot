@@ -1,0 +1,18 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0, 10]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [8, 18],
+        "transforms": [{
+            "functions": [
+                { "match": ["\\d+$", "g"] },
+                { "at": [0] }
+            ], "appliesTo": [0, 1]
+        }]
+    }
+}
