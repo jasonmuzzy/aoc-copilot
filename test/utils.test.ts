@@ -12,9 +12,9 @@ describe('Unit tests', () => {
             test('middle', () => expect(mut.adjacents(5, 5, 10, 10)).toEqual([[5, 4], [4, 5], [6, 5], [5, 6]]));
         });
         describe('orthogonal + diagonal', () => {
-            test('bottom right corner', () => expect(mut.adjacents(9, 9, 10, 10, 0, 0, true)).toEqual([[8, 8], [9, 8], [8, 9]]));
-            test('left edge', () => expect(mut.adjacents(0, 5, 10, 10, 0, 0, true)).toEqual([[0, 4], [1, 4], [1, 5], [0, 6], [1, 6]]));
-            test('middle', () => expect(mut.adjacents(5, 5, 10, 10, 0, 0, true)).toEqual([[4, 4], [5, 4], [6, 4], [4, 5], [6, 5], [4, 6], [5, 6], [6, 6]]));
+            test('bottom right corner', () => expect(mut.adjacents(9, 9, 10, 10, true)).toEqual([[8, 8], [9, 8], [8, 9]]));
+            test('left edge', () => expect(mut.adjacents(0, 5, 10, 10, true)).toEqual([[0, 4], [1, 4], [1, 5], [0, 6], [1, 6]]));
+            test('middle', () => expect(mut.adjacents(5, 5, 10, 10, true)).toEqual([[4, 4], [5, 4], [6, 4], [4, 5], [6, 5], [4, 6], [5, 6], [6, 6]]));
         });
     });
 
