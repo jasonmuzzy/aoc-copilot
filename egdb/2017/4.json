@@ -1,0 +1,19 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[0, 1, 3], [7, 8, 9, 10, 11]]
+    },
+    "answers": {
+        "selector": "li:contains('is valid'), li:contains('is a valid')",
+        "indexesOrLiterals": [[0, 1], [2, 3, 4]],
+        "transforms": [{
+            "functions": [
+                { "length": [] },
+                { "toString": [] }
+            ],
+            "appliesTo": [0, 1]
+        }]
+    }
+}
