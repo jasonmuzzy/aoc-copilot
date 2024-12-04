@@ -148,9 +148,7 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
         if (runOptions.runPart1) await allPass(year, day, 1, true, examples.filter(e => e.part === 1), solver);
         if (runOptions.runPart2 && acceptedAnswers.length > 0 && day != 25) await allPass(year, day, 2, true, examples.filter(e => e.part === 2), solver);
     } else if (acceptedAnswers.length == 0) {
-        try {
-            if (runOptions.runPart1) await runInput(year, day, 1, solver, examples, inputs, runOptions.skipTests, runOptions.forceSubmit);
-        } catch { }
+        if (runOptions.runPart1) await runInput(year, day, 1, solver, examples, inputs, runOptions.skipTests, runOptions.forceSubmit);
     } else {
         if (!runOptions.runPart1 || await passes(inputs, year, day, 1, false, solver, acceptedAnswers.first().text())) {
             if (day === 25) {
