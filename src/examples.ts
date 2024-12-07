@@ -169,7 +169,7 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
         }
     }
     for (const test of addTests) examples.push(test);
-    for (const eg of examples) while (eg.inputs.at(-1) === '') eg.inputs.pop();
+    for (const eg of examples) while (eg.inputs.length > 1 && eg.inputs.at(-1) === '') eg.inputs.pop();
     return examples;
 }
 
