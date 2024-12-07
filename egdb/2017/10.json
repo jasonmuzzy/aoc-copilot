@@ -1,0 +1,16 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [6, 69, 71, 73, 75],
+        "transforms": [
+            { "functions": [{ "map": [[{ "replaceAll": [" ", ""] }]] }], "appliesTo": [0] },
+            { "functions": [{ "map": [[{ "replaceAll": ["f", ""] }]] }], "appliesTo": [1] }
+        ]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [39, 70, 72, 74, 76]
+    }
+}
