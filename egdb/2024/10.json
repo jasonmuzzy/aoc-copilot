@@ -1,0 +1,19 @@
+{
+    "reason": "Irregular format",
+    "part1length": 5,
+    "inputs": {
+        "selector": "code",
+        "indexes": [2, 10, 14, 17, 18, 30, 34, 40, 41]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [7, 9, 12, [15, 16], 28, 31, 33, 35, 51],
+        "transforms": [{
+            "functions": [
+                { "map": [[{ "parseInt": [] }]] },
+                { "reduce": [[{ "sum": [] }]] },
+                { "toString": [] }
+            ], "appliesTo": [3]
+        }]
+    }
+}

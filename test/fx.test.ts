@@ -37,6 +37,9 @@ describe('Unit tests', () => {
     test('substring', () => {
         expect(mut.interpolate('start middle end', [{ 'substring': [6, 12] }])).toEqual('middle');
     });
+    test('sum', () => {
+        expect(mut.interpolate(undefined, [{ 'sum': [1, 2] }])).toEqual(3);
+    });
     test('toString', () => {
         expect(mut.interpolate(42, [{ 'toString': [] }])).toEqual('42');
     });
@@ -63,6 +66,21 @@ describe('Integration tests', () => {
     });
     test('split length toString', () => {
         expect(mut.interpolate('row 1\nrow2\nrow3', [{ 'split': ['\n'] }, { 'length': [] }, { 'toString': [] }])).toEqual('3');
+    });
+    test('map (parseInt) reduce (sum) toString', () => {
+        expect(mut.interpolate(['1', '2'], [
+            {
+                'map': [
+                    [{ 'parseInt': [] }]
+                ]
+            },
+            {
+                'reduce': [
+                    [{ 'sum': [] }]
+                ]
+            },
+            { 'toString': [] }
+        ])).toEqual('3');
     });
     test('split slice map (parseInt) reduce (multiply) toString', () => {
         expect(mut.interpolate('a\nb\n13\n42\n99\nc\nd\n', [

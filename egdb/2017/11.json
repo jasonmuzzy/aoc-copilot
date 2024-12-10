@@ -1,0 +1,12 @@
+{
+    "reason": "Irregular format",
+    "part1length": 4,
+    "inputs": {
+        "selector": "code",
+        "indexes": [1, 3, 5, 8]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [2, 4, 6, 9]
+    }
+}

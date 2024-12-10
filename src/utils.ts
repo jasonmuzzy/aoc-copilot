@@ -10,6 +10,21 @@ function adjacents(x: number, y: number, endx: number, endy: number, diagonals =
     return result;
 }
 
+function combos(characters: string, length: number): string[] {
+    const results: string[] = [];
+    const totalCombinations = Math.pow(characters.length, length);
+    for (let i = 0; i < totalCombinations; i++) { // Outer loop e.g. 0 to 26 for 3 ** 3
+        let combination = '';
+        let temp = i;
+        for (let j = 0; j < length; j++) { // Inner loop e.g. 0 to 2 for length 3
+            combination += characters[temp % characters.length];
+            temp = Math.floor(temp / characters.length); // Magic e.g.: 21 -> 7 -> 2 (which mod to 0, 1, 2) 
+        }
+        results.push(combination);
+    }
+    return results;
+}
+
 class DefaultMap<K, V> extends Map<K, V> {
     default: V;
     constructor(entries: [K, V][], defaultValue: V) {
@@ -106,6 +121,7 @@ function xyArray(a: any[]): number[][] {
 
 export {
     adjacents,
+    combos,
     DefaultMap,
     gcd,
     lcm,
