@@ -27,6 +27,7 @@ function interpolate(data: string | number | (string | number)[] | undefined, fx
 }
 
 const ops: { [key: string]: Function } = {
+    sum(lhs: number, rhs: number) { return lhs + rhs; },
     at(this: string[], index: number) { return this.at(index); },
     concat(this: string, [...str]: string[]) { return this.concat(...str); },
     join(this: string[], separator: string) { return this.join(separator); },

@@ -18,6 +18,10 @@ describe('Unit tests', () => {
         });
     });
 
+    describe('combos', () => {
+        test('chars 2, len 3', () => expect(mut.combos('+*', 3)).toEqual(['+++', '*++', '+*+', '**+', '++*', '*+*', '+**', '***']))
+    });
+
     describe('DefaultMap', () => {
         const map = new mut.DefaultMap<string, number>([['a', 1]], 0);
         test('get() map.has(key)', () => expect(map.get('a')).toBe(1));
