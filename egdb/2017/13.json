@@ -1,0 +1,12 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code, em",
+        "indexes": [8, 8]
+    },
+    "answers": {
+        "selector": "code, em",
+        "indexesOrLiterals": [32, 41]
+    }
+}
