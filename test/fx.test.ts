@@ -4,6 +4,10 @@ import * as mut from '../src/fx';
  * Run with `npm run test` or `npx jest fx.test.ts`
  */
 describe('Unit tests', () => {
+    test('add', () => {
+        expect(mut.interpolate(undefined, [{ 'add': [1, 2] }])).toEqual(3);
+        expect(mut.interpolate(undefined, [{ 'add': ['1', '2'] }])).toEqual('12');
+    });
     test('at', () => {
         expect(mut.interpolate(['13', '42', '99'], [{ 'at': [1] }])).toEqual('42');
     });
@@ -36,9 +40,6 @@ describe('Unit tests', () => {
     });
     test('substring', () => {
         expect(mut.interpolate('start middle end', [{ 'substring': [6, 12] }])).toEqual('middle');
-    });
-    test('sum', () => {
-        expect(mut.interpolate(undefined, [{ 'sum': [1, 2] }])).toEqual(3);
     });
     test('toString', () => {
         expect(mut.interpolate(42, [{ 'toString': [] }])).toEqual('42');
@@ -76,7 +77,7 @@ describe('Integration tests', () => {
             },
             {
                 'reduce': [
-                    [{ 'sum': [] }]
+                    [{ 'add': [] }]
                 ]
             },
             { 'toString': [] }

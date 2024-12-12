@@ -11,7 +11,7 @@
         "transforms": [{
             "functions": [
                 { "map": [[{ "parseInt": [] }]] },
-                { "reduce": [[{ "sum": [] }]] },
+                { "reduce": [[{ "add": [] }]] },
                 { "toString": [] }
             ], "appliesTo": [3]
         }]
