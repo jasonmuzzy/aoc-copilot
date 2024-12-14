@@ -1,0 +1,12 @@
+{
+  "reason": "No part 2 test",
+  "part1length": 1,
+  "inputs": {
+    "selector": "code",
+    "indexes": [2]
+  },
+  "answers": {
+    "selector": "code",
+    "indexesOrLiterals": [29]
+  }
+}
