@@ -18,7 +18,7 @@ type Solver = (
     part: number,
     test: boolean,
     additionalInfo?: { [key: string]: string }
-) => Promise<number | string>;
+) => Promise<number | bigint | string>;
 
 function getYearDay(filename: string) {
     const bn = basename(filename);
@@ -126,7 +126,7 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
  * @param options (optional) run tests or inputs only, or only part 1 or 2
  * @param addDb (optional) ad-hoc entry for the example database to override the supplied entry or add support for an as-yet unsupported day
  * @param addTests (optional) additional test cases
- * @returns 
+ * @returns
  */
 async function run(yearDay: string | { year: number, day: number }, solver: Solver, options: boolean | { testsOnly?: boolean, skipTests?: boolean, onlyPart?: 1 | 2, forceSubmit?: boolean } = false, addDb?: Egdb, addTests: Example[] = []) {
     if (!preChecksPass()) return;

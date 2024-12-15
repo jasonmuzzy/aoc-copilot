@@ -133,12 +133,12 @@ async function countdown(until: Date): Promise<void> {
     }
 }
 
-async function submitAnswer(year: number, day: number, part: number, answer: number | string, yes = false): Promise<{ cancelled: boolean, response?: string, dayStats?: stats.Stats }> {
+async function submitAnswer(year: number, day: number, part: number, answer: number | bigint | string, yes = false): Promise<{ cancelled: boolean, response?: string, dayStats?: stats.Stats }> {
     await validateYearDay(year, day);
 
     // Get answers file
     const filename = `${year}/answers/${day}.json`;
-    let answers: { part: number, answer: string, correct: boolean, timestamp: string, problem?: string, wait?: string }[];
+    let answers: { part: number, answer: string | bigint, correct: boolean, timestamp: string, problem?: string, wait?: string }[];
     try {
         answers = JSON.parse(await read(filename));
     } catch (err) {
@@ -154,14 +154,14 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
         await stats.avoidedAttempt(year, day, part);
         throw new Incorrect(`Already submitted ${duplicate.problem ?? 'incorrect'} answer ${duplicate.answer} for ${year} day ${day} part ${part} on ${duplicate.timestamp}`);
     }
-    if (typeof answer === 'number') {
-        const tooLows = partAnswers.filter(a => a.problem === 'too low').sort((a, b) => parseInt(b.answer) - parseInt(a.answer));
-        if (tooLows.length > 0 && answer < parseInt(tooLows[0].answer)) {
+    if (typeof answer === 'number' || typeof answer === 'bigint') {
+        const tooLows = partAnswers.filter(a => a.problem === 'too low').sort((a, b) => { const d = BigInt(b.answer) - BigInt(a.answer); return d < 0n ? -1 : d === 0n ? 0 : 1 });
+        if (tooLows.length > 0 && answer < BigInt(tooLows[0].answer)) {
             await stats.avoidedAttempt(year, day, part);
             throw new Incorrect(`${answer} is too low because it's less than ${tooLows[0].answer} which was too low for ${year} day ${day} part ${part} on ${tooLows[0].timestamp}`);
         }
-        const tooHighs = partAnswers.filter(a => a.problem === 'too high').sort((a, b) => parseInt(a.answer) - parseInt(b.answer));
-        if (tooHighs.length > 0 && answer > parseInt(tooHighs[0].answer)) {
+        const tooHighs = partAnswers.filter(a => a.problem === 'too high').sort((a, b) => {const d = BigInt(a.answer) - BigInt(b.answer); return d < 0n ? -1 : d === 0n ? 0 : 1 });
+        if (tooHighs.length > 0 && answer > BigInt(tooHighs[0].answer)) {
             await stats.avoidedAttempt(year, day, part);
             throw new Incorrect(`${answer} is too high because it's greater than ${tooHighs[0].answer} which was too high for ${year} day ${day} part ${part} on ${tooHighs[0].timestamp}`);
         }
@@ -201,10 +201,11 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
     }
 
     // Submit the answer
+    const answerStr = typeof answer === 'string' ? answer : answer.toString(10);
     const path = `/${year}/day/${day}/answer`;
     const formData = encode({
         level: part,
-        answer: answer
+        answer: answerStr
     });
     let { headers, body: response } = await request('POST', path, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE, formData);
     let timestamp = new Date().toJSON();
