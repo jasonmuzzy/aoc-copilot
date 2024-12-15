@@ -2,10 +2,17 @@
 
 Advent of Code Copilot (AoCC) strives to honor the wishes of its creator, Eric Wastl, and one of his requests is to [not post parts of puzzles or inputs](https://adventofcode.com/about#faq_copying).  So rather than store the example inputs and answers statically, AoCC downloads and caches the puzzles and then extracts examples from the cache.
 
+<a id="contributing"></a>
+## Contributing
+
+The purpose of the example database (EGDB) is to make examples usable even when they can't be extracted automatically by the [default search strategy (DSS)](#default-search-strategy).  A good EGDB entry is one that extracts the example input(s) and answer(s) from the AoC puzzle page itself.  One of the values of this project is to not spoil the fun for players, so an EGDB entry should not provide example inputs or answers that weren't included in the puzzle, since sometimes it seems that Eric intentionally leaves those things out to increase the difficulty.  One exception to this is when the answer is implied and trivial to calculate: those are ok to include -- see the [implied answer](#implied-answer) section for more info.
+
+As an alternative, you can always use [Test Cases](./test-cases.md) to include additional tests that you'd like to run your own solution against.  Test cases support activities like refactoring but remain local to your solution so they aren't published to other players through AoCC.
+
 <a id="default-search-strategy"></a>
 ## Default Search Strategy
 
-Most of the time, AoCC is able to use its default search strategy (DSS) to locate examples automatically.  It works under the following conditions:
+Most of the time, AoCC is able to use its DSS to locate examples automatically.  It works under the following conditions:
 1) There's exactly one input which is found in part 1, is applicable to both parts, is tagged in a specific way, and is positioned relative to keywords
 2) There's one expected answer in part 1 and another in part 2 that are tagged and positioned in specific ways
 
@@ -16,7 +23,7 @@ When puzzles don't match those conditions then the DSS will fail in part or in f
 - Irregular format
 - Implied answer
 
-In these cases it's necessary to provide the runner with information specific to the puzzle about the location of examples, and this is where the example database (EGDB) comes in.  The EGDB can be used in two ways:
+In these cases it's necessary to provide the runner with information specific to the puzzle about the location of examples, and this is where the EGDB comes in.  The EGDB can be used in two ways:
 1) By saving it in a JSON file in this project's `egdb` folder
 2) By including it as an input parameter when calling the runner
 

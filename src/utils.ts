@@ -36,6 +36,23 @@ class DefaultMap<K, V> extends Map<K, V> {
     }
 }
 
+function factorize(n: number) {
+    const factors: number[] = [];
+    if (n <= 1) return factors;
+    while (n % 2 === 0) { // Even optimization
+        factors.push(2);
+        n /= 2;
+    }
+    for (let i = 3; i <= Math.sqrt(n); i += 2) { // Odd optimization
+        while (n % i === 0) {
+            factors.push(i);
+            n /= i;
+        }
+    }
+    if (n > 1) factors.push(n); // Prime optimization
+    return factors;
+}
+
 function _gcd(a: number, b: number): number {
     return b > 0 ? _gcd(b, a % b) : a;
 }
@@ -123,6 +140,7 @@ export {
     adjacents,
     combos,
     DefaultMap,
+    factorize,
     gcd,
     lcm,
     printableGrid,
