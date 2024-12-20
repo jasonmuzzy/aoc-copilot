@@ -1,0 +1,34 @@
+{
+    "reason": "Implied answers",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0, 0]
+    },
+    "answers": {
+        "selector": "ul",
+        "indexesOrLiterals": [2, 3],
+        "transforms": [{
+            "functions": [
+                { "match": ["(\\d+|one)(?= cheat)", "g"] },
+                { "map": [[
+                    { "replaceAll": ["one", "1"] },
+                    { "parseInt": [] }
+                ]] },
+                { "reduce": [[{ "add": [] }]] },
+                { "toString": [] }
+            ], "appliesTo": [0, 1]
+        }]
+    },
+    "additionalInfos": {
+        "key": "minPSSaved",
+        "selector": "em",
+        "indexes": [9, 25],
+        "transforms": [{
+            "functions": [
+                { "match": ["\\d+", "g"] },
+                { "at": [0] }
+            ], "appliesTo": [0, 1]
+        }]
+    }
+}
