@@ -1,12 +1,20 @@
 {
     "reason": "Multiple examples",
-    "part1length": 1,
+    "part1length": 3,
     "inputs": {
         "selector": "code",
-        "indexes": [92, 99]
+        "indexes": [[70, 71, 72], [74, 75, 76], 92, 99],
+        "transforms": [{
+            "functions": [
+                { "join": ["\n"] },
+                { "replaceAll": ["A\n", "Register A: "]},
+                { "replaceAll": ["\n", "\nRegister B: 0\nRegister C: 0\n\nProgram: "]},
+                { "split": ["\n"]}
+            ], "appliesTo": [0, 1]
+        }]
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": [95, 101]
+        "indexesOrLiterals": [73, 77, 95, 101]
     }
 }
