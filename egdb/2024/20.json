@@ -19,16 +19,5 @@
                 { "toString": [] }
             ], "appliesTo": [0, 1]
         }]
-    },
-    "additionalInfos": {
-        "key": "minPSSaved",
-        "selector": "em",
-        "indexes": [9, 25],
-        "transforms": [{
-            "functions": [
-                { "match": ["\\d+", "g"] },
-                { "at": [0] }
-            ], "appliesTo": [0, 1]
-        }]
     }
 }
