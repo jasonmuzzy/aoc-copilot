@@ -24,7 +24,7 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 
 Currently, years 2018 - 2023 are fully tested and supported for all features.
 
-*Year 2017 is in process, with days 1 - 13 supported.*
+*Year 2017 is in process, with days 1 - 14 supported.*
 
 **Q**.  What about 2024 and beyond?  Can I use it as soon as a new puzzle drops?<br>
 **A**.  Yes, probably for most days.  Advent of Code follows a very consistent structure from year-to-year, so most features of AoCC should work with 2024 and beyond.  The availability of examples is the only thing that is likely to vary.  AoCC uses a default search strategy (DSS) for extracting examples from most puzzles.  In 2023, the DSS automatically extracted examples for 18 out of 25 days.  The other 6 days contained multiple examples each so they required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the DSS working for 20 days.  So, I expect 2024 will follow a similar pattern and AoCC will be able to automatically extract examples for most days.

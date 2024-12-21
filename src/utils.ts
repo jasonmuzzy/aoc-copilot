@@ -25,6 +25,8 @@ function combos(characters: string, length: number): string[] {
     return results;
 }
 
+function csv(...vals: any[]) { return vals.join(','); }
+
 class DefaultMap<K, V> extends Map<K, V> {
     default: V;
     constructor(entries: [K, V][], defaultValue: V) {
@@ -139,6 +141,7 @@ function xyArray(a: any[]): number[][] {
 export {
     adjacents,
     combos,
+    csv,
     DefaultMap,
     factorize,
     gcd,
