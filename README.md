@@ -22,16 +22,12 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 <a id="years-supported"></a>
 ## Years Supported
 
-Currently, years 2018 - 2023 are fully tested and supported for all features.
+Currently, years 2018 - 2024 are fully tested and supported for all features.
 
 *Year 2017 is in process, with days 1 - 14 supported.*
 
-**Q**.  What about 2024 and beyond?  Can I use it as soon as a new puzzle drops?<br>
-**A**.  Yes, probably for most days.  Advent of Code follows a very consistent structure from year-to-year, so most features of AoCC should work with 2024 and beyond.  The availability of examples is the only thing that is likely to vary.  AoCC uses a default search strategy (DSS) for extracting examples from most puzzles.  In 2023, the DSS automatically extracted examples for 18 out of 25 days.  The other 6 days contained multiple examples each so they required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the DSS working for 20 days.  So, I expect 2024 will follow a similar pattern and AoCC will be able to automatically extract examples for most days.
-
-*2024 Update:  Days 1 - 20, 21<sup>1</sup> and 22 supported (days 1, 2, 4 - 9, 18 and 19 automatically with the DSS, days 3, 10 - 17 and 20 - 22 with EGDB entries).*
-
-*<sup>1</sup>Day 21 only for part 1*
+**Q**.  What about 2025 and beyond?  Can I use it as soon as a new puzzle drops?<br>
+**A**.  Probably, for most days.  Advent of Code follows a consistent structure from year-to-year, so most features of AoCC should work with future years.  The availability of *examples* is the only thing that is likely to vary.  AoCC uses a default search strategy (DSS) for extracting examples from most puzzles.  In 2024, the DSS automatically extracted examples for 14 out of 25 days.  In 2023, it automatically extracted them for 18 out of 25 days.  The rest required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the DSS working for 20 days.  So, I expect future years will follow a similar pattern and AoCC will be able to automatically extract examples for most days.
 
 **Q**.  What do I do if AoCC doesn't properly extract examples for a day?  Am I stuck?<br>
 **A**.  No, you're not stuck.  You have two options when configuring the [runner](docs/runner.md):
@@ -39,7 +35,7 @@ Currently, years 2018 - 2023 are fully tested and supported for all features.
 2) Provide the `addDb` parameter to the runner so it knows where to find the examples.  If you go this route then please consider [contributing](#contributing) it to the [example database](docs/egdb.md) so others can benefit as well!
 
 **Q**.  What about 2015 - 2017?<br>
-**A**.  Based on how differently 2018 and 2019 were structured compared to more recent years, I don't expect *any* examples to be automatically available for 2017 or earlier.  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
+**A**.  Based on how differently 2018 and 2019 were structured compared to more recent years, I expect very few (if any) examples to be automatically available for 2017 or earlier.  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
 
 <a id="installation"></a>
 ## Installation
