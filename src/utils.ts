@@ -79,6 +79,24 @@ function lcm(numbers: number[]): number {
     return a;
 }
 
+function permutations<T>(arr: T[]): T[][] {
+    if (arr.length === 0) return [[]];
+
+    const result: T[][] = [];
+
+    for (let i = 0; i < arr.length; i++) {
+        const current = arr[i];
+        const rest = arr.slice(0, i).concat(arr.slice(i + 1));
+        const permsOfRest = permutations(rest);
+
+        for (const perm of permsOfRest) {
+            result.push([current, ...perm]);
+        }
+    }
+
+    return result;
+}
+
 // Takes x,y coordinates and turns it into a printable string representing the overall grid
 function printableGrid(coords: Iterable<string | { x: number, y: number }>, occupied = '#', empty = ' ') {
     let lhs = '', rhs = '', x = 0, y = 0, minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity;
@@ -146,6 +164,7 @@ export {
     factorize,
     gcd,
     lcm,
+    permutations,
     printableGrid,
     product,
     range,

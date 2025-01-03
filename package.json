@@ -1,7 +1,7 @@
 {
   "name": "aoc-copilot",
   "private": false,
-  "version": "1.6.14",
+  "version": "1.6.15",
   "description": "Advent of Code automatic runner for examples and inputs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
