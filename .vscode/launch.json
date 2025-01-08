@@ -46,15 +46,128 @@
             "console": "integratedTerminal",
         },
         {
-            "name": "index command",
+            "name": "cmd: index 2022 1",
             "type": "node",
             "request": "launch",
             "args": [
                 "src/bin.ts",
                 "index",
-                "2019",
-                "16",
-                "code"
+                "2022",
+                "1"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "cmd: index 2024 1 em",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/bin.ts",
+                "index",
+                "2024",
+                "1",
+                "em"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "cmd: refresh leaderboard w/ ID",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/bin.ts",
+                "refresh",
+                "leaderboard",
+                "2024",
+                "--leaderboard-id",
+                "1737071"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "cmd: refresh leaderboard w/o ID",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/bin.ts",
+                "refresh",
+                "leaderboard",
+                "2024"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "cmd: stats-print",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/bin.ts",
+                "stats-print",
+                "2024"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "cmd: stats-sync",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/bin.ts",
+                "stats-sync",
+                "2024"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "cmd: leaderboard-to-csv",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/bin.ts",
+                "leaderboard-to-csv",
+                "2024"
             ],
             "runtimeArgs": [
                 "--nolazy",

@@ -1,4 +1,3 @@
-import { IncomingHttpHeaders } from 'node:http';
 import { encode } from 'node:querystring'
 import { createInterface } from 'node:readline/promises';
 
@@ -44,13 +43,57 @@ async function getInput(year: number, day: number, forceRefresh = false) {
         inputs = input.split('\n');
         while (inputs.at(-1) === '') inputs.pop();
     } catch (err) {
-        const { headers, body: input } = await request('GET', `/${year}/day/${day}/input`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
+        const { body: input } = await request('GET', `/${year}/day/${day}/input`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
         if (input === 'Puzzle inputs differ by user.  Please log in to get your puzzle input.\n') throw new Error(errExpiredSessionCookie);
         inputs = input.split('\n');
         while (inputs.at(-1) === '') inputs.pop();
         await write(`${year}/inputs/${day}`, inputs.join('\n'));
     }
     return inputs;
+}
+
+interface Leaderboard {
+    members: {
+        [key: string]: {
+            id: number,
+            name: string,
+            stars: number,
+            local_score: number,
+            global_score: number,
+            last_star_ts: number,
+            completion_day_level: {
+                [key: string]: {
+                    [key: string]: {
+                        star_index: number,
+                        get_star_ts: number
+                    }
+                }
+            }
+        }
+    }
+}
+
+async function getLeaderboard(year: number, id: string, refreshIfPossible = false) {
+    await validateYearDay(year, 1);
+    let isPossible = false;
+    if (refreshIfPossible) {
+        try {
+            const elapsed = Date.now() - parseInt(await read(`lastLeaderboardRequest.json`));
+            if (elapsed >= 900000) isPossible = true;
+        } catch (err) {
+            isPossible = true;
+        }
+    }
+    let json = '';
+    try {
+        if (refreshIfPossible && isPossible) throw new Error('Force refresh');
+        json = await read(`${year}/${id}.json`);
+    } catch (err) {
+        const { body: json } = await request('GET', `${year}/leaderboard/private/view/${id}.json`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE);
+        await write(`${year}/${id}.json`, json);
+        await write(`lastLeaderboardRequest.json`, Date.now().toString());
+    }
+    return JSON.parse(json) as Leaderboard;
 }
 
 async function getPuzzle(year: number, day: number, forceRefresh = false) {
@@ -60,8 +103,7 @@ async function getPuzzle(year: number, day: number, forceRefresh = false) {
         if (forceRefresh) throw new Error('Force refresh');
         puzzle = await read(`${year}/puzzles/${day}.html`);
     } catch (err) {
-        let headers: IncomingHttpHeaders;
-        ({ headers, body: puzzle } = await request('GET', `/${year}/day/${day}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE));
+        ({ body: puzzle } = await request('GET', `/${year}/day/${day}`, process.env.AOC_SESSION_COOKIE, process.env.CERTIFICATE));
         const $ = load(puzzle);
         const login = $(`a[href="/${year}/auth/login"]`);
         if (login.length > 0) throw new Error(errExpiredSessionCookie);
@@ -259,10 +301,12 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
 export {
     cookieSteps,
     getInput,
+    getLeaderboard,
     getPuzzle,
     hms,
     Incorrect,
     isNumChar,
+    Leaderboard,
     sleep,
     submitAnswer,
     validateYearDay
