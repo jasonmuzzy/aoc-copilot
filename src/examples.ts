@@ -40,22 +40,6 @@ type Example = {
     additionalInfo?: { [key: string]: string }
 }
 
-function getExampleInputs($: cheerio.Root) {
-    const largerEgs = $("p:contains('larger example'),p:contains('complex example') + pre code");
-    let largerEg: cheerio.Cheerio | undefined;
-    for (let i = 0; i < largerEgs.length; ++i) {
-        if (largerEgs.eq(i).parent().prev('p').text().endsWith('larger example:') ||
-            largerEgs.eq(i).parent().prev('p').text().endsWith('complex example:')) {
-            largerEg = largerEgs.eq(i);
-            break;
-        }
-    }
-    if (largerEg) return largerEg;
-    const eg = $("p:contains('xample'):contains(':')").nextAll("pre").find('code');
-    if (eg.length > 0) return eg.first();
-    else return $('article pre code').first();
-}
-
 async function getExamples(year: number, day: number, part1only: boolean, $: cheerio.Root, addDb?: Egdb, addTests: Example[] = []) {
     const examples: Example[] = [];
     let internalError = false;
@@ -156,16 +140,13 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
             noExamples = (JSON.parse(await readFile(egdbFilename, { encoding: 'utf-8' })) as { [key: string]: number[] })[day.toString()] ?? [];
         } catch { }
         if (internalError) throw err;
-        const answer = (part: number) => {
-            const elements = $(`article:${part === 1 ? 'first' : 'last'} p:has(em,code)`).find("em,code").find("em,code");
-            return elements.length < 2
-                ? elements.text()
-                : elements.eq([...elements].map((e, i) => ({ e, score: (/^\d+$/.test(elements.eq(i).text()) ? 1 : 0) + (e.prev === null ? 1 : 0), i })).sort((a, b) => a.score === b.score ? b.i - a.i : b.score - a.score)[0].i).text();
+        const dss = defaultSearchStrategy($);
+        const inputs = dss.inputs.split('\n');
+        if (noExamples.indexOf(1) === -1 && dss.answer1 !== '') {
+            examples.push({ part: 1, inputs, answer: dss.answer1 });
         }
-        const inputs = getExampleInputs($).html()?.includes('<br') ? getExampleInputs($).html()!.split('<br>') : getExampleInputs($).text().split('\n');
-        if (noExamples.indexOf(1) === -1) examples.push({ part: 1, inputs, answer: answer(1) }); // No additionalInfo for generically determined examples
-        if (day != 25 && !part1only) {
-            if (noExamples.indexOf(2) === -1) examples.push({ part: 2, inputs, answer: answer(2) });
+        if (day != 25 && !part1only && noExamples.indexOf(2) === -1 && dss.answer2 !== '') {
+            examples.push({ part: 2, inputs, answer: dss.answer2 });
         }
     }
     for (const test of addTests) examples.push(test);
@@ -173,7 +154,52 @@ async function getExamples(year: number, day: number, part1only: boolean, $: che
     return examples;
 }
 
+function defaultSearchStrategy($: cheerio.Root) {
+
+    // Try to find the example input, checking first for a "larger example" or a "complex example".
+    // larger example:  2019: 5, 18, 20; 2020: 10, 24; 2021: 8, 12, 18, 22; 2022: 9, 18; 2023: 10; 2024: 10, 12, 24
+    // complex example:  2019: 18; 2022: 24
+    let inputElements: cheerio.Cheerio | undefined;
+    const larger = $("p:contains('larger example'),p:contains('complex example') + pre code");
+    for (let i = 0; i < larger.length; ++i) {
+        if (larger.eq(i).parent().prev('p').text().endsWith('larger example:') ||
+            larger.eq(i).parent().prev('p').text().endsWith('complex example:')) {
+            inputElements = larger.eq(i);
+            break;
+        }
+    }
+
+    // If no larger/complex example was found then look next for the <pre><code> block that follows "xample".
+    if (inputElements === undefined) inputElements = $("p:contains('xample'):contains(':')").nextAll("pre").find('code');
+    // If no example input was still found then just return the first <pre><code> block.
+    if (inputElements.length === 0) inputElements = $('article pre code').first();
+    const br = inputElements.eq(0).html()?.includes('<br');
+    const inputs = br ? inputElements.eq(0).html()!.replaceAll('<br>', '\n') : inputElements.eq(0).text();
+
+    // Return the highest scoring potential answer element:
+    // +1 if it's all numeric
+    // +1 if the previous element is null
+    const bestAnswer = (elements: cheerio.Cheerio) => {
+        return elements.length < 2
+            ? elements
+            : elements.eq([...Array(elements.length).keys()].reduce((pv, cv) => {
+                const bestScore = (/^\d+$/.test(elements.eq(pv).text()) ? 1 : 0)
+                    + (elements[pv].prev === null ? 1 : 0);
+                const thisScore = (/^\d+$/.test(elements.eq(cv).text()) ? 1 : 0)
+                    + (elements[cv].prev === null ? 1 : 0);
+                return thisScore >= bestScore ? cv : pv;
+            }));
+    }
+
+    const answer1 = bestAnswer($(`article:first p:has(em,code)`).find("em,code").find("em,code")).text();
+    const answer2 = bestAnswer($(`article:last p:has(em,code)`).find("em,code").find("em,code")).text();
+
+    return { inputs, answer1, answer2 };
+
+}
+
 export {
+    defaultSearchStrategy,
     Egdb,
     Example,
     getExamples

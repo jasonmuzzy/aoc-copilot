@@ -10,7 +10,7 @@ import { getPuzzle } from '../src/site';
  * Run with `npm run test` or `npx jest examples.test.ts`
  */
 
-describe.each([2017, 2018, 2019, 2020, 2021, 2022, 2023])('%d', year => {
+describe.each([2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024])('%d', year => {
     return test.each(readdirSync(`./examples/${year}`, { encoding: 'utf-8' }).sort((a, b) => parseInt(a.split('.')[0]) - parseInt(b.split('.')[0])))('%s answer', async (file) => { //, done: jest.DoneCallback) => { // adding the done parameter causes Jest to just spin forever
         const expecteds = JSON.parse(readFileSync(`./examples/${year}/${file}`, { encoding: 'utf-8' }));
         const day = parseInt(path.parse(file).name);

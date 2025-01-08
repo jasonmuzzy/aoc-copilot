@@ -1,4 +1,5 @@
 import { read, write } from './cache';
+import { getLeaderboard, hms } from './site';
 
 type Stats = {
     day: number,
@@ -74,11 +75,49 @@ async function solvedElsewhere(year: number, day: number, part: number) {
     return updateStatsFile(year, stats);
 }
 
+async function print(year: number) {
+    const stats = await readStatsFile(year);
+    const times = stats.map(stat => [
+        stat.day.toString().padStart(3, ' '),
+        stat.part1Finished === '' ? '' : hms(Date.parse(stat.part1Finished) - Date.parse(stat.part1Started)),
+        stat.part2Finished === '' ? '' : hms(Date.parse(stat.part2Finished) - Date.parse(stat.part1Finished))
+    ]) as [string, string, string][];
+
+    // Print table
+    const width1 = times.reduce((pv, cv) => Math.max(pv, cv[1].length), 6);
+    const width2 = times.reduce((pv, cv) => Math.max(pv, cv[2].length), 6);
+    const col1 = '-'.repeat(Math.ceil((width1 - 6) / 2)) + 'Part 1' + '-'.repeat(Math.floor((width1 - 6) / 2));
+    const col2 = '-'.repeat(Math.ceil((width2 - 6) / 2)) + 'Part 2' + '-'.repeat(Math.floor((width2 - 6) / 2));
+    console.log(`Day   ${col1}   ${col2}`);
+    times.toReversed().forEach(time => console.log(`${time[0]}   ${time[1].padStart(width1, ' ')}   ${time[2].padStart(width2, ' ')}`));
+}
+
+/**
+ * Sync local stats file to site leaderboard service
+ * @param year Year
+ * @param id Leaderboard ID
+ * @param memberId (optional) Member ID; defaults to same as Leaderboard ID
+ */
+async function sync(year: number, id: string, memberId = id) {
+    const stats = await readStatsFile(year);
+    const leaderboard = await getLeaderboard(year, id);
+    for (let [day, stars] of Object.entries(leaderboard.members[memberId].completion_day_level)) {
+        const stat = getDayStats(stats, parseInt(day));
+        for (let [part, star] of Object.entries(stars)) {
+            if (part === '1') stat.part1Finished = new Date(star.get_star_ts * 1000).toJSON();
+            else if (part === '2') stat.part2Finished = new Date(star.get_star_ts * 1000).toJSON();
+        }
+    }
+    await updateStatsFile(year, stats);
+}
+
 export {
-    Stats,
-    startPart1,
-    finish,
     avoidedAttempt,
+    finish,
     incorrectAttempt,
-    solvedElsewhere
+    print,
+    solvedElsewhere,
+    startPart1,
+    Stats,
+    sync
 }
