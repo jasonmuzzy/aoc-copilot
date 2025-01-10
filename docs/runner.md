@@ -16,13 +16,25 @@ At a minimum, two parameters are needed to start the runner:
 
 ## Optional Parameters
 
-- `options` ({ testsOnly?: boolean, skipTests?: boolean, onlyPart?: 1 | 2 }) (optional): If ommitted, the runner will use its default options documented in the [process flow](#process-flow) below.  The following attributes can be used to fine-tune the behavior:
-    - `testsOnly` (boolean): `true` = only examples will be run; `false` (default) = both examples and actual inputs will be run.<br>**NOTE**: For compatibility, `options` also accepts a boolean which functions the same as the `testsOnly` attribute.
-    - `skipTests` (boolean): `true` = examples will be skipped; `false` (default) = examples will not be skipped
+- `options` ({ testsOnly?: boolean, skipTests?: boolean, onlyPart?: 1 | 2, forceSubmit?: boolean }) (optional): If ommitted, the runner will use its default options documented in the [process flow](#process-flow) below.  The following attributes can be used to fine-tune the behavior:
+    - `forceSubmit` (boolean): `true` = submit the answer without confirmation; `false` (default) = you must confirm before the answer will be submitted
     - `onlyPart` (number): `1` = run only part 1; `2` = run only part 2; (ommitted) (default) = both parts will be run
+    - `skipTests` (boolean): `true` = examples will be skipped; `false` (default) = examples will not be skipped
+    - `testsOnly` (boolean): `true` = only examples will be run; `false` (default) = both examples and actual inputs will be run.<br>**NOTE**: For compatibility, `options` also accepts a boolean which functions the same as the `testsOnly` attribute.
 <a id="addDb"></a>
 - `addDb` (object) (optional): Provide the runner with information about where to locate the example(s) and expected answer(s) in a puzzle file.  Useful when AoCC is unable to extract examples automatically.  See the [example database documentation](../docs/egdb.md) for details.
 - `addTc` (object[]) (optional): Additional [test cases](./test-cases.md).
+
+### Command Line Arguments
+
+If you'd prefer to pass the optional parameters as command line arguments then import the `argsToOptions` function and call the runner like this:
+
+```TypeScript
+import { argsToOptions, NotImplemented, run } from 'aoc-copilot';
+...
+const options = argsToOptions(process.argv);
+run(__filename, solve, options);
+```
 
 <a id="process-flow"></a>
 ## Process Flow
