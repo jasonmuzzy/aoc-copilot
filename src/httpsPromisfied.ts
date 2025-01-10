@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { IncomingHttpHeaders } from 'node:http';
 import { request as stdRequest, RequestOptions, } from 'node:https';
 
 const cookieSteps = `
@@ -40,7 +39,7 @@ Try connecting to the network that uses self-signed certificates -- commonly a
 corporate network -- or removing the certificate from your .env file.
 `;
 
-function request(method: string, path: string, cookie?: string, ca?: string, formData?: string): Promise<{ headers: IncomingHttpHeaders, body: string }> {
+function legacyRequest(method: string, path: string, cookie: string, ca?: string, formData?: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const options: RequestOptions = {
             hostname: "adventofcode.com",
@@ -56,7 +55,7 @@ function request(method: string, path: string, cookie?: string, ca?: string, for
         const req = stdRequest(options, res => {
             let body = "";
             res.on("data", chunk => body += chunk);
-            res.on("end", () => resolve({ headers: res.headers, body }));
+            res.on("end", () => resolve(body));
         });
         req.on('error', error => {
             if ((error as any)?.code === 'SELF_SIGNED_CERT_IN_CHAIN') { // https://www.reddit.com/r/typescript/comments/11yilc1/how_the_hell_do_you_handle_exceptions_in/
@@ -73,6 +72,52 @@ function request(method: string, path: string, cookie?: string, ca?: string, for
         if (method === 'POST' && !!formData) req.write(formData);
         req.end()
     });
+}
+
+async function request(method: string, path: string, cookie: string, ca?: string, formData?: string): Promise<string> {
+    if (!!ca) {
+        // we can't set a cert chain with `fetch()`, can only disable cert
+        // validation: https://github.com/orgs/nodejs/discussions/44038
+        // so instead of doing that, use the previous version
+        return legacyRequest(method, path, cookie, ca, formData);
+    }
+
+    const headers = new Headers();
+    headers.set('agent', 'github.com/jasonmuzzy/aoc-copilot by aoc-copilot@outlook.com');
+    headers.set('cookie', cookie);
+
+    const url = new URL(path, 'https://adventofcode.com');
+    const options: RequestInit = {
+        method,
+        headers,
+        redirect: 'manual'
+    };
+
+    if (method === 'POST' && !!formData) {
+        options.body = formData;
+        headers.set('content-type', 'application/x-www-form-urlencoded');
+    } else if (!!formData) {
+        url.search = formData;
+    }
+
+    try {
+        const response = await fetch(url, options);
+        if (response.redirected) {
+            throw new Error(`HTTP ${response.status}\n${errExpiredSessionCookie}`);
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status} - ${response.statusText}\nFetch Error`);
+        }
+
+        const body = await response.text();
+        return body;
+    } catch (error: any) {
+        if (error.code === 'SELF_SIGNED_CERT_IN_CHAIN') {
+            throw new Error(`HTTP ${error.code}\n${errSelfSignedCertInChain}`)
+        }
+        throw error;
+    }
 }
 
 export {
