@@ -36,6 +36,8 @@ const options = argsToOptions(process.argv);
 run(__filename, solve, options);
 ```
 
+The command line arguments `--force-submit`, `--only-part`, `--skip-tests` and `--tests-only` correspond to the options above.
+
 <a id="process-flow"></a>
 ## Process Flow
 

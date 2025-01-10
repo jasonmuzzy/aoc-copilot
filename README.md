@@ -59,11 +59,11 @@ Steps for Chromium-based browsers like Chrome and Edge:
 5. Click on https<nolink>://adventofcode.com
 6. Copy the value from the session row
 7. Open or create a `.env` file in the root of your project
-8. Add a line `AOC_SESSION_COOKIE="session="` and paste your session value after the equals sign
+8. Add a line `AOC_SESSION_COOKIE=` and paste your session value after the equals sign
 
 For example:
 ```
-AOC_SESSION_COOKIE="session=**your_session_value**"
+AOC_SESSION_COOKIE=**your_session_value**
 ```
 
 <a id="corporate-networks-and-self-signed-certificates"></a>
