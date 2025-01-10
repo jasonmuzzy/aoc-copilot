@@ -14,6 +14,35 @@ class NotImplemented extends Error {
     }
 }
 
+enum LogOutput {
+    LOG,
+    ERROR,
+}
+
+type LogLine = {
+    output: LogOutput;
+    line: any[];
+}
+
+class Logger {
+    lines: LogLine[] = [];
+    log = (...args: any[]) => this.lines.push({output: LogOutput.LOG, line: args});
+    error = (...args: any[]) => this.lines.push({output: LogOutput.ERROR, line: args});
+
+    dump() {
+        for (const line of this.lines) {
+            switch (line.output) {
+                case LogOutput.LOG: console.log(...line.line);
+                    break;
+                case LogOutput.ERROR: console.error(...line.line);
+                    break;
+            }
+        }
+    }
+}
+
+export const logger = new Logger();
+
 type Solver = (
     inputs: string[],
     part: number,
@@ -56,49 +85,60 @@ async function allPass(year: number, day: number, part: number, test: boolean, e
         } catch (err) {
             passed = false;
         }
-        if (!passed) allPassed = false;
+        if (!passed)
+            allPassed = false;
     }
     return allPassed;;
 }
 
-function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key: string]: string }): Promise<boolean> {
+async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key: string]: string }): Promise<boolean> {
     const start = performance.now();
-    return solver(inputs, part, test, additionalInfo).then(answer => {
+    try {
+        logger.lines.length = 0;
+        const answer = await solver(inputs, part, test, additionalInfo);
         const end = performance.now();
         const elapsed = (end - start) / 1000;
+
         if (answer == expected) {
             console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (${test ? "example" : "regression"}) (${elapsed.toFixed(3)}s)`);
             return true;
         } else {
             console.log(`That's not the right answer. Expected: ${expected} actual: ${answer} (${year} day ${day} part ${part}) (${test ? "example" : "regression"}) (${elapsed.toFixed(3)}s)`);
+            logger.dump();
             return false;
         }
-    }).catch(error => {
-        if (error?.name === 'NotImplemented') {
+    } catch(error: any) {
+        if (error.name === 'NotImplemented') {
             console.log("\nExample input:");
-            for (const input of inputs) console.log(input);
+            for (const input of inputs)
+                console.log(input);
+
             if (additionalInfo !== undefined) {
                 console.log(`\nAdditional info:\n${Object.entries(additionalInfo).map(([k, v]) => `${k}: ${v}`).join('\n')}`)
             }
+
             console.log(`\nExpected answer: ${expected}`);
             return false;
         } else {
             console.error(error);
             throw error;
         }
-    });
+    }
 }
 
 async function runInput(year: number, day: number, part: number, solver: Solver, examples: Example[], inputs: string[], skipTests: boolean, forceSubmit: boolean) {
     if (skipTests || await allPass(year, day, part, true, examples.filter(e => e.part == part), solver)) {
+        logger.lines.length = 0;
         const start = performance.now();
         const answer = await solver(inputs, part, false);
         const end = performance.now();
         const elapsed = (end - start) / 1000;
         try {
             const { cancelled, response, dayStats } = await submitAnswer(year, day, part, answer, forceSubmit);
-            if (cancelled) console.log(`Submission cancelled (${elapsed.toFixed(3)}s)`);
-            else {
+            if (cancelled) {
+                console.log(`Submission cancelled (${elapsed.toFixed(3)}s)`);
+                logger.dump();
+            } else {
                 console.log(`That's the right answer! ${answer} (${year} day ${day} part ${part}) (new submission) (${elapsed.toFixed(3)}s)`);
                 const timeToFinish = part === 1
                     ? Date.parse(dayStats!.part1Finished) - Date.parse(dayStats!.part1Started)
@@ -116,6 +156,7 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
         } catch (error) {
             if ((error as Incorrect)?.name === 'Incorrect') {
                 console.log(`Incorrect: ${(error as Incorrect).message} (${elapsed.toFixed(3)}s)`);
+                logger.dump();
             } else {
                 console.error(error, `(${elapsed.toFixed(3)}s)`);
             }
