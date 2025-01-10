@@ -40,6 +40,9 @@ A session cookie is required in order to log in to the adventofcode.com site.
 ` + cookieSteps);
         return false;
     }
+    if (!process.env.AOC_SESSION_COOKIE.startsWith('session=')) {
+        process.env.AOC_SESSION_COOKIE = 'session=' + process.env.AOC_SESSION_COOKIE;
+    }
     return true;
 }
 
