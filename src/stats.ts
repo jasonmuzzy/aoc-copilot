@@ -98,9 +98,9 @@ async function print(year: number) {
  * @param id Leaderboard ID
  * @param memberId (optional) Member ID; defaults to same as Leaderboard ID
  */
-async function sync(year: number, id: string, memberId = id) {
+async function sync(year: number, id: string, memberId = id, syncIfPossible = false) {
     const stats = await readStatsFile(year);
-    const leaderboard = await getLeaderboard(year, id);
+    const leaderboard = await getLeaderboard(year, id, syncIfPossible);
     for (let [day, stars] of Object.entries(leaderboard.members[memberId].completion_day_level)) {
         const stat = getDayStats(stats, parseInt(day));
         for (let [part, star] of Object.entries(stars)) {

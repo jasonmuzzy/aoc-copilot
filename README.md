@@ -27,7 +27,7 @@ Currently, years 2018 - 2024 are fully tested and supported for all features.
 *Year 2017 is in process, with days 1 - 14 supported.*
 
 **Q**.  What about 2025 and beyond?  Can I use it as soon as a new puzzle drops?<br>
-**A**.  Probably, for most days.  Advent of Code follows a consistent structure from year-to-year, so most features of AoCC should work with future years.  The availability of *examples* is the only thing that is likely to vary.  AoCC uses a default search strategy (DSS) for extracting examples from most puzzles.  In 2024, the DSS automatically extracted examples for 14 out of 25 days.  In 2023, it automatically extracted them for 18 out of 25 days.  The rest required [example database](docs/egdb.md) entries to extract the examples.  2022 was very similar with the DSS working for 20 days.  So, I expect future years will follow a similar pattern and AoCC will be able to automatically extract examples for most days.
+**A**.  Probably, for most days.  Advent of Code generally follows a consistent structure from year-to-year, so most features of AoCC should work with future years.  The availability of *examples* is the only thing that is likely to vary.  AoCC uses a default search strategy (DSS) for extracting examples from most puzzles.  In 2024, the DSS automatically extracted examples for 14 out of 25 days.  In 2023, it automatically extracted them for 18 out of 25 days.  The rest required [example database](docs/egdb.md) entries to extract.  2022 was very similar with the DSS working for 20 days.  Assuming AoC follows the same structure in future years, AoCC should be able to automatically extract examples for most days.
 
 **Q**.  What do I do if AoCC doesn't properly extract examples for a day?  Am I stuck?<br>
 **A**.  No, you're not stuck.  You have two options when configuring the [runner](docs/runner.md):
@@ -85,7 +85,7 @@ Steps to [override](https://nodejs.org/api/tls.html#tlscreatesecurecontextoption
 
 For example:
 ```
-AOC_SESSION_COOKIE="session=**your_session_value**"
+AOC_SESSION_COOKIE=**your_session_value**
 CERTIFICATE="-----BEGIN CERTIFICATE-----
 **your_primary_certificate**
 -----END CERTIFICATE-----
@@ -125,7 +125,7 @@ Run it.
 
 The console will show the example and expected answer.
 
-Replace the `throw new Error` line of code with your solution and set `answer` to the result.  Run it again.
+Replace the `throw new NotImplemented` line of code with your solution and set `answer` to the result.  Run it again.
 
 First AoCC will run your solver against the example.  If the example passes then AoCC will run it against the actual input and offer to submit the answer for you.  If not it will stop and let you know.
 
@@ -140,7 +140,7 @@ The `solve` function, or "solver", is where you write code to solve the puzzle. 
 <a id="runner"></a>
 ### Runner
 
-The `run` function, or "runner", takes your solver and automates running it.  It's highly configurable, but only the simplest example is shown above.  See the [docs](docs/runner.md) for more info.
+The `run` function, or "runner", takes your solver and automates running it.  It's highly configurable -- including by command line arguments -- but only the simplest example is shown above.  See the [docs](docs/runner.md) for more info.
 
 <a id="commands"></a>
 ## Commands

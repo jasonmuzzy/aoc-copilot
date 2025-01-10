@@ -177,6 +177,26 @@
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
             "console": "integratedTerminal",
+        },
+        {
+            "name": "argsToOptions",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "src/options.ts",
+                "--tests-only",
+                "--no-force-submit",
+                "--part",
+                "1"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
         }
     ]
 }

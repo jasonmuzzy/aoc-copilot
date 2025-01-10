@@ -41,18 +41,19 @@ yargs(hideBin(process.argv))
         const selections = $(argv.selector);
         for (let i = 0; i < selections.length; i++) {
             const text = selections.eq(i).html()?.includes('<br>') ? selections.eq(i).html()!.replaceAll('<br>', '\n') : selections.eq(i).text();
-            const part = selections.eq(i).closest('article').find('h2').attr('id') === 'part2' ? 2 : 1;
+            const article = selections.eq(i).closest('article');
+            const part = article.length === 0 ? 0 : article.find('h2').attr('id') === 'part2' ? 2 : 1;
             let matches = '';
             if (part === 1 && text === dss.inputs) matches = 'Inputs';
             else if (part === 1 && text === dss.answer1) matches = 'Part 1 Answer';
-            else if (text === dss.answer2) matches = 'Part 2 Answer';
-            if (matches.length > 0) matches = `\x1b[102m<<< Matches Default Search Strategy for ${matches}\x1b[0m`;
+            else if (part === 2 && text === dss.answer2) matches = 'Part 2 Answer';
+            if (matches.length > 0) matches = `\x1b[36m<<< Matches Default Search Strategy for ${matches}\x1b[0m`;
             console.info(`\x1b[36m${i.toString().padStart(3, '0') + ': '}\x1b[0m ${text.includes('\n') ? matches + '\n' + text : text + '  ' + matches}`);
         }
     })
-    .command(['refresh <sub> <year> [day]', 'download'], 'Force refresh of a cached file', (yargs) => {
+    .command(['refresh <file> <year> [day]', 'download'], 'Refresh (re-download) a cached file.  NOTE:  Leaderboard refresh is throttled to once every 15 minutes.', (yargs) => {
         return yargs
-            .positional('sub', {
+            .positional('file', {
                 choices: ['puzzle', 'input', 'leaderboard'],
                 describe: 'File to refresh',
                 type: 'string'
@@ -74,7 +75,7 @@ yargs(hideBin(process.argv))
         if (argv.verbose) console.info(argv);
         let leaderboardId = '';
         try {
-            await validateYearDay(argv.year, argv.sub === 'leaderboard' ? 1 : argv.day);
+            await validateYearDay(argv.year, argv.file === 'leaderboard' ? 1 : argv.day);
             if (argv['leaderboard-id']) leaderboardId = argv['leaderboard-id'];
             if (!leaderboardId) leaderboardId = process.env.LEADERBOARD_ID ?? '';
             if (!leaderboardId) throw new Error(`Specify --leaderboard-id or populate LEADERBOARD_ID in .env file`);
@@ -82,13 +83,13 @@ yargs(hideBin(process.argv))
             console.error((err as Error).message);
             return;
         }
-        if (argv.sub === 'puzzle') {
+        if (argv.file === 'puzzle') {
             process.stdout.write(`Refresh puzzle ${argv.year} day ${argv.day}... `);
             getPuzzle(argv.year!, argv.day!, true).then(() => console.info('Done'));
-        } else if (argv.sub === 'input') {
+        } else if (argv.file === 'input') {
             process.stdout.write(`Refresh input ${argv.year} day ${argv.day}... `);
             getInput(argv.year!, argv.day!, true).then(() => console.info('Done'));
-        } else if (argv.sub === 'leaderboard') {
+        } else if (argv.file === 'leaderboard') {
             process.stdout.write(`Refresh leaderboard ${argv.year} ID ${leaderboardId}... `);
             getLeaderboard(argv.year!, leaderboardId, true).then(() => console.info('Done'));
         }
@@ -109,7 +110,7 @@ yargs(hideBin(process.argv))
         }
         print(argv.year!);
     })
-    .command(['stats-sync <year> [leaderboardId]'], 'Sync local statistics with leaderboard', (yargs) => {
+    .command(['stats-sync <year> [leaderboard-id] [member-id]'], 'Sync local statistics with leaderboard', (yargs) => {
         return yargs
             .positional('year', {
                 describe: 'Year',
@@ -124,6 +125,12 @@ yargs(hideBin(process.argv))
                 alias: 'm',
                 describe: 'Member ID (optional; defaults to Leaderboard ID)',
                 type: 'string'
+            })
+            .option('refresh', {
+                alias: 'r',
+                describe: 'Refresh the leaderboard first (if possible, throttled to once every 15 minutes)',
+                type: 'boolean',
+                default: true
             });
     }, async (argv) => {
         if (argv.verbose) console.info(argv);
@@ -137,10 +144,10 @@ yargs(hideBin(process.argv))
             console.error((err as Error).message);
             return;
         }
-        process.stdout.write(`Refresh leaderboard ${argv.year} ID ${leaderboardId}... `);
-        sync(argv.year!, leaderboardId, argv['member-id']).then(() => console.info('Done'));
+        process.stdout.write(`Synchronizing ${argv.year} local stats using leaderboard ID ${leaderboardId}${argv["member-id"] ? ` and member ID ${argv["member-id"]}` : ''}... `);
+        sync(argv.year!, leaderboardId, argv['member-id'], argv['refresh']).then(() => console.info('Done'));
     })
-    .command(['leaderboard-to-csv <year> [leaderboardId]'], 'Transform leaderboard to CSV', (yargs) => {
+    .command(['leaderboard-to-csv <year> [leaderboard-id] [filename] [refresh]'], 'Transform leaderboard to CSV', (yargs) => {
         return yargs
             .positional('year', {
                 describe: 'Year',
@@ -155,6 +162,12 @@ yargs(hideBin(process.argv))
                 alias: 'f',
                 describe: 'Filename',
                 type: 'string'
+            })
+            .option('refresh', {
+                alias: 'r',
+                describe: 'Refresh the leaderboard first (if possible, throttled to once every 15 minutes)',
+                type: 'boolean',
+                default: true
             });
     }, async (argv) => {
         if (argv.verbose) console.info(argv);
@@ -169,8 +182,8 @@ yargs(hideBin(process.argv))
             return;
         }
         const filename = argv.filename ?? `leaderboard_${leaderboardId}_${argv.year}.csv`;
-        process.stdout.write(`Leaderboard year ${argv.year} ID ${leaderboardId} to CSV file ${filename} ... `);
-        const leaderboard = await getLeaderboard(argv.year!, leaderboardId);
+        process.stdout.write(`Converting ${argv.year} leaderboard ID ${leaderboardId} to CSV and writing to file ${filename}... `);
+        const leaderboard = await getLeaderboard(argv.year!, leaderboardId, argv.refresh);
         // Transform the leaderboard JSON into a sorted, tabular format, assigning places (rank)
         const times = Object.values(leaderboard.members).map(member =>
             Object.entries(member.completion_day_level).map(([day, stars]) => [
@@ -210,7 +223,7 @@ yargs(hideBin(process.argv))
         ['$0 refresh input 2021 4', 'refresh input for year 2021 day 4'],
         ['$0 refresh stats 2023 10', 'refresh stats for year 2023 day 10'],
         ['$0 stats-print 2024', 'print stats for 2024'],
-        ['$0 stats-sync 2024 --leaderboard-id 1234567', 'sync local stats with 2024 leaderboard 1234567'],
+        ['$0 stats-sync 2024 --leaderboard-id 1234567 --member-id 9876543', 'sync local stats with 2024 leaderboard 1234567 member 9876543'],
         ['$0 stats-sync 2024', 'sync local stats with 2024 leaderboard specified in .env file'],
         ['$0 leaderboard-to-csv 2024 --leaderboard-id 1234567 --filename leaderboard.csv', 'save leaderboard 2024 ID 1234567 as CSV-formatted file leaderboard.csv']
     ])

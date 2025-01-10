@@ -3,6 +3,7 @@ import { basename } from 'node:path';
 import * as cheerio from 'cheerio';
 
 import { Egdb, Example, getExamples } from './examples';
+import { Options } from './options';
 import { cookieSteps, getInput, getPuzzle, hms, Incorrect, submitAnswer } from './site';
 
 class NotImplemented extends Error {
@@ -128,7 +129,7 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
  * @param addTests (optional) additional test cases
  * @returns
  */
-async function run(yearDay: string | { year: number, day: number }, solver: Solver, options: boolean | { testsOnly?: boolean, skipTests?: boolean, onlyPart?: 1 | 2, forceSubmit?: boolean } = false, addDb?: Egdb, addTests: Example[] = []) {
+async function run(yearDay: string | { year: number, day: number }, solver: Solver, options: boolean | Options = false, addDb?: Egdb, addTests: Example[] = []) {
     if (!preChecksPass()) return;
     if (typeof options === 'object' && options.testsOnly && options.skipTests) throw new Error('Cannot specify both testsOnly and skipTests');
     const runOptions = {
