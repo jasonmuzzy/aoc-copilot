@@ -73,12 +73,7 @@ yargs(hideBin(process.argv))
             });
     }, async (argv) => {
         if (argv.verbose) console.info(argv);
-        try {
-            await validateYearDay(argv.year, argv.file === 'leaderboard' ? 1 : argv.day);
-        } catch (err) {
-            console.error((err as Error).message);
-            return;
-        }
+        let leaderboardId = '';
         if (argv.file === 'puzzle') {
             process.stdout.write(`Refresh puzzle ${argv.year} day ${argv.day}... `);
             getPuzzle(argv.year!, argv.day!, true).then(() => console.info('Done'));
@@ -86,11 +81,13 @@ yargs(hideBin(process.argv))
             process.stdout.write(`Refresh input ${argv.year} day ${argv.day}... `);
             getInput(argv.year!, argv.day!, true).then(() => console.info('Done'));
         } else if (argv.file === 'leaderboard') {
-            let leaderboardId = '';
-            if (argv['leaderboard-id']) leaderboardId = argv['leaderboard-id'];
-            if (!leaderboardId) leaderboardId = process.env.LEADERBOARD_ID ?? '';
-            if (!leaderboardId) {
-                console.error(`Specify --leaderboard-id or populate LEADERBOARD_ID in .env file`);
+            try {
+                await validateYearDay(argv.year, argv.file === 'leaderboard' ? 1 : argv.day);
+                if (argv['leaderboard-id']) leaderboardId = argv['leaderboard-id'];
+                if (!leaderboardId) leaderboardId = process.env.LEADERBOARD_ID ?? '';
+                if (!leaderboardId) throw new Error(`Specify --leaderboard-id or populate LEADERBOARD_ID in .env file`);
+            } catch (err) {
+                console.error((err as Error).message);
                 return;
             }
             process.stdout.write(`Refresh leaderboard ${argv.year} ID ${leaderboardId}... `);
