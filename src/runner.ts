@@ -27,7 +27,7 @@ type LogLine = {
 class Logger {
     lines: LogLine[] = [];
     log = (...args: any[]) => this.lines.push({output: LogOutput.LOG, line: args});
-    error = (...args: any[]) => this.lines.push({output: LogOutput.LOG, line: args});
+    error = (...args: any[]) => this.lines.push({output: LogOutput.ERROR, line: args});
 
     dump() {
         for (const line of this.lines) {
