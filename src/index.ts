@@ -1,2 +1,2 @@
 export { argsToOptions, Options } from './options';
-export { NotImplemented, run } from './runner';
+export { NotImplemented, run, logger } from './runner';
