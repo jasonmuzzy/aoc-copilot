@@ -15,8 +15,8 @@ function argsToOptions(args: string[]) {
             alias: 'f',
             type: 'boolean'
         })
-        .option('part', {
-            alias: 'p',
+        .option('only-part', {
+            alias: 'o',
             type: 'number'
         })
         .option('skip-tests', {
@@ -32,7 +32,7 @@ function argsToOptions(args: string[]) {
     const options: Options = {};
     for (let [arg, val] of Object.entries(argv)) {
         if (arg === 'force-submit') options.forceSubmit = val;
-        else if (arg === 'part') options.onlyPart = val;
+        else if (arg === 'only-part') options.onlyPart = val;
         else if (arg === 'skip-tests') options.skipTests = val;
         else if (arg === 'tests-only') options.testsOnly = val;
     };
