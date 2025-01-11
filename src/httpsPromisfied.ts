@@ -65,8 +65,12 @@ function legacyRequest(method: string, path: string, cookie: string, ca?: string
             } else reject(error);
         });
         req.on('response', res => { // When the session cookie expires we get a redirect
-            if (res.statusCode !== undefined && res.statusCode >= 300 && res.statusCode <= 399) {
-                reject(new Error(`HTTP ${res.statusCode}\n${errExpiredSessionCookie}`));
+            if (res.statusCode !== undefined && res.statusCode > 299) {
+                const isRedirect = (statusCode: number) => statusCode >= 300 && statusCode <= 399;
+                const msg = isRedirect(res.statusCode)
+                    ? errExpiredSessionCookie
+                    : res.statusMessage;
+                reject(new Error(`HTTP ${res.statusCode}\n${msg}`));
             }
         });
         if (method === 'POST' && !!formData) req.write(formData);
