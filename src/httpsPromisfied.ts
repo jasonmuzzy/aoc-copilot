@@ -8,7 +8,7 @@ Application then expanding Cookies under the Storage section, locating the
 adventofcode.com cookie, and copying the session value.
 
 Then, add the following line to a .env file in the root of your project:
-AOC_SESSION_COOKIE="session=<your session cookie value>"
+AOC_SESSION_COOKIE="<your session cookie value>"
 
 NOTE: Protect your session ID!  For example, add .env to your .gitignore file.
 `;
@@ -79,6 +79,11 @@ function legacyRequest(method: string, path: string, cookie: string, ca?: string
 }
 
 async function request(method: string, path: string, cookie: string, ca?: string, formData?: string): Promise<string> {
+    // Common error to forget the "session=" at the beginning of the cookie value in .env
+    if (!cookie.startsWith('session=')) {
+        cookie = 'session=' + cookie;
+    }
+
     if (!!ca) {
         // we can't set a cert chain with `fetch()`, can only disable cert
         // validation: https://github.com/orgs/nodejs/discussions/44038
