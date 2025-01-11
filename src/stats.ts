@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 
 import { read, remove } from './cache';
 import { getLeaderboard, hms } from './site';
@@ -20,7 +20,7 @@ let deleteOldLocation = false;
 
 function readStatsFile(year: number): Promise<Stats[]> {
     let newLocation = true;
-    return read(`stats_${year}.json`)
+    return readFile(`stats_${year}.json`, { encoding: 'utf-8' })
         .catch(() => { // Fallback to old cache location
             newLocation = false;
             return read(`${year}/stats.json`);
@@ -120,12 +120,12 @@ async function sync(year: number, id: string, memberId = id, syncIfPossible = fa
         for (let [part, star] of Object.entries(stars)) {
             if (part === '1') stat.part1Finished = new Date(star.get_star_ts * 1000).toJSON();
             else if (part === '2') stat.part2Finished = new Date(star.get_star_ts * 1000).toJSON();
-            if (stat.part1Finished < stat.part1Started || stat.part2Finished < stat.part1Finished) {
-                console.error(`Your local stats file has start time(s) that are after your actual`,
-                    `finish time(s).  This can happen when you use multiple development environments`,
-                    `so try syncing with your repository and trying again.`);
-                return;
-            }
+        }
+        if (stat.part1Finished < stat.part1Started || stat.part2Finished < stat.part1Finished) {
+            console.error(`Your local stats file has start time(s) that are after your actual`,
+                `finish time(s).  This can happen when you use multiple development environments`,
+                `so try syncing with your repository and trying again.`);
+            return;
         }
     }
     await updateStatsFile(year, stats);
