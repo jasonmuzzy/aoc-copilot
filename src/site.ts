@@ -89,7 +89,7 @@ async function getLeaderboard(year: number, id: string, refreshIfPossible = fals
         if (refreshIfPossible && isPossible) throw new Error('Force refresh');
         json = await read(`${year}/${id}.json`);
     } catch (err) {
-        const json = await request('GET', `/${year}/leaderboard/private/view/${id}.json`, process.env.AOC_SESSION_COOKIE!, process.env.CERTIFICATE);
+        json = await request('GET', `/${year}/leaderboard/private/view/${id}.json`, process.env.AOC_SESSION_COOKIE!, process.env.CERTIFICATE);
         await write(`${year}/${id}.json`, json);
         await write(`lastLeaderboardRequest.json`, Date.now().toString());
     }
