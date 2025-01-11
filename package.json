@@ -42,7 +42,6 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "aoc-copilot": "^1.6.18",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
     "yargs": "^17.7.2"
