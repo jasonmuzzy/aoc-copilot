@@ -74,15 +74,6 @@ yargs(hideBin(process.argv))
     }, async (argv) => {
         if (argv.verbose) console.info(argv);
         let leaderboardId = '';
-        try {
-            await validateYearDay(argv.year, argv.file === 'leaderboard' ? 1 : argv.day);
-            if (argv['leaderboard-id']) leaderboardId = argv['leaderboard-id'];
-            if (!leaderboardId) leaderboardId = process.env.LEADERBOARD_ID ?? '';
-            if (!leaderboardId) throw new Error(`Specify --leaderboard-id or populate LEADERBOARD_ID in .env file`);
-        } catch (err) {
-            console.error((err as Error).message);
-            return;
-        }
         if (argv.file === 'puzzle') {
             process.stdout.write(`Refresh puzzle ${argv.year} day ${argv.day}... `);
             getPuzzle(argv.year!, argv.day!, true).then(() => console.info('Done'));
@@ -90,6 +81,15 @@ yargs(hideBin(process.argv))
             process.stdout.write(`Refresh input ${argv.year} day ${argv.day}... `);
             getInput(argv.year!, argv.day!, true).then(() => console.info('Done'));
         } else if (argv.file === 'leaderboard') {
+            try {
+                await validateYearDay(argv.year, argv.file === 'leaderboard' ? 1 : argv.day);
+                if (argv['leaderboard-id']) leaderboardId = argv['leaderboard-id'];
+                if (!leaderboardId) leaderboardId = process.env.LEADERBOARD_ID ?? '';
+                if (!leaderboardId) throw new Error(`Specify --leaderboard-id or populate LEADERBOARD_ID in .env file`);
+            } catch (err) {
+                console.error((err as Error).message);
+                return;
+            }
             process.stdout.write(`Refresh leaderboard ${argv.year} ID ${leaderboardId}... `);
             getLeaderboard(argv.year!, leaderboardId, true).then(() => console.info('Done'));
         }
@@ -197,7 +197,7 @@ yargs(hideBin(process.argv))
         let place = 0;
         // Part 1
         const csv = times.map(time => [...time.slice(0, 3), '1', time[3]] as string[])
-            // plus Part 2    
+            // plus Part 2
             .concat(times.filter(time => time[4] !== undefined).map(time => [...time.slice(0, 3), '2', time[4]] as string[]))
             // sorted by day, part, time completed then name
             .sort((a, b) => parseInt(a[2]) < parseInt(b[2]) ? -1 : parseInt(a[2]) > parseInt(b[2]) ? 1 : a[3] < b[3] ? -1 : a[3] > b[3] ? 1 : a[4] < b[4] ? -1 : a[4] > b[4] ? 1 : a[1] < b[1] ? -1 : 1)
