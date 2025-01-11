@@ -1,4 +1,6 @@
-import { read, write } from './cache';
+import { writeFile } from 'node:fs/promises';
+
+import { read, remove } from './cache';
 import { getLeaderboard, hms } from './site';
 
 type Stats = {
@@ -14,18 +16,30 @@ type Stats = {
     part2SolvedElsewhere: boolean
 }
 
+let deleteOldLocation = false;
+
 function readStatsFile(year: number): Promise<Stats[]> {
-    return read(`${year}/stats.json`)
-        .then(file => JSON.parse(file) as Stats[])
-        .catch(() => []);
+    let newLocation = true;
+    return read(`stats_${year}.json`)
+        .catch(() => { // Fallback to old cache location
+            newLocation = false;
+            return read(`${year}/stats.json`);
+        }).then(file => {
+            if (!newLocation) deleteOldLocation = true;
+            return JSON.parse(file) as Stats[];
+        }).catch(() => []);
 }
 
 function getDayStats(stats: Stats[], day: number) {
     return stats.find(stat => stat.day === day) || (stats.push({ day, part1Started: '', part1Finished: '', part2Finished: '', part1AvoidedAttempts: 0, part2AvoidedAttempts: 0, part1IncorrectAttempts: 0, part2IncorrectAttempts: 0, part1SolvedElsewhere: false, part2SolvedElsewhere: false }), stats.at(-1)!);
 }
 
-function updateStatsFile(year: number, stats: Stats[]) {
-    return write(`${year}/stats.json`, JSON.stringify(stats));;
+async function updateStatsFile(year: number, stats: Stats[]) {
+    if (deleteOldLocation) { // Move to new location (delete then write)
+        await remove(`${year}/stats.json`);
+        deleteOldLocation = false;
+    }
+    return writeFile(`stats_${year}.json`, JSON.stringify(stats), { encoding: 'utf-8' });
 }
 
 async function startPart1(year: number, day: number) {
@@ -106,6 +120,12 @@ async function sync(year: number, id: string, memberId = id, syncIfPossible = fa
         for (let [part, star] of Object.entries(stars)) {
             if (part === '1') stat.part1Finished = new Date(star.get_star_ts * 1000).toJSON();
             else if (part === '2') stat.part2Finished = new Date(star.get_star_ts * 1000).toJSON();
+            if (stat.part1Finished < stat.part1Started || stat.part2Finished < stat.part1Finished) {
+                console.error(`Your local stats file has start time(s) that are after your actual`,
+                    `finish time(s).  This can happen when you use multiple development environments`,
+                    `so try syncing with your repository and trying again.`);
+                return;
+            }
         }
     }
     await updateStatsFile(year, stats);

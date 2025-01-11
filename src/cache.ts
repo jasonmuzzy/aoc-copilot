@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 // https://stackoverflow.com/a/26227660
@@ -14,6 +14,11 @@ async function read(filePath: string) {
     return readFile(pathname, { encoding: 'utf-8' });
 }
 
+function remove(filePath: string) {
+    const pathname = join(CACHE_DIR, filePath);
+    return rm(pathname, { force: true });
+}
+
 async function write(filePath: string, data: string) {
     const pathname = join(CACHE_DIR, filePath);
     await mkdir(dirname(pathname), { recursive: true });
@@ -23,5 +28,6 @@ async function write(filePath: string, data: string) {
 export {
     CACHE_DIR,
     read,
+    remove,
     write
 }
