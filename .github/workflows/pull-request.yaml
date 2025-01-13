@@ -23,7 +23,7 @@ jobs:
       - name: Checkout examples
         uses: actions/checkout@v4
         with:
-          repository: "chad3814/aoc-copilot-examples"
+          repository: "jasonmuzzy/aoc-copilot-examples"
           token: ${{ secrets.AOC_EXAMPLE_TOKEN }}
           path: "examples"
 
