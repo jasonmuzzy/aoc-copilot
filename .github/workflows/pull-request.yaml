@@ -27,6 +27,17 @@ jobs:
           token: ${{ secrets.AOC_EXAMPLE_TOKEN }}
           path: "examples"
 
+      - name: Remove all except 4-digit year folders and their contents
+        run: |
+          # Navigate to the examples directory
+          cd examples
+
+          # Find and delete all directories except those named with exactly 4 digits
+          find . -mindepth 1 -type d ! -name '[0-9][0-9][0-9][0-9]' -exec rm -rf {} +
+
+          # Find and delete all files not under the 4-digit year directories
+          find . -mindepth 1 -type f -not -path './[0-9][0-9][0-9][0-9]/*' -exec rm -f {} +
+
       - name: Cache config
         uses: actions/cache@v3
         with:
