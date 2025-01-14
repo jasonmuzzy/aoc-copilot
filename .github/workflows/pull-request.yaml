@@ -3,6 +3,7 @@ name: aoc-copilot tests
 on:
   pull_request:
     branches: [ main ]
+  workflow_dispatch
 
 env:
   AOC_SESSION_COOKIE: ${{ secrets.AOC_SESSION_COOKIE }}
