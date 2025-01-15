@@ -47,9 +47,9 @@ jobs:
       - name: Set NPM auth token
         run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
-      - name: Publishpackage
+      - name: Publish package
         run: npm publish
 
       - name: Push version change commits
         run: |
-          git push origin HEAD:${{ github.ref }}
+          git push origin HEAD:main
