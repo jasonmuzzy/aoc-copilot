@@ -1,4 +1,4 @@
-name: Release NPM Package
+name: Publish NPM Package
 
 on:
   push:
@@ -9,10 +9,6 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -40,15 +36,16 @@ jobs:
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-          git add package.json
+          git add package.json package-lock.json
           git commit -m "ci: update version to ${{ env.TAG_NAME }}" || echo "No changes to commit"
 
-      - name: Build the package
+      - name: Build package
         run: npm run build  # Adjust if you have a different build command
 
-      - name: Publish to NPM
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # Use a secret for your NPM token
+      - name: Set NPM auth token
+        run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+
+      - name: Publishpackage
         run: npm publish
 
       - name: Push version change commits
