@@ -41,15 +41,6 @@ jobs:
           git add package.json package-lock.json
           git commit -m "ci: update version to ${{ env.TAG_NAME }}" || echo "No changes to commit"
 
-      - name: Build package
-        run: npm run build  # Adjust if you have a different build command
-
-      - name: Set NPM auth token
-        run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-
-      - name: Publish package
-        run: npm publish
-
       - name: Determine Branch
         run: |
           # Get the commit SHA for the tag
@@ -57,6 +48,7 @@ jobs:
           echo $TAG_COMMIT
 
           # Get the branches that contain the commit
+          git branch --contains ${TAG_COMMIT}
           BRANCH_NAME=$(git branch --contains ${TAG_COMMIT} | grep -v 'remotes/' | sed 's/^\* //;s/^ //;s/ *$//')
           echo $BRANCH_NAME
 
@@ -65,3 +57,12 @@ jobs:
       - name: Push version change commits
         run: |
           git push origin HEAD:${{ env.BRANCH_NAME }}
+
+      - name: Build package
+        run: npm run build  # Adjust if you have a different build command
+
+      - name: Set NPM auth token
+        run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package
+        run: npm publish
