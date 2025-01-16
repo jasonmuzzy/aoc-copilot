@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -36,19 +34,12 @@ jobs:
           # Use npm version to set the package version
           npm version $TAG_NAME --no-git-tag-version
 
-      - name: Determine Branch
+      - name: Get Branch
         run: |
-          # Get the commit SHA for the tag
-          git rev-list -n 1 ${GITHUB_REF}
-          TAG_COMMIT=$(git rev-list -n 1 ${GITHUB_REF})
-          echo $TAG_COMMIT
-
           # Get the branches that contain the commit
-          git log --oneline --decorate
-          git branch --contains ${TAG_COMMIT}
-          BRANCH_NAME=$(git branch --contains ${TAG_COMMIT} | grep -v 'remotes/' | sed 's/^\* //;s/^ //;s/ *$//')
-          echo $BRANCH_NAME
-
+          git branch --contains ${GITHUB_SHA}
+          BRANCH_NAME=$(git branch --contains ${GITHUB_SHA} | grep -v 'remotes/' | sed 's/^\* //;s/^ //;s/ *$//')
+          echo "Branch Name: $BRANCH_NAME"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Commit version changes
