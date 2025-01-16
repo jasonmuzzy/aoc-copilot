@@ -54,9 +54,11 @@ jobs:
         run: |
           # Get the commit SHA for the tag
           TAG_COMMIT=$(git rev-list -n 1 ${GITHUB_REF})
+          echo $TAG_COMMIT
 
           # Get the branches that contain the commit
           BRANCH_NAME=$(git branch --contains ${TAG_COMMIT} | grep -v 'remotes/' | sed 's/^\* //;s/^ //;s/ *$//')
+          echo $BRANCH_NAME
 
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
