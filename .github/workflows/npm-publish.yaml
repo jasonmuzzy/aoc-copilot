@@ -47,14 +47,26 @@ jobs:
     - name: Get branch from tag
       id: get_branch
       run: |
-        # Get the commit that the tag points to
         TAG_COMMIT=$(git rev-list -n 1 $GITHUB_REF)
-        # Fetch all branches to ensure we can see the branch containing the commit
+        
+        # Fetch all remote branches
         git fetch --all
         
-        # Find the branch that contains this commit
-        BRANCH_NAME=$(git branch -r --contains $TAG_COMMIT | grep -v 'HEAD' | grep -v 'origin/' | awk '{print $1}' | sed 's/origin\///' | head -n 1)
+        # Show all branches to debug
+        echo "Available branches:"
+        git branch -a
         
+        # Find the branches that contain the tag commit
+        BRANCHES=$(git branch -r --contains $TAG_COMMIT | grep -v 'HEAD' | awk '{print $1}' | sed 's/origin\///')
+        
+        # Check if branches were found and set BRANCH_NAME
+        if [ -z "$BRANCHES" ]; then
+          echo "No branches found containing the tag commit."
+          exit 1
+        fi
+        
+        # Take the first branch found
+        BRANCH_NAME=$(echo "$BRANCHES" | head -n 1)
         echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
     - name: Push changes back to the repository
