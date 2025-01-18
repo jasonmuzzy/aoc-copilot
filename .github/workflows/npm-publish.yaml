@@ -42,9 +42,18 @@ jobs:
     - name: Build the project
       run: npm run build
 
+    - name: Get branch from tag
+      id: get_branch
+      run: |
+        # Get the commit that the tag points to
+        TAG_COMMIT=$(git rev-list -n 1 $GITHUB_REF)
+        # Find the branch that contains this commit
+        BRANCH_NAME=$(git branch --contains $TAG_COMMIT | grep -v '^\*' | awk '{print $1}')
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
     - name: Push changes back to the repository
       run: |
-        git push origin HEAD:refs/heads/${GITHUB_REF#refs/tags/}
+        git push origin HEAD:${BRANCH_NAME}
 
     - name: Publish to NPM
       env:
