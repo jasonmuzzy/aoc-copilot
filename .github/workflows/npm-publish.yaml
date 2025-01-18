@@ -44,7 +44,7 @@ jobs:
 
     - name: Push changes back to the repository
       run: |
-        git push origin HEAD:${GITHUB_REF#refs/tags/}
+        git push origin HEAD:refs/heads/${GITHUB_REF#refs/tags/}
 
     - name: Publish to NPM
       env:
