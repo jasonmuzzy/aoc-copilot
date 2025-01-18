@@ -40,12 +40,12 @@ jobs:
     - name: Build the project
       run: npm run build
 
+    - name: Push changes back to the repository
+      run: |
+        git push origin HEAD:${GITHUB_REF#refs/tags/}
+
     - name: Publish to NPM
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
-        npm publish --access public  # Change access level if necessary
-
-    - name: Push changes back to the repository
-      run: |
-        git push origin HEAD:${GITHUB_REF#refs/tags/}
+        npm publish
