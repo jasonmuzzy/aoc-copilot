@@ -14,6 +14,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for all branches
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -47,13 +49,18 @@ jobs:
       run: |
         # Get the commit that the tag points to
         TAG_COMMIT=$(git rev-list -n 1 $GITHUB_REF)
+        # Fetch all branches to ensure we can see the branch containing the commit
+        git fetch --all
+        
         # Find the branch that contains this commit
-        BRANCH_NAME=$(git branch --contains $TAG_COMMIT | grep -v '^\*' | awk '{print $1}')
+        BRANCH_NAME=$(git branch -r --contains $TAG_COMMIT | grep -v 'HEAD' | grep -v 'origin/' | awk '{print $1}' | sed 's/origin\///' | head -n 1)
+        
         echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
     - name: Push changes back to the repository
       run: |
-        git push origin HEAD:${BRANCH_NAME}
+        echo "Pushing to branch: $BRANCH_NAME"
+        git push origin HEAD:$BRANCH_NAME
 
     - name: Publish to NPM
       env:
