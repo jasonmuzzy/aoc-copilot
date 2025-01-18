@@ -21,7 +21,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22'  # Specify your Node.js version here
-        registry-url: 'https://registry.npmjs.org/'
 
     - name: Install dependencies
       run: npm ci
@@ -73,6 +72,9 @@ jobs:
       run: |
         echo "Pushing to branch: $BRANCH_NAME"
         git push origin HEAD:$BRANCH_NAME
+
+    - name: Set NPM auth token
+        run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
     - name: Publish to NPM
       env:
