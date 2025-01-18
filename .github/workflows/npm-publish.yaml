@@ -1,80 +1,48 @@
-name: Publish NPM Package
+name: Release and Publish to NPM
 
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags, e.g., v1.0.0
+      - 'v*'  # Triggers on tags that start with "v"
 
 jobs:
-  build-and-publish:
+  release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Fetch All Branches
-        run: |
-          git fetch --all
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '16'  # Specify your Node.js version here
+        registry-url: 'https://registry.npmjs.org/'
 
-      - name: Check out the branch corresponding to the tag
-        run: |
-          # Get the tag name from GITHUB_REF, e.g., refs/tags/v1.0.0
-          TAG_NAME=${GITHUB_REF#refs/tags/}
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-          # Check out the corresponding branch if it exists
-          if git show-ref --verify --quiet refs/heads/$TAG_NAME; then
-            git checkout $TAG_NAME
-          else
-            echo "Branch corresponding to the tag does not exist. Staying on the tag commit."
-          fi
+    - name: Update package.json version
+      run: |
+        npm version $VERSION --no-git-tag-version
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
+    - name: Commit package.json changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add package.json
+        git commit -m "chore(release): update version to $VERSION"
 
-      - name: Install dependencies
-        run: npm ci
+    - name: Build the project
+      run: npm run build
 
-      - name: Update version number
-        id: versioning
-        run: |
-          # Extract the version from the tag
-          TAG_NAME=${GITHUB_REF##*/}
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+    - name: Publish to NPM
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        npm publish --access public  # Change access level if necessary
 
-          # Use npm version to set the package version
-          npm version $TAG_NAME --no-git-tag-version
-
-      - name: Get Branch
-        run: |
-          # Get the branches that contain the commit
-          BRANCH_NAME=$(git branch --contains ${GITHUB_SHA} | grep -v 'remotes/' | sed 's/^\* //;s/^ //;s/ *$//')
-          echo "Branch Name: $BRANCH_NAME"
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-
-      - name: Commit version changes
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          git add package.json package-lock.json
-          git commit -m "ci: update version to ${{ env.TAG_NAME }}" || echo "No changes to commit"
-
-      - name: Push version change commits
-        run: |
-          git push origin HEAD:${{ env.BRANCH_NAME }}
-
-      - name: Build package
-        run: npm run build  # Adjust if you have a different build command
-
-      - name: Set NPM auth token
-        run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-
-      - name: Publish package
-        run: npm publish
+    - name: Push changes back to the repository
+      run: |
+        git push origin HEAD:${GITHUB_REF#refs/tags/}
