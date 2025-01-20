@@ -74,7 +74,7 @@ jobs:
         git push origin HEAD:$BRANCH_NAME
 
     - name: Set NPM auth token
-        run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+      run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
     - name: Publish to NPM
       env:
