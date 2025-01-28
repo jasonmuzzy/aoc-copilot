@@ -21,6 +21,10 @@
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": ["0,3", 20, 23]
+        "indexesOrLiterals": [20, 20, 23],
+        "transforms": [{
+            "functions": [{ "replaceAll": ["7", "0"] }],
+            "appliesTo": [0]
+        }]
     }
 }

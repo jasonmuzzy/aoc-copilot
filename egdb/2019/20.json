@@ -7,7 +7,10 @@
     },
     "answers": {
         "selector": "article p, em",
-        "indexesOrLiterals": [6, 9, 4, "0", 24],
-        "transforms": [{ "functions": [{ "match": ["\\d+", "g"] }, { "at": [-1] }], "appliesTo": [2] }]
+        "indexesOrLiterals": [6, 9, 4, 19, 24],
+        "transforms": [
+            { "functions": [{ "match": ["\\d+", "g"] }, { "at": [-1] }], "appliesTo": [2] },
+            { "functions": [{ "match": ["\\d+", "g"] }, { "at": [0] }], "appliesTo": [3] }
+        ]
     }
 }
