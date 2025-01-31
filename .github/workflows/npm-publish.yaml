@@ -1,5 +1,9 @@
 name: Release and Publish to NPM
 
+# Usage (assuming changes are already committed and pushed to main):
+# 1. git tag vM.m.p -m "aoc-copilot vM.m.p"
+# 2. git push origin vM.m.p
+
 on:
   push:
     tags:
