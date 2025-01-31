@@ -1,0 +1,18 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[20, 23, 25]],
+        "transforms": [{
+            "functions": [
+                { "join": [","] },
+                { "match": [".*", "g"] }
+            ], "appliesTo": [0]
+        }]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [29]
+    }
+}
