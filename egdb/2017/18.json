@@ -3,10 +3,17 @@
     "part1length": 1,
     "inputs": {
         "selector": "code",
-        "indexes": [27]
+        "indexes": [27, 61]
     },
     "answers": {
         "selector": "code",
-        "indexesOrLiterals": [49]
+        "indexesOrLiterals": [49, 65],
+        "transforms": [{
+            "functions": [
+                { "split": [", "] },
+                { "length": [] },
+                { "toString": [] }
+            ], "appliesTo": [1]
+        }]
     }
 }
