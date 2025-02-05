@@ -6,7 +6,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
 import { CACHE_DIR } from './cache';
-import { defaultSearchStrategy } from './examples';
+import { defaultSearchStrategy, getExamples } from './examples';
 import { getInput, getLeaderboard, getPuzzle, validateYearDay } from './site'
 import { print, sync } from './stats';
 
@@ -217,6 +217,38 @@ yargs(hideBin(process.argv))
         alias: 'v',
         type: 'boolean',
         description: 'Run with verbose logging'
+    })
+    .command('show-example <year> <day>', 'Prints the exampe for the year and day', (yargs) => {
+        return yargs
+            .positional('year', {
+                describe: 'Year',
+                type: 'number'
+            })
+            .positional('day', {
+                describe: 'Day',
+                type: 'number'
+            })
+    }, async (argv) => {
+        if (argv.verbose) console.info(argv);
+        try {
+            await validateYearDay(argv.year, argv.day);
+        } catch (err) {
+            console.error((err as Error).message);
+            return;
+        }
+        const puzzle = await getPuzzle(argv.year!, argv.day!);
+        let $ = cheerio.load(puzzle);
+        const examples = await getExamples(argv.year!, argv.day!, false, $);
+        for (const example of examples) {
+            console.log('Part', example.part, 'example:');
+            console.log('Input:');
+            console.log(example.inputs.join('\n'));
+            console.log('Answer:', example.answer);
+            if (example.additionalInfo) {
+                console.log('Additional Info:', example.additionalInfo);
+            }
+            console.log();
+        }
     })
     .example([
         ['$0 index 2020 13', 'index puzzle year 2020 day 13 for default selector \'code\''],
