@@ -24,7 +24,7 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 
 Currently, years 2018 - 2024 are fully tested and supported for all features.
 
-*Year 2015 is in process, with days 1 - 11 supported.*
+*Year 2015 is in process, with days 1 - 14 supported.*
 *Year 2017 is in process, with days 1 - 18 supported.*
 
 **Q**.  What about 2025 and beyond?  Can I use it as soon as a new puzzle drops?<br>
