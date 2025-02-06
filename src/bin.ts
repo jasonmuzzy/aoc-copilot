@@ -9,6 +9,7 @@ import { CACHE_DIR } from './cache';
 import { defaultSearchStrategy, getExamples } from './examples';
 import { getInput, getLeaderboard, getPuzzle, validateYearDay } from './site'
 import { print, sync } from './stats';
+import { dumpExample } from './runner';
 
 yargs(hideBin(process.argv))
     .command(['index <year> <day> [selector]', 'search'], 'list the indexes and values of a selector within a puzzle; useful for searching for examples', (yargs) => {
@@ -218,7 +219,7 @@ yargs(hideBin(process.argv))
         type: 'boolean',
         description: 'Run with verbose logging'
     })
-    .command('show-example <year> <day>', 'Prints the exampe for the year and day', (yargs) => {
+    .command('show-examples <year> <day>', 'Prints the examples for the year and day', (yargs) => {
         return yargs
             .positional('year', {
                 describe: 'Year',
@@ -239,15 +240,25 @@ yargs(hideBin(process.argv))
         const puzzle = await getPuzzle(argv.year!, argv.day!);
         let $ = cheerio.load(puzzle);
         const examples = await getExamples(argv.year!, argv.day!, false, $);
-        for (const example of examples) {
-            console.log('Part', example.part, 'example:');
-            console.log('Input:');
-            console.log(example.inputs.join('\n'));
-            console.log('Answer:', example.answer);
-            if (example.additionalInfo) {
-                console.log('Additional Info:', example.additionalInfo);
+        const part1Examples = examples.filter(e => e.part === 1);
+        const part2Examples = examples.filter(e => e.part === 2);
+        if (part1Examples.length > 0) {
+            console.log('Part 1:');
+            for (let i = 0; i < part1Examples.length; i++) {
+                const example = part1Examples[i];
+                dumpExample(example.inputs, example.answer, example.additionalInfo, i + 1);
             }
-            console.log();
+        } else {
+            console.log('No Part 1 Examples');
+        }
+        if (part2Examples.length > 0) {
+            console.log('\n===\nPart 2:');
+            for (let i = 0; i < part2Examples.length; i++) {
+                const example = part2Examples[i];
+                dumpExample(example.inputs, example.answer, example.additionalInfo, i + 1);
+            }
+        } else {
+            console.log('\nNo Part 2 Examples');
         }
     })
     .example([
