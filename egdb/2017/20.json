@@ -1,0 +1,26 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [29, 36],
+        "transforms": [
+            {
+                "functions": [
+                    { "slice": [0, 2] },
+                    { "map": [[{ "substring": [0, 34] }]] }
+                ], "appliesTo": [0]
+            },
+            {
+                "functions": [
+                    { "slice": [0, 4] },
+                    { "map": [[{ "substring": [0, 34] }]] }
+                ], "appliesTo": [1]
+            }
+        ]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [33, 38]
+    }
+}
