@@ -1,9 +1,7 @@
 import fs from 'node:fs/promises';
 
-import * as cheerio from 'cheerio';
-
-import { Egdb, getExamples } from '../src/examples';
-import { getPuzzle, isNumChar } from '../src/site';
+import { Egdb } from '../src/examples';
+import { isNumChar } from '../src/site';
 
 // Prints all the colors in the terminal
 function printColors() {
@@ -17,18 +15,6 @@ function printColors() {
     }
 }
 // printColors();
-
-// // Write out example files
-async function writeExampleFiles(year: number, dayFrom: number, dayTo: number) {
-    await fs.mkdir(`./examples/${year}`, { recursive: true });
-    for (let day = dayFrom; day <= dayTo; ++day) {
-        const puzzle = await getPuzzle(year, day);
-        const $ = cheerio.load(puzzle);
-        const examples = await getExamples(year, day, false, $);
-        await fs.writeFile(`./examples/${year}/${day}.json`, JSON.stringify(examples), { encoding: "utf-8" });
-    }
-}
-// writeExampleFiles(2024, 1, 25).then(() => console.log('Done')).catch(error => console.error(error));
 
 // Find arrays, literals and functions in egdb
 async function findLiterals() {
@@ -60,11 +46,3 @@ async function findLiterals() {
     };
 }
 // findLiterals().then(() => console.log('Done')).catch(error => console.error(error));
-
-// Print one example
-async function getExample() {
-    const puzzle = await getPuzzle(2020, 4);
-    const $ = cheerio.load(puzzle);
-    return $('code:eq(56)').text();
-}
-// getExample().then(example => console.log(`"${example}"`)).catch(error => console.error(error));

@@ -79,6 +79,10 @@ function lcm(numbers: number[]): number {
     return a;
 }
 
+function mod(n: number, d: number) {
+    return ((n % d) + d) % d;
+}
+
 function permutations<T>(arr: T[]): T[][] {
     if (arr.length === 0) return [[]];
 
@@ -164,6 +168,7 @@ export {
     factorize,
     gcd,
     lcm,
+    mod,
     permutations,
     printableGrid,
     product,
