@@ -1,0 +1,19 @@
+{
+    "reason": "Irregular Format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[0, 2, 5, 8], [18, 22, 26, 30]]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [16, 36],
+        "transforms": [{
+            "functions": [
+                { "match": [".* = (\\d+)"] },
+                { "at": [1] }
+            ],
+            "appliesTo": [0, 1]
+        }]
+    }
+}

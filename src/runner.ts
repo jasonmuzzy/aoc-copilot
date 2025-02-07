@@ -2,7 +2,7 @@ import { basename } from 'node:path';
 
 import * as cheerio from 'cheerio';
 
-import { Egdb, Example, getExamples } from './examples';
+import { AdditionalInfo, Egdb, Example, getExamples } from './examples';
 import { Options } from './options';
 import { cookieSteps, getInput, getPuzzle, hms, Incorrect, submitAnswer } from './site';
 
@@ -13,7 +13,6 @@ class NotImplemented extends Error {
         this.name = 'NotImplemented';
     }
 }
-
 enum LogOutput {
     LOG,
     ERROR,
@@ -47,7 +46,7 @@ type Solver = (
     inputs: string[],
     part: number,
     test: boolean,
-    additionalInfo?: { [key: string]: string }
+    additionalInfo?: AdditionalInfo
 ) => Promise<number | bigint | string>;
 
 function getYearDay(filename: string) {
@@ -88,7 +87,23 @@ async function allPass(year: number, day: number, part: number, test: boolean, e
     return allPassed;;
 }
 
-async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: { [key: string]: string }): Promise<boolean> {
+function dumpExample(inputs: string[], expected: string, additionalInfo?: AdditionalInfo, exampleNumber?: number): void {
+    if (exampleNumber == null) {
+        console.log("\nExample input:");
+    } else {
+        console.log("\nExample", exampleNumber, "input:");
+    }
+    for (const input of inputs)
+        console.log(input);
+
+    if (additionalInfo != null) {
+        console.log(`\nAdditional info:\n${Object.entries(additionalInfo).map(([k, v]) => `${k}: ${v}`).join('\n')}`)
+    }
+
+    console.log(`\nExpected answer: ${expected}`);
+}
+
+async function passes(inputs: string[], year: number, day: number, part: number, test: boolean, solver: Solver, expected: string, additionalInfo?: AdditionalInfo): Promise<boolean> {
     const start = performance.now();
     try {
         logger.lines.length = 0;
@@ -106,15 +121,7 @@ async function passes(inputs: string[], year: number, day: number, part: number,
         }
     } catch(error: any) {
         if (error.name === 'NotImplemented') {
-            console.log("\nExample input:");
-            for (const input of inputs)
-                console.log(input);
-
-            if (additionalInfo !== undefined) {
-                console.log(`\nAdditional info:\n${Object.entries(additionalInfo).map(([k, v]) => `${k}: ${v}`).join('\n')}`)
-            }
-
-            console.log(`\nExpected answer: ${expected}`);
+            dumpExample(inputs, expected, additionalInfo);
             return false;
         } else {
             console.error(error);
@@ -219,6 +226,8 @@ async function run(yearDay: string | { year: number, day: number }, solver: Solv
 }
 
 export {
+    AdditionalInfo,
+    dumpExample,
     NotImplemented,
     run
 }
