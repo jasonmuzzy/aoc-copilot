@@ -40,6 +40,13 @@ describe('Unit tests', () => {
         test('of 4 numbers', () => expect(mut.lcm([8, 12, 16, 20])).toBe(240));
     });
 
+    describe('mod()', () => { // Behaves the same as remainder (%) when signs match
+        test('positive positive', () => expect(mut.mod(5, 10)).toBe(5 % 10));
+        test('positive negative', () => expect(mut.mod(5, -10)).toBe(-5));
+        test('negative positive', () => expect(mut.mod(-5, 10)).toBe(5));
+        test('negative negative', () => expect(mut.mod(-5, -10)).toBe(-5 % -10));
+    });
+
     describe('printableGrid()', () => {
         test("from array of strings", () => expect(mut.printableGrid(['-1,-1','0,0','1,1'])).toEqual('#  \n # \n  #'));
         test("from set of strings", () => expect(mut.printableGrid(new Set(['-1,-1','0,0','1,1']))).toEqual('#  \n # \n  #'));
