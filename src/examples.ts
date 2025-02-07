@@ -33,11 +33,16 @@ type Egdb = {
     }
 }
 
+type AdditionalInfo = {
+    [key: string]: string;
+};
+
+
 type Example = {
     part: number,
     inputs: string[],
     answer: string,
-    additionalInfo?: { [key: string]: string }
+    additionalInfo?: AdditionalInfo
 }
 
 async function getExamples(year: number, day: number, part1only: boolean, $: cheerio.Root, addDb?: Egdb, addTests: Example[] = []) {
@@ -199,6 +204,7 @@ function defaultSearchStrategy($: cheerio.Root) {
 }
 
 export {
+    AdditionalInfo,
     defaultSearchStrategy,
     Egdb,
     Example,

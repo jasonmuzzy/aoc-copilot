@@ -6,6 +6,7 @@ AoC Copilot (AoCC) supports a few custom commands:
 - [leaderboard-to-csv](#leaderboard-to-csv)
 - [index](#index)
 - [refresh](#refresh)
+- [show-examples](#show-examples)
 - [cache](#cache)
 
 Help is available from the command line by running:
@@ -157,7 +158,7 @@ npx aoc-copilot index 2020 2 "code, em"
 Puzzle 2020 day 2 indexes matching selector 'code, em':
 000:  passwords
 001:  the corporate policy when that password was set
-002:  
+002:
 1-3 a: abcde
 1-3 b: cdefg
 2-9 c: ccccccccc
@@ -197,19 +198,35 @@ Or to re-download the 2020 leaderboard file with ID 1234567:
 ```shell
 npx aoc-copilot refresh leaderboard 2020 --leaderboard-id 1234567
 ```
+<a id="show-examples"></a>
+### show-examples
+
+Displays the examples for the given day:
+
+Usage:
+
+```shell
+npx aoc-copilot show-examples <year> <day>
+```
+
+For example:
+
+```shell
+npx aoc-copilot show-examples 2020 2
+```
 
 ## Troubleshooting
 
 <a id="cache"></a>
 ### cache
 
-Prints the location where puzzles, inputs and attempted answers are cached.  For example:
+Displays the location where puzzles, inputs and attempted answers are cached.  For example:
 
 ```shell
 npx aoc-copilot cache
 ```
 
-will print
+will show
 
 ```shell
 Cache location: C:\Users\<user>\AppData\Local\AoC-Copilot
