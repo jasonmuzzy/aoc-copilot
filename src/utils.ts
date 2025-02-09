@@ -40,7 +40,8 @@ class DefaultMap<K, V> extends Map<K, V> {
 
 function factorize(n: number) {
     const factors: number[] = [];
-    if (n <= 1) return factors;
+    if (n <= 0) return factors;
+    if (n === 1) return [1];
     while (n % 2 === 0) { // Even optimization
         factors.push(2);
         n /= 2;

@@ -22,10 +22,9 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 <a id="years-supported"></a>
 ## Years Supported
 
-Currently, years 2018 - 2024 are fully tested and supported for all features.
+Currently, years 2017 - 2024 are fully tested and supported for all features.
 
 *Year 2015 is in process, with days 1 - 14 supported.*
-*Year 2017 is in process, with days 1 - 21 supported.*
 
 **Q**.  What about 2025 and beyond?  Can I use it as soon as a new puzzle drops?<br>
 **A**.  Probably, for most days.  Advent of Code generally follows a consistent structure from year-to-year, so most features of AoCC should work with future years.  The availability of *examples* is the only thing that is likely to vary.  AoCC uses a default search strategy (DSS) for extracting examples from most puzzles.  In 2024, the DSS automatically extracted examples for 14 out of 25 days.  In 2023, it automatically extracted them for 18 out of 25 days.  The rest required [example database](docs/egdb.md) entries to extract.  2022 was very similar with the DSS working for 20 days.  Assuming AoC follows the same structure in future years, AoCC should be able to automatically extract examples for most days.
@@ -35,8 +34,8 @@ Currently, years 2018 - 2024 are fully tested and supported for all features.
 1) Skip the examples and only run against actual inputs by setting `skipTests` to true
 2) Provide the `addDb` parameter to the runner so it knows where to find the examples.  If you go this route then please consider [contributing](#contributing) it to the [example database](docs/egdb.md) so others can benefit as well!
 
-**Q**.  What about 2015 - 2017?<br>
-**A**.  Based on how differently 2018 and 2019 were structured compared to more recent years, I expect very few (if any) examples to be automatically available for 2017 or earlier.  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
+**Q**.  What about 2015 and 2016?<br>
+**A**.  2015 is in process and partially supported (see above).  For 2016, expect very few (if any) examples to be automatically available.  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
 
 <a id="installation"></a>
 ## Installation
