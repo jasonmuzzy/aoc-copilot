@@ -1,9 +1,11 @@
+import { readdirSync } from 'node:fs';
+import * as path from 'node:path';
 import { encode } from 'node:querystring'
 import { createInterface } from 'node:readline/promises';
 
 import { load } from 'cheerio';
 
-import { read, write } from './cache';
+import { CACHE_DIR, read, write } from './cache';
 import { cookieSteps, errExpiredSessionCookie, request } from './httpsPromisfied';
 import * as stats from './stats';
 
@@ -97,6 +99,7 @@ async function getLeaderboard(year: number, id: string, refreshIfPossible = fals
 }
 
 async function getPuzzle(year: number, day: number, forceRefresh = false) {
+    const no_http = process.env.NO_HTTP?.toLowerCase() ?? 'false';
     await validateYearDay(year, day);
     let puzzle = '';
     try {
@@ -119,7 +122,7 @@ async function getPuzzle(year: number, day: number, forceRefresh = false) {
             return '';
         }
     })();
-    if (cachev != sitev) { // Get CSS if it doesn't exist or is an older version
+    if (cachev != sitev && !no_http) { // Get CSS if it doesn't exist or is an older version
         const css = await request('GET', `/static/style.css?${sitev}`, process.env.AOC_SESSION_COOKIE!, process.env.CERTIFICATE);
         await write(`static/style.css`, css);
         await write(`static/version`, sitev);
@@ -202,7 +205,7 @@ async function submitAnswer(year: number, day: number, part: number, answer: num
             await stats.avoidedAttempt(year, day, part);
             throw new Incorrect(`${answer} is too low because it's less than ${tooLows[0].answer} which was too low for ${year} day ${day} part ${part} on ${tooLows[0].timestamp}`);
         }
-        const tooHighs = partAnswers.filter(a => a.problem === 'too high').sort((a, b) => {const d = BigInt(a.answer) - BigInt(b.answer); return d < 0n ? -1 : d === 0n ? 0 : 1 });
+        const tooHighs = partAnswers.filter(a => a.problem === 'too high').sort((a, b) => { const d = BigInt(a.answer) - BigInt(b.answer); return d < 0n ? -1 : d === 0n ? 0 : 1 });
         if (tooHighs.length > 0 && answer > BigInt(tooHighs[0].answer)) {
             await stats.avoidedAttempt(year, day, part);
             throw new Incorrect(`${answer} is too high because it's greater than ${tooHighs[0].answer} which was too high for ${year} day ${day} part ${part} on ${tooHighs[0].timestamp}`);

@@ -1,0 +1,42 @@
+{
+    "reason": "Implied answers",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[8, 9, 10], [18, 20]]
+    },
+    "answers": {
+        "selector": "article:first,code",
+        "indexesOrLiterals": [0, [20, 22]],
+        "transforms": [
+            {
+                "functions": [
+                    { "match": ["\\d+", "g"] },
+                    { "add": [
+                        [{ "multiply": [
+                            [{ "at": [1] }],
+                            [{ "at": [4] }]
+                        ] }],
+                        [{ "multiply": [
+                            -1,
+                            [{ "multiply": [
+                                [{ "at": [15] }],
+                                [{ "at": [16] }]
+                            ] }]
+                        ] }]
+                    ] },
+                    { "toString": [] }
+                ],
+                "appliesTo": [0]
+            },
+            {
+                "functions": [
+                    { "map": [[{ "parseInt": [] }]] },
+                    { "reduce": [[{ "add": [] }]] },
+                    { "toString": [] }
+                ],
+                "appliesTo": [1]
+            }
+        ]
+    }
+}
