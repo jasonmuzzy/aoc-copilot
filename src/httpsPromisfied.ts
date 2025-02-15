@@ -79,6 +79,13 @@ function legacyRequest(method: string, path: string, cookie: string, ca?: string
 }
 
 async function request(method: string, path: string, cookie: string, ca?: string, formData?: string): Promise<string> {
+
+    // Check for NO_HTTP environment variable (e.g. in case of automated tests running in GitHub)
+    const no_http = process.env.NO_HTTP?.toLowerCase() ?? 'false';
+    if (['1', 'true'].includes(no_http)) {
+        throw new Error(`process.env.NO_HTTP = "${no_http}"; no HTTP requests allowed`);
+    }
+
     // Common error to forget the "session=" at the beginning of the cookie value in .env
     if (!cookie.startsWith('session=')) {
         cookie = 'session=' + cookie;
