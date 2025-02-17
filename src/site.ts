@@ -1,11 +1,9 @@
-import { readdirSync } from 'node:fs';
-import * as path from 'node:path';
 import { encode } from 'node:querystring'
 import { createInterface } from 'node:readline/promises';
 
 import { load } from 'cheerio';
 
-import { CACHE_DIR, read, write } from './cache';
+import { read, write } from './cache';
 import { cookieSteps, errExpiredSessionCookie, request } from './httpsPromisfied';
 import * as stats from './stats';
 
