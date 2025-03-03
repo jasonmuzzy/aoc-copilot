@@ -1,0 +1,19 @@
+{
+    "reason": "Irregular format",
+    "part1length": 6,
+    "inputs": {
+        "selector": "code",
+        "indexes": [3, 5, 10, 13, 18, 23, 29, 31, 36, 39]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [4, 9, 12, 17, 22, 25, 30, 32, 38, 40],
+        "transforms": [{
+            "functions": [
+                { "length": [] },
+                { "toString": [] }
+            ],
+            "appliesTo": [6, 7]
+        }]
+    }
+}
