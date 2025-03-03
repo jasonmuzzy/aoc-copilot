@@ -1,0 +1,21 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[11, 13, 15, 17]]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [18],
+        "transforms": [{
+            "functions": [
+                { "replaceAll": ["\n", ""] },
+                { "replaceAll": [".", ""] },
+                { "length" : [] },
+                { "toString": [] }
+            ],
+            "appliesTo": [0]
+        }]
+    }
+}
