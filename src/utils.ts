@@ -1,4 +1,4 @@
-function adjacents(x: number, y: number, endx: number, endy: number, diagonals = false, startx = 0, starty = 0) {
+function adjacents(x: number, y: number, endx = Infinity, endy = Infinity, diagonals = false, startx = 0, starty = 0) {
     const result: [number, number][] = [];
     for (let y1 = Math.max(starty, y - 1); y1 <= Math.min(endy - 1, y + 1); y1++) {
         for (let x1 = Math.max(startx, x - 1); x1 <= Math.min(endx - 1, x + 1); x1++) {
