@@ -112,14 +112,14 @@ async function print(year: number) {
  * @param id Leaderboard ID
  * @param memberId (optional) Member ID; defaults to same as Leaderboard ID
  */
-async function sync(year: number, id: string, memberId = id, syncIfPossible = false) {
+async function sync(year: number, id: string, memberId = id, syncIfPossible = false, force = false) {
     const stats = await readStatsFile(year);
     const leaderboard = await getLeaderboard(year, id, syncIfPossible);
     for (let [day, stars] of Object.entries(leaderboard.members[memberId].completion_day_level)) {
         const stat = getDayStats(stats, parseInt(day));
         for (let [part, star] of Object.entries(stars)) {
-            if (part === '1') stat.part1Finished = new Date(star.get_star_ts * 1000).toJSON();
-            else if (part === '2') stat.part2Finished = new Date(star.get_star_ts * 1000).toJSON();
+            if (part === '1' && (force || stat.part1Finished === '')) stat.part1Finished = new Date(star.get_star_ts * 1000).toJSON();
+            else if (part === '2' && (force || stat.part2Finished === '')) stat.part2Finished = new Date(star.get_star_ts * 1000).toJSON();
         }
         if (stat.part1Finished < stat.part1Started || stat.part2Finished < stat.part1Finished) {
             console.error(`Your local stats file has start time(s) that are after your actual`,

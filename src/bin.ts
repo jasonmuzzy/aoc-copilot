@@ -135,6 +135,12 @@ yargs(hideBin(process.argv))
                 describe: 'Refresh the leaderboard first (if possible, throttled to once every 15 minutes)',
                 type: 'boolean',
                 default: true
+            })
+            .option('force', {
+                alias: 'f',
+                describe: 'Force overwriting existing finish times',
+                type: 'boolean',
+                default: false
             });
     }, async (argv) => {
         if (argv.verbose) console.info(argv);
