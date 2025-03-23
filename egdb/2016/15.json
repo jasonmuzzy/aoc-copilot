@@ -1,0 +1,20 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [6]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [18],
+            "transforms": [{
+                "functions": [
+                    { "split": ["="] },
+                    { "at": ["1"] },
+                    { "toString": [] }
+                ],
+                "appliesTo": [0]
+            }]
+    }
+}

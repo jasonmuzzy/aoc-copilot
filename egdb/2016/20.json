@@ -1,0 +1,19 @@
+{
+    "reason": "Irregular format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [4, 4]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [5, [5, 6]],
+        "transforms": [{
+            "functions": [
+                { "length": [] },
+                { "toString": [] }
+            ],
+            "appliesTo": [1]
+        }]
+    }
+}
