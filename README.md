@@ -22,22 +22,17 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 <a id="years-supported"></a>
 ## Years Supported
 
-Currently, years 2017 - 2024 are fully tested and supported for all features.
+Currently, years 2016 - 2024 are fully tested and supported for all features.
 
-*Year 2015 is in process, with days 1 - 14 supported.*
-
-*Year 2016 is in process, with days 1 - 22 supported.*
+*Year 2015 is in process, with days 1 - 17 supported.*
 
 **Q**.  What about 2025 and beyond?  Can I use it as soon as a new puzzle drops?<br>
-**A**.  Probably, for most days.  Advent of Code generally follows a consistent structure from year-to-year, so most features of AoCC should work with future years.  The availability of *examples* is the only thing that is likely to vary.  AoCC uses a default search strategy (DSS) for extracting examples from most puzzles.  In 2024, the DSS automatically extracted examples for 14 out of 25 days.  In 2023, it automatically extracted them for 18 out of 25 days.  The rest required [example database](docs/egdb.md) entries to extract.  2022 was very similar with the DSS working for 20 days.  Assuming AoC follows the same structure in future years, AoCC should be able to automatically extract examples for most days.
+**A**.  AoCC uses a default search strategy (DSS) to find examples that works automatically most of the time.  For reference, it was successful for 14 days in 2024, 18 days in 2023, 20 days in 2022, and 17 days in 2021.  (Before that the formatting of the puzzles was less consistent so automatic extraction almost never worked.)  The runner that downloads puzzles, runs solutions and submits answers has worked every day so far, and so can reasonably be expected to continue to work.
 
 **Q**.  What do I do if AoCC doesn't properly extract examples for a day?  Am I stuck?<br>
 **A**.  No, you're not stuck.  You have two options when configuring the [runner](docs/runner.md):
 1) Skip the examples and only run against actual inputs by setting `skipTests` to true
 2) Provide the `addDb` parameter to the runner so it knows where to find the examples.  If you go this route then please consider [contributing](#contributing) it to the [example database](docs/egdb.md) so others can benefit as well!
-
-**Q**.  What about 2015 and 2016?<br>
-**A**.  Both are in process and partially supported (see above).  Some additional days may be automatically supported, but expect very few (if any).  You can still use all the other features of AoCC, but plan to use one of the techniques above to skip the examples or provide their locations.
 
 <a id="installation"></a>
 ## Installation
