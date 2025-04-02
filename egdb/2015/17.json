@@ -1,0 +1,29 @@
+{
+    "reason": "Irregular Format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
+    },
+    "answers": {
+        "selector": "article",
+        "indexesOrLiterals": [0, 1],
+        "transforms": [
+            {
+                "functions": [
+                    { "match": ["(?<=do it:\\n*)\\d(.|\\n)*\\d(?=\\n*Filling)", "g"] },
+                    { "join": [""] },
+                    { "split": ["\n"] },
+                    { "length": [] },
+                    { "toString": [] }
+                ], "appliesTo": [0]
+            },
+            {
+                "functions": [
+                    { "match": ["\\d+", "g"] },
+                    { "at": [-1] }
+                ], "appliesTo": [1]
+            }
+        ]
+    }
+}
