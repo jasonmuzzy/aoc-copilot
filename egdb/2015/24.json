@@ -1,0 +1,45 @@
+{
+    "reason": "Irregular Format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [4, 4],
+        "transforms": [{
+            "functions": [
+                { "join": ["\n"] },
+                { "match": ["\\d+", "g"] },
+                { "add": [[{ "at": [0] }],
+                    [{ "add": [",", [{ "add": [[{ "at": [1] }],
+                        [{ "add": [",", [{ "add": [[{ "at": [2] }],
+                            [{ "add": [",", [{ "add": [[{ "at": [11] }],
+                                [{ "add": [",", [{ "add": [[{ "at": [10] }],
+                                    [{ "add": [",", [{ "add": [[{ "at": [9] }],
+                                        [{ "add": [",", [{ "add": [[{ "at": [7] }],
+                                            [{ "add": [",", [{ "add": [[{ "at": [4] }],
+                                                [{ "add": [",", [{ "add": [[{ "at": [6] }],
+                                                    [{ "add": [",", [{ "at": [3] }]] }]
+                                                ] }]] }]
+                                            ] }]] }]
+                                        ] }]] }]
+                                    ] }]] }]
+                                ] }]] }]
+                            ] }]] }]
+                        ] }]] }]
+                    ] }]] }]
+                ] },
+                { "split": [","] }
+            ], "appliesTo": [0, 1]
+        }]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [8, 14],
+        "transforms": [{
+            "functions": [
+                { "split": [" "] },
+                { "reduce": [[{ "multiply": [] }]]},
+                { "toString": []}
+            ], "appliesTo": [1]
+        }]
+    }
+}
