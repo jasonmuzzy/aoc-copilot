@@ -1,0 +1,34 @@
+{
+    "reason": "Irregular Format",
+    "part1length": 9,
+    "inputs": {
+        "selector": "code",
+        "indexes": [24, 24, 24, 24, 24, 24, 24, 24, 24],
+        "transforms": [
+            { "functions": [{ "at": [0] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [0]},
+            { "functions": [{ "at": [1] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [1]},
+            { "functions": [{ "at": [2] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [2]},
+            { "functions": [{ "at": [3] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [3]},
+            { "functions": [{ "at": [4] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [4]},
+            { "functions": [{ "at": [5] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [5]},
+            { "functions": [{ "at": [6] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [6]},
+            { "functions": [{ "at": [7] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [7]},
+            { "functions": [{ "at": [8] }, { "match": ["(?<=^House . got )\\d+", "g"] }], "appliesTo": [8]}
+        ]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [24, 24, 24, 24, 24, 24, 24, 24, 24],
+        "transforms": [
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [0] }], "appliesTo": [0]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [1] }], "appliesTo": [1]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [2] }], "appliesTo": [2]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [3] }], "appliesTo": [3]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [3] }], "appliesTo": [4]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [5] }], "appliesTo": [5]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [5] }], "appliesTo": [6]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [7] }], "appliesTo": [7]},
+            { "functions": [{ "match": ["(?<=^House )\\d", "gm"] }, { "at": [7] }], "appliesTo": [8]}
+        ]
+    }
+}

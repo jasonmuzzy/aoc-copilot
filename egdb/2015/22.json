@@ -1,0 +1,43 @@
+{
+    "reason": "Irregular Format",
+    "part1length": 2,
+    "inputs": {
+        "selector": "p",
+        "indexes": [5, [6, 5]],
+        "transforms": [
+            { "functions": [
+                { "join": [""] },
+                { "match": ["boss .* \\d", "g"] },
+                { "at": [0] },
+                { "replaceAll": ["boss has", "Hit Points:"] },
+                { "replaceAll": [" hit points and", "\\nDamage:"] },
+                { "split": ["\\n"] }
+            ], "appliesTo": [0]
+            },
+            { "functions": [
+                { "map": [[
+                    { "match": ["(boss has \\d+ hit points (?!and)|and \\d(?= damage))", "g"] },
+                    { "at": [0] }
+                ]] },
+                { "join": [""] },
+                { "match": ["boss .* \\d", "g"] },
+                { "at": [0] },
+                { "replaceAll": ["boss has", "Hit Points:"] },
+                { "replaceAll": [" hit points and", "\\nDamage:"] },
+                { "split": ["\\n"] }
+            ], "appliesTo": [1]
+            }
+        ]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [[12, 4], [15, 9, 6, 12, 4]],
+        "transforms": [{
+            "functions": [
+                { "map": [[{ "parseInt": [] }]] },
+                { "reduce": [[{ "add": [] }]] },
+                { "toString": [] }
+            ], "appliesTo": [0, 1]
+        }]
+    }
+}

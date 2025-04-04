@@ -1,0 +1,22 @@
+{
+    "reason": "Irregular Format",
+    "part1length": 1,
+    "inputs": {
+        "selector": "p",
+        "indexes": [9],
+        "transforms": [{
+            "functions": [
+                { "join": [""] },
+                { "match": ["(?<=\\().*(?=, start)", "g"] },
+                { "at": [0] },
+                { "replaceAll": ["which ends up in row", "To continue, please consult the code grid in the manual.  Enter the code at row"] },
+                { "replaceAll": [")", "."] },
+                { "match": [".*", "g"] }
+            ], "appliesTo": [0]
+        }]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [14]
+    }
+}

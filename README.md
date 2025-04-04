@@ -22,9 +22,7 @@ Advent of Code Copilot (AoCC) helps you iterate through cycles of code and test 
 <a id="years-supported"></a>
 ## Years Supported
 
-Currently, years 2016 - 2024 are fully tested and supported for all features.
-
-*Year 2015 is in process, with days 1 - 17 supported.*
+All years up through 2024 are fully tested and supported for all features.
 
 **Q**.  What about 2025 and beyond?  Can I use it as soon as a new puzzle drops?<br>
 **A**.  AoCC uses a default search strategy (DSS) to find examples that works automatically most of the time.  For reference, it was successful for 14 days in 2024, 18 days in 2023, 20 days in 2022, and 17 days in 2021.  (Before that the formatting of the puzzles was less consistent so automatic extraction almost never worked.)  The runner that downloads puzzles, runs solutions and submits answers has worked every day so far, and so can reasonably be expected to continue to work.
