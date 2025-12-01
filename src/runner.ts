@@ -148,12 +148,15 @@ async function runInput(year: number, day: number, part: number, solver: Solver,
                     ? Date.parse(dayStats!.part1Finished) - Date.parse(dayStats!.part1Started)
                     : Date.parse(dayStats!.part2Finished) - Date.parse(dayStats!.part1Finished);
                 console.log(`It took you ${hms(timeToFinish)} to finish (started ${new Date(part === 1 ? dayStats!.part1Started : dayStats!.part1Finished)})`);
-                if (day === 25) {
+                if (day === 25 || (year >= 2025 && day === 12)) {
                     const $ = cheerio.load(response!);
-                    if (parseInt($('span[class="star-count"]').text() || '0*') < 49) {
-                        console.log(`You don't seem to have enough stars to complete day 25 (https://adventofcode.com/${year}/day/25) so go check your advent calendar (https://adventofcode.com/${year}) for unfinished days!`);
+                    const earnedStars = parseInt($('span[class="star-count"]').text() || '0*');
+                    const neededStars = year >= 2025 ? 23 : 49;
+                    const lastDay = year >= 2025 ? '12' : '25';
+                    if (earnedStars < neededStars) {
+                        console.log(`You don't seem to have enough stars to complete day ${lastDay} (https://adventofcode.com/${year}/day/${lastDay}) so go check your advent calendar (https://adventofcode.com/${year}) for unfinished days!`);
                     } else {
-                        console.log(`You have 49 stars, now go get that last one (https://adventofcode.com/${year}/day/25)!`);
+                        console.log(`You have ${earnedStars} stars, now go get that last one (https://adventofcode.com/${year}/day/${lastDay})!`);
                     }
                 }
             }
