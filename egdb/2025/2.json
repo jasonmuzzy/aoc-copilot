@@ -1,0 +1,18 @@
+{
+    "reason": "Inputs wrapped",
+    "part1length": 1,
+    "inputs": {
+        "selector": "code",
+        "indexes": [0, 0],
+        "transforms": [{
+            "functions": [
+                { "join": [""] },
+                { "match": [".*", "g"] }
+            ], "appliesTo": [0, 1]
+        }]
+    },
+    "answers": {
+        "selector": "code",
+        "indexesOrLiterals": [27, 61]
+    }
+}
