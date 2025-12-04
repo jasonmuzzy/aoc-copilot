@@ -61,6 +61,20 @@ For example:
 AOC_SESSION_COOKIE=**your_session_value**
 ```
 
+<a id="cache-directory"></a>
+### Cache Directory (Optional)
+
+By default, AoCC caches puzzles and examples in a platform-specific directory:
+- Windows: `%LOCALAPPDATA%\AoC-Copilot`
+- macOS: `~/Library/Preferences/AoC-Copilot`
+- Linux: `~/.config/AoC-Copilot`
+
+You can override this location by setting `CACHE_DIR` in your `.env` file:
+
+```
+CACHE_DIR=/custom/path/to/cache
+```
+
 <a id="corporate-networks-and-self-signed-certificates"></a>
 ### Corporate Networks and Self-Signed Certificates (Optional)
 
