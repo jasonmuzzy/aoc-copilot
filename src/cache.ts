@@ -3,7 +3,8 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, parse } from 'node:path';
 
 // https://stackoverflow.com/a/26227660
-const CACHE_DIR = process.env.CACHE_DIR || join(
+const CACHE_DIR = join(
+    process.env.CACHE_DIR ||
     process.env.LOCALAPPDATA || (process.platform == 'darwin' // APPDATA for roaming
         ? process.env.HOME + '/Library/Preferences'
         : process.env.HOME + "/.config"),

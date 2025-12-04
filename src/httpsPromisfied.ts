@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { request as stdRequest, RequestOptions, } from 'node:https';
 
 const cookieSteps = `

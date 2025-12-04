@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import 'dotenv/config';
 import { writeFile } from 'node:fs/promises';
 
 import * as cheerio from 'cheerio';
