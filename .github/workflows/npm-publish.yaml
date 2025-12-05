@@ -5,9 +5,10 @@ name: Release and Publish to NPM
 # 2. git push origin vM.m.p
 
 on:
-  push:
-    tags:
-      - 'v*'  # Triggers on tags that start with "v"
+  workflow_dispatch:  # Manual trigger only (tags disabled temporarily)
+  # push:
+  #   tags:
+  #     - 'v*'  # Triggers on tags that start with "v"
 
 jobs:
   release:
